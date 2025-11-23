@@ -1,0 +1,19 @@
+{
+  "manifest_version": 3,
+  "name": "Leboncoin Description Viewer",
+  "version": "1.0",
+  "description": "Affiche la description d'une annonce Leboncoin dans une popup.",
+  "permissions": [
+    "activeTab",
+    "scripting"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "48": "icons/icon-48.png"
+    }
+  },
+  "icons": {
+    "48": "icons/icon-48.png"
+  }
+}
