@@ -70,66 +70,26 @@
 </head>
 
 <body>
-    <h1>Détails du bien</h1>
-    <div id="content">
-        <div class="data-row">
-            <span class="label">Ville :</span>
-            <span class="value" id="city">Chargement...</span>
-        </div>
-        <div class="data-row">
-            <span class="label">Code Postal :</span>
-            <span class="value" id="zipcode">Chargement...</span>
-        </div>
-        <div class="data-row">
-            <span class="label">Surface :</span>
-            <span class="value" id="surface">Chargement...</span>
-        </div>
-        <div class="data-row">
-            <span class="label">Surface terrain :</span>
-            <span class="value" id="terrain">Chargement...</span>
-        </div>
-        <div class="data-row">
-            <span class="label">DPE :</span>
-            <span class="value" id="dpe">Chargement...</span>
-        </div>
-        <div class="data-row">
-            <span class="label">GES :</span>
-            <span class="value" id="ges">Chargement...</span>
-        </div>
-        <div class="data-row">
-            <span class="label">Date diagnostic :</span>
-            <span class="value" id="date_diag">Chargement...</span>
-        </div>
-        <div class="data-row">
-            <span class="label">Conso. primaire :</span>
-            <span class="value" id="conso_prim">Chargement...</span>
-        </div>
-        <div class="data-row">
-            <span class="label">Conso. finale :</span>
-            <span class="value" id="conso_fin">Chargement...</span>
-        </div>
-    </div>
 
-    <div id="ademe-section" style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #eee;">
-        <h3>Base de données ADEME</h3>
+    <body>
+        <div id="ademe-section" style="margin-top: 0; padding-top: 0; border-top: none;">
 
-        <div id="ademe-params" style="margin-bottom: 10px; font-size: 0.9em; color: #555; display: none;">
-            <strong>Paramètres de recherche :</strong>
-            <ul id="params-list" style="padding-left: 20px; margin: 5px 0;"></ul>
+            <div id="ademe-params" style="margin-bottom: 10px; font-size: 0.9em; color: #555; display: none;">
+                <strong>Paramètres de recherche :</strong>
+                <ul id="params-list" style="padding-left: 20px; margin: 5px 0;"></ul>
+            </div>
+
+            <button id="search-ademe-btn"
+                style="display: none; width: 100%; margin-bottom: 10px; background-color: #2c3e50; color: white; border: none; padding: 8px; border-radius: 4px; cursor: pointer;">
+                Lancer la recherche
+            </button>
+
+            <div id="ademe-loading" style="display: none; color: #666; font-style: italic;">Recherche en cours...</div>
+            <div id="ademe-results" style="font-size: 0.9em;"></div>
         </div>
 
-        <button id="search-ademe-btn"
-            style="display: none; width: 100%; margin-bottom: 10px; background-color: #2c3e50; color: white; border: none; padding: 8px; border-radius: 4px; cursor: pointer;">
-            Lancer la recherche ADEME
-        </button>
-
-        <div id="ademe-loading" style="display: none; color: #666; font-style: italic;">Recherche en cours...</div>
-        <div id="ademe-results" style="font-size: 0.9em;"></div>
-    </div>
-
-    <div id="error-msg" class="error" style="display: none;"></div>
-    <button id="copy-btn">Copier les détails</button>
-    <script src="popup.js"></script>
-</body>
+        <div id="error-msg" class="error" style="display: none;"></div>
+        <script src="popup.js"></script>
+    </body>
 
 </html>

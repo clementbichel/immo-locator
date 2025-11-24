@@ -1,16 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const surfaceEl = document.getElementById('surface');
-    const terrainEl = document.getElementById('terrain');
-    const dpeEl = document.getElementById('dpe');
-    const gesEl = document.getElementById('ges');
-    const dateDiagEl = document.getElementById('date_diag');
-    const consoPrimEl = document.getElementById('conso_prim');
-    const consoFinEl = document.getElementById('conso_fin');
-    const cityEl = document.getElementById('city');
-    const zipcodeEl = document.getElementById('zipcode');
-
     const errorMsg = document.getElementById('error-msg');
-    const copyBtn = document.getElementById('copy-btn');
 
     // Function to be injected into the page
     async function extractRealEstateData() {
@@ -373,14 +362,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const ademeLoading = document.getElementById('ademe-loading');
         const ademeResults = document.getElementById('ademe-results');
         const searchBtn = document.getElementById('search-ademe-btn');
-        const ademeDebug = document.getElementById('ademe-debug');
 
         searchBtn.disabled = true;
         searchBtn.textContent = "Recherche en cours...";
         ademeLoading.style.display = 'block';
         ademeResults.innerHTML = '';
-        ademeDebug.style.display = 'block';
-        ademeDebug.innerHTML = '<strong>Debug Info:</strong><br>Génération de la requête...';
 
         try {
             // Build URL parameters
@@ -452,15 +438,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const url = `https://data.ademe.fr/data-fair/api/v1/datasets/dpe03existant/lines?${params.toString()}`;
 
-            // Display Debug Info
-            ademeDebug.innerHTML = `<strong>Debug Info:</strong><br>
-            <strong>URL:</strong> <a href="${url}" target="_blank" style="color: blue;">Lien API</a>`;
-
             const response = await fetch(url);
             const result = await response.json();
 
             ademeLoading.style.display = 'none';
-            searchBtn.textContent = "Lancer la recherche ADEME";
+            searchBtn.textContent = "Lancer la recherche";
             searchBtn.disabled = false;
 
             if (result.results && result.results.length > 0) {
@@ -503,7 +485,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Sort by score descending
                 scoredResults.sort((a, b) => b.score - a.score);
 
-                let html = '<p><strong>Correspondances trouvées (ADEME) :</strong></p><ul style="padding-left: 20px; margin-top: 5px;">';
+                let html = '<p><strong>Correspondances trouvées :</strong></p><ul style="padding-left: 20px; margin-top: 5px;">';
                 scoredResults.forEach(item => {
                     const date = item.date_etablissement_dpe ? new Date(item.date_etablissement_dpe).toLocaleDateString() : 'N/A';
                     const address = item.adresse_ban || item.nom_commune_ban || 'Adresse inconnue';
@@ -519,11 +501,6 @@ document.addEventListener('DOMContentLoaded', () => {
                             <strong>${address}</strong>
                             <span style="background: ${scoreColor}; color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.8em; font-weight: bold;">${item.score}%</span>
                         </div>
-                        <div style="font-size: 0.9em; color: #555; margin-top: 4px;">
-                            ${item.surface_habitable_logement} m² | DPE: ${item.etiquette_dpe} | GES: ${item.etiquette_ges}<br>
-                            <span style="color: green;">Date: ${date}</span>
-                            ${item.conso_5_usages_par_m2_ep ? ` | Conso: ${Math.round(item.conso_5_usages_par_m2_ep)}` : ''}
-                        </div>
                         <a href="${mapsLink}" target="_blank" style="display: inline-block; margin-top: 4px; font-size: 0.85em; color: #3498db; text-decoration: none;">📍 Voir sur Google Maps</a>
                     </li>`;
                 });
@@ -533,13 +510,23 @@ document.addEventListener('DOMContentLoaded', () => {
                 ademeResults.innerHTML = '<p>Aucun DPE correspondant trouvé avec ces critères stricts.</p>';
             }
 
+            if (!data.zipcode || data.zipcode === 'Non trouvé') {
+                ademeResults.innerHTML = '<p style="color: orange;">Code postal non trouvé, impossible de chercher dans la base.</p>';
+                return;
+            }
+
+            // New condition: only proceed if diagnostic date is found
+            if (!data.date_diag || data.date_diag === 'Non trouvé') {
+                ademeResults.innerHTML = '<p style="color: orange;">Date du diagnostic non trouvée, recherche annulée.</p>';
+                return;
+            }
+
         } catch (error) {
-            console.error('ADEME API Error:', error);
+            console.error('API Error:', error);
             ademeLoading.style.display = 'none';
-            searchBtn.textContent = "Lancer la recherche ADEME";
+            searchBtn.textContent = "Lancer la recherche";
             searchBtn.disabled = false;
-            ademeResults.innerHTML = '<p style="color: red;">Erreur lors de la recherche ADEME.</p>';
-            ademeDebug.innerHTML += `<br><strong style="color: red;">Erreur:</strong> ${error.message}`;
+            ademeResults.innerHTML = '<p style="color: red;">Erreur lors de la recherche.</p>';
         }
     }
 
@@ -566,21 +553,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (res.error) {
                     errorMsg.textContent = res.error;
                     errorMsg.style.display = 'block';
-                    // Hide content
-                    document.getElementById('content').style.display = 'none';
-                    copyBtn.style.display = 'none';
                     return;
                 }
-
-                surfaceEl.textContent = res.surface;
-                terrainEl.textContent = res.terrain;
-                dpeEl.textContent = res.dpe;
-                gesEl.textContent = res.ges;
-                dateDiagEl.textContent = res.date_diag;
-                consoPrimEl.textContent = res.conso_prim;
-                consoFinEl.textContent = res.conso_fin;
-                cityEl.textContent = res.city;
-                zipcodeEl.textContent = res.zipcode;
 
                 // Prepare ADEME Search (Manual)
                 prepareAdemeSearch(res);
@@ -589,26 +563,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 errorMsg.textContent = "Données non trouvées.";
                 errorMsg.style.display = 'block';
             }
-        });
-    });
-
-    copyBtn.addEventListener('click', () => {
-        const text = `Ville: ${cityEl.textContent}
-Code Postal: ${zipcodeEl.textContent}
-Surface: ${surfaceEl.textContent}
-Terrain: ${terrainEl.textContent}
-DPE: ${dpeEl.textContent}
-GES: ${gesEl.textContent}
-Date: ${dateDiagEl.textContent}
-Conso Primaire: ${consoPrimEl.textContent}
-Conso Finale: ${consoFinEl.textContent}`;
-
-        navigator.clipboard.writeText(text).then(() => {
-            const originalText = copyBtn.textContent;
-            copyBtn.textContent = "Copié !";
-            setTimeout(() => {
-                copyBtn.textContent = originalText;
-            }, 1500);
         });
     });
 });
