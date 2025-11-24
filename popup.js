@@ -357,6 +357,12 @@ document.addEventListener('DOMContentLoaded', () => {
         liSurf.textContent = `Surface : ${data.surface} (+/- 10%)`;
         paramsList.appendChild(liSurf);
 
+        if (data.conso_prim && data.conso_prim !== 'Non trouvé') {
+            const liPrim = document.createElement('li');
+            liPrim.textContent = `Conso. Primaire : ${data.conso_prim} (+/- 10%)`;
+            paramsList.appendChild(liPrim);
+        }
+
         // Show Button
         searchBtn.style.display = 'block';
         searchBtn.onclick = () => executeAdemeSearch(data);
@@ -426,9 +432,23 @@ document.addEventListener('DOMContentLoaded', () => {
                 params.append('date_etablissement_dpe_lte', formatDate(maxDate));
             }
 
+            // 6. Primary Energy (+/- 10%) - Optional
+            if (data.conso_prim && data.conso_prim !== 'Non trouvé') {
+                // Remove non-numeric chars except comma/dot
+                const cleanPrim = data.conso_prim.replace(/[^\d,.-]/g, '').replace(',', '.');
+                const primVal = parseFloat(cleanPrim);
+
+                if (!isNaN(primVal)) {
+                    const minPrim = Math.floor(primVal * 0.9);
+                    const maxPrim = Math.ceil(primVal * 1.1);
+                    params.append('conso_5_usages_par_m2_ep_gte', minPrim);
+                    params.append('conso_5_usages_par_m2_ep_lte', maxPrim);
+                }
+            }
+
             // Add standard parameters
             params.append('size', '5');
-            params.append('select', 'adresse_ban,etiquette_dpe,etiquette_ges,date_etablissement_dpe,surface_habitable_logement,nom_commune_ban');
+            params.append('select', 'adresse_ban,etiquette_dpe,etiquette_ges,date_etablissement_dpe,surface_habitable_logement,nom_commune_ban,conso_5_usages_par_m2_ep');
 
             const url = `https://data.ademe.fr/data-fair/api/v1/datasets/dpe03existant/lines?${params.toString()}`;
 
@@ -444,13 +464,67 @@ document.addEventListener('DOMContentLoaded', () => {
             searchBtn.disabled = false;
 
             if (result.results && result.results.length > 0) {
+                // Calculate scores
+                const scoredResults = result.results.map(item => {
+                    let score = 100;
+
+                    // 1. Surface Deviation
+                    const surfAd = parseFloat(data.surface.replace(/[^\d,.-]/g, '').replace(',', '.'));
+                    const surfItem = item.surface_habitable_logement;
+                    if (surfAd && surfItem) {
+                        const diffPercent = Math.abs(surfAd - surfItem) / surfAd * 100;
+                        score -= diffPercent * 2; // Penalty weight
+                    }
+
+                    // 2. Date Deviation (Days)
+                    const [day, month, year] = data.date_diag.split('/');
+                    const dateAd = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+                    const dateItem = item.date_etablissement_dpe ? new Date(item.date_etablissement_dpe) : null;
+
+                    if (dateAd && dateItem) {
+                        const diffTime = Math.abs(dateAd - dateItem);
+                        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                        score -= diffDays * 2; // 2 points per day
+                    }
+
+                    // 3. Primary Energy Deviation
+                    if (data.conso_prim && data.conso_prim !== 'Non trouvé' && item.conso_5_usages_par_m2_ep) {
+                        const primAd = parseFloat(data.conso_prim.replace(/[^\d,.-]/g, '').replace(',', '.'));
+                        const primItem = item.conso_5_usages_par_m2_ep;
+                        if (primAd && primItem) {
+                            const diffPercent = Math.abs(primAd - primItem) / primAd * 100;
+                            score -= diffPercent; // 1 point per % deviation
+                        }
+                    }
+
+                    return { ...item, score: Math.max(0, Math.round(score)) };
+                });
+
+                // Sort by score descending
+                scoredResults.sort((a, b) => b.score - a.score);
+
                 let html = '<p><strong>Correspondances trouvées (ADEME) :</strong></p><ul style="padding-left: 20px; margin-top: 5px;">';
-                result.results.forEach(item => {
+                scoredResults.forEach(item => {
                     const date = item.date_etablissement_dpe ? new Date(item.date_etablissement_dpe).toLocaleDateString() : 'N/A';
-                    html += `<li style="margin-bottom: 8px;">
-                        <strong>${item.adresse_ban || item.nom_commune_ban || 'Adresse inconnue'}</strong><br>
-                        ${item.surface_habitable_logement} m² | DPE: ${item.etiquette_dpe} | GES: ${item.etiquette_ges}<br>
-                        <span style="color: green; font-weight: bold; font-size: 0.85em;">Date: ${date}</span>
+                    const address = item.adresse_ban || item.nom_commune_ban || 'Adresse inconnue';
+                    const mapsLink = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
+
+                    // Color code score
+                    let scoreColor = 'green';
+                    if (item.score < 80) scoreColor = 'orange';
+                    if (item.score < 50) scoreColor = 'red';
+
+                    html += `<li style="margin-bottom: 12px; border-bottom: 1px solid #eee; padding-bottom: 8px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <strong>${address}</strong>
+                            <span style="background: ${scoreColor}; color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.8em; font-weight: bold;">${item.score}%</span>
+                        </div>
+                        <div style="font-size: 0.9em; color: #555; margin-top: 4px;">
+                            ${item.surface_habitable_logement} m² | DPE: ${item.etiquette_dpe} | GES: ${item.etiquette_ges}<br>
+                            <span style="color: green;">Date: ${date}</span>
+                            ${item.conso_5_usages_par_m2_ep ? ` | Conso: ${Math.round(item.conso_5_usages_par_m2_ep)}` : ''}
+                        </div>
+                        <a href="${mapsLink}" target="_blank" style="display: inline-block; margin-top: 4px; font-size: 0.85em; color: #3498db; text-decoration: none;">📍 Voir sur Google Maps</a>
                     </li>`;
                 });
                 html += '</ul>';
