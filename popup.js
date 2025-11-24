@@ -6,6 +6,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const dateDiagEl = document.getElementById('date_diag');
     const consoPrimEl = document.getElementById('conso_prim');
     const consoFinEl = document.getElementById('conso_fin');
+    const cityEl = document.getElementById('city');
+    const zipcodeEl = document.getElementById('zipcode');
 
     const errorMsg = document.getElementById('error-msg');
     const copyBtn = document.getElementById('copy-btn');
@@ -25,7 +27,9 @@ document.addEventListener('DOMContentLoaded', () => {
             ges: 'Non trouvé',
             date_diag: 'Non trouvé',
             conso_prim: 'Non trouvé',
-            conso_fin: 'Non trouvé'
+            conso_fin: 'Non trouvé',
+            city: 'Non trouvé',
+            zipcode: 'Non trouvé'
         };
 
         // Helper to clean text
@@ -38,43 +42,51 @@ document.addEventListener('DOMContentLoaded', () => {
                 const jsonData = JSON.parse(nextDataScript.textContent);
                 const ad = jsonData?.props?.pageProps?.ad;
 
-                if (ad && ad.attributes) {
-                    const attributes = ad.attributes;
+                if (ad) {
+                    // Extract Location
+                    if (ad.location) {
+                        if (ad.location.city) data.city = ad.location.city;
+                        if (ad.location.zipcode) data.zipcode = ad.location.zipcode;
+                    }
 
-                    // Helper to find attribute by key or label
-                    const findAttr = (key, labelPart) => {
-                        return attributes.find(a =>
-                            a.key === key ||
-                            (a.label && a.label.toLowerCase().includes(labelPart))
+                    if (ad.attributes) {
+                        const attributes = ad.attributes;
+
+                        // Helper to find attribute by key or label
+                        const findAttr = (key, labelPart) => {
+                            return attributes.find(a =>
+                                a.key === key ||
+                                (a.label && a.label.toLowerCase().includes(labelPart))
+                            );
+                        };
+
+                        const surfaceAttr = findAttr('square', 'habitable');
+                        if (surfaceAttr) data.surface = surfaceAttr.value_label || surfaceAttr.value + ' m²';
+
+                        const terrainAttr = findAttr('land_plot_surface', 'terrain');
+                        if (terrainAttr) data.terrain = terrainAttr.value_label || terrainAttr.value + ' m²';
+
+                        const dpeAttr = findAttr('energy_rate', 'énergie');
+                        if (dpeAttr) data.dpe = (dpeAttr.value_label || dpeAttr.value).toUpperCase();
+
+                        const gesAttr = attributes.find(a =>
+                            a.key === 'ges_rate' ||
+                            (a.label && (
+                                a.label.toLowerCase() === 'ges' ||
+                                a.label.toLowerCase().includes('gaz à effet de serre')
+                            ))
                         );
-                    };
+                        if (gesAttr) data.ges = (gesAttr.value_label || gesAttr.value).toUpperCase();
 
-                    const surfaceAttr = findAttr('square', 'habitable');
-                    if (surfaceAttr) data.surface = surfaceAttr.value_label || surfaceAttr.value + ' m²';
+                        const dateAttr = attributes.find(a => a.label && a.label.includes('Date de réalisation'));
+                        if (dateAttr) data.date_diag = dateAttr.value_label || dateAttr.value;
 
-                    const terrainAttr = findAttr('land_plot_surface', 'terrain');
-                    if (terrainAttr) data.terrain = terrainAttr.value_label || terrainAttr.value + ' m²';
+                        const primAttr = attributes.find(a => a.label && a.label.includes('primaire'));
+                        if (primAttr) data.conso_prim = primAttr.value_label || primAttr.value;
 
-                    const dpeAttr = findAttr('energy_rate', 'énergie');
-                    if (dpeAttr) data.dpe = (dpeAttr.value_label || dpeAttr.value).toUpperCase();
-
-                    const gesAttr = attributes.find(a =>
-                        a.key === 'ges_rate' ||
-                        (a.label && (
-                            a.label.toLowerCase() === 'ges' ||
-                            a.label.toLowerCase().includes('gaz à effet de serre')
-                        ))
-                    );
-                    if (gesAttr) data.ges = (gesAttr.value_label || gesAttr.value).toUpperCase();
-
-                    const dateAttr = attributes.find(a => a.label && a.label.includes('Date de réalisation'));
-                    if (dateAttr) data.date_diag = dateAttr.value_label || dateAttr.value;
-
-                    const primAttr = attributes.find(a => a.label && a.label.includes('primaire'));
-                    if (primAttr) data.conso_prim = primAttr.value_label || primAttr.value;
-
-                    const finAttr = attributes.find(a => a.label && a.label.includes('finale'));
-                    if (finAttr) data.conso_fin = finAttr.value_label || finAttr.value;
+                        const finAttr = attributes.find(a => a.label && a.label.includes('finale'));
+                        if (finAttr) data.conso_fin = finAttr.value_label || finAttr.value;
+                    }
                 }
             }
         } catch (e) {
@@ -120,6 +132,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const terrainMatch = bodyText.match(/Surface totale du terrain\s*[:\n]?\s*(\d+(?:[.,]\d+)?\s*m²)/i);
             if (terrainMatch) data.terrain = terrainMatch[1];
+        }
+
+        // Fallback for location
+        if (data.zipcode === 'Non trouvé' || data.city === 'Non trouvé') {
+            const locationEl = document.querySelector('[data-qa-id="adview_location_container"]');
+            if (locationEl) {
+                const text = locationEl.innerText;
+                const zipMatch = text.match(/\b\d{5}\b/);
+                if (zipMatch) data.zipcode = zipMatch[0];
+
+                // City is usually before the zipcode
+                if (zipMatch) {
+                    const parts = text.split(zipMatch[0]);
+                    if (parts[0]) data.city = parts[0].trim();
+                }
+            }
         }
 
         // Regex on Description Text (now expanded)
@@ -310,6 +338,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 dateDiagEl.textContent = res.date_diag;
                 consoPrimEl.textContent = res.conso_prim;
                 consoFinEl.textContent = res.conso_fin;
+                cityEl.textContent = res.city;
+                zipcodeEl.textContent = res.zipcode;
             } else {
                 errorMsg.textContent = "Données non trouvées.";
                 errorMsg.style.display = 'block';
@@ -318,7 +348,9 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     copyBtn.addEventListener('click', () => {
-        const text = `Surface: ${surfaceEl.textContent}
+        const text = `Ville: ${cityEl.textContent}
+Code Postal: ${zipcodeEl.textContent}
+Surface: ${surfaceEl.textContent}
 Terrain: ${terrainEl.textContent}
 DPE: ${dpeEl.textContent}
 GES: ${gesEl.textContent}
