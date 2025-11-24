@@ -302,6 +302,173 @@ document.addEventListener('DOMContentLoaded', () => {
         return data;
     }
 
+    // Function to prepare ADEME Search (Manual Trigger)
+    function prepareAdemeSearch(data) {
+        const ademeParams = document.getElementById('ademe-params');
+        const paramsList = document.getElementById('params-list');
+        const searchBtn = document.getElementById('search-ademe-btn');
+        const ademeResults = document.getElementById('ademe-results');
+
+        // Reset
+        ademeResults.innerHTML = '';
+        paramsList.innerHTML = '';
+        ademeParams.style.display = 'none';
+        searchBtn.style.display = 'none';
+
+        // Strict Check: All fields must be present
+        const hasLocation = (data.zipcode && data.zipcode !== 'Non trouvé') || (data.city && data.city !== 'Non trouvé');
+        const hasDate = data.date_diag && data.date_diag !== 'Non trouvé';
+        const hasDpe = data.dpe && data.dpe !== 'Non trouvé';
+        const hasGes = data.ges && data.ges !== 'Non trouvé';
+        const hasSurface = data.surface && data.surface !== 'Non trouvé';
+
+        if (!hasLocation || !hasDate || !hasDpe || !hasGes || !hasSurface) {
+            let missing = [];
+            if (!hasLocation) missing.push("Localisation");
+            if (!hasDate) missing.push("Date");
+            if (!hasDpe) missing.push("DPE");
+            if (!hasGes) missing.push("GES");
+            if (!hasSurface) missing.push("Surface");
+
+            ademeResults.innerHTML = `<p style="color: #999; font-size: 0.8em;">Recherche ADEME non disponible : informations manquantes (${missing.join(', ')}).</p>`;
+            return;
+        }
+
+        // Show Parameters
+        ademeParams.style.display = 'block';
+
+        const liLoc = document.createElement('li');
+        liLoc.textContent = `Localisation : ${data.zipcode !== 'Non trouvé' ? data.zipcode : data.city}`;
+        paramsList.appendChild(liLoc);
+
+        const liDate = document.createElement('li');
+        liDate.textContent = `Date : ${data.date_diag} (+/- 7 jours)`;
+        paramsList.appendChild(liDate);
+
+        const liDpe = document.createElement('li');
+        liDpe.textContent = `DPE : ${data.dpe}`;
+        paramsList.appendChild(liDpe);
+
+        const liGes = document.createElement('li');
+        liGes.textContent = `GES : ${data.ges}`;
+        paramsList.appendChild(liGes);
+
+        const liSurf = document.createElement('li');
+        liSurf.textContent = `Surface : ${data.surface} (+/- 10%)`;
+        paramsList.appendChild(liSurf);
+
+        // Show Button
+        searchBtn.style.display = 'block';
+        searchBtn.onclick = () => executeAdemeSearch(data);
+    }
+
+    // Function to execute ADEME API Search
+    async function executeAdemeSearch(data) {
+        const ademeLoading = document.getElementById('ademe-loading');
+        const ademeResults = document.getElementById('ademe-results');
+        const searchBtn = document.getElementById('search-ademe-btn');
+        const ademeDebug = document.getElementById('ademe-debug');
+
+        searchBtn.disabled = true;
+        searchBtn.textContent = "Recherche en cours...";
+        ademeLoading.style.display = 'block';
+        ademeResults.innerHTML = '';
+        ademeDebug.style.display = 'block';
+        ademeDebug.innerHTML = '<strong>Debug Info:</strong><br>Génération de la requête...';
+
+        try {
+            // Build URL parameters
+            const params = new URLSearchParams();
+
+            // 1. Location (Zipcode OR City)
+            if (data.zipcode && data.zipcode !== 'Non trouvé') {
+                params.append('code_postal_ban_eq', data.zipcode);
+            } else if (data.city && data.city !== 'Non trouvé') {
+                params.append('nom_commune_ban_eq', data.city);
+            }
+
+            // 2. DPE Letter (Strict)
+            params.append('etiquette_dpe_eq', data.dpe);
+
+            // 3. GES Letter (Strict)
+            params.append('etiquette_ges_eq', data.ges);
+
+            // 4. Surface (+/- 10%)
+            // Remove "m²" and spaces, replace comma with dot
+            const cleanSurface = data.surface.replace(/[^\d,.-]/g, '').replace(',', '.');
+            const surfaceVal = parseFloat(cleanSurface);
+
+            if (!isNaN(surfaceVal)) {
+                const minSurface = Math.floor(surfaceVal * 0.9);
+                const maxSurface = Math.ceil(surfaceVal * 1.1);
+                params.append('surface_habitable_logement_gte', minSurface);
+                params.append('surface_habitable_logement_lte', maxSurface);
+            }
+
+            // 5. Date (+/- 7 days)
+            const [day, month, year] = data.date_diag.split('/');
+            // Use local time constructor to avoid UTC shifts
+            const diagDate = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+
+            if (!isNaN(diagDate.getTime())) {
+                const minDate = new Date(diagDate);
+                minDate.setDate(diagDate.getDate() - 7);
+                const maxDate = new Date(diagDate);
+                maxDate.setDate(diagDate.getDate() + 7);
+
+                const formatDate = (d) => {
+                    const y = d.getFullYear();
+                    const m = String(d.getMonth() + 1).padStart(2, '0');
+                    const da = String(d.getDate()).padStart(2, '0');
+                    return `${y}-${m}-${da}`;
+                };
+                params.append('date_etablissement_dpe_gte', formatDate(minDate));
+                params.append('date_etablissement_dpe_lte', formatDate(maxDate));
+            }
+
+            // Add standard parameters
+            params.append('size', '5');
+            params.append('select', 'adresse_ban,etiquette_dpe,etiquette_ges,date_etablissement_dpe,surface_habitable_logement,nom_commune_ban');
+
+            const url = `https://data.ademe.fr/data-fair/api/v1/datasets/dpe03existant/lines?${params.toString()}`;
+
+            // Display Debug Info
+            ademeDebug.innerHTML = `<strong>Debug Info:</strong><br>
+            <strong>URL:</strong> <a href="${url}" target="_blank" style="color: blue;">Lien API</a>`;
+
+            const response = await fetch(url);
+            const result = await response.json();
+
+            ademeLoading.style.display = 'none';
+            searchBtn.textContent = "Lancer la recherche ADEME";
+            searchBtn.disabled = false;
+
+            if (result.results && result.results.length > 0) {
+                let html = '<p><strong>Correspondances trouvées (ADEME) :</strong></p><ul style="padding-left: 20px; margin-top: 5px;">';
+                result.results.forEach(item => {
+                    const date = item.date_etablissement_dpe ? new Date(item.date_etablissement_dpe).toLocaleDateString() : 'N/A';
+                    html += `<li style="margin-bottom: 8px;">
+                        <strong>${item.adresse_ban || item.nom_commune_ban || 'Adresse inconnue'}</strong><br>
+                        ${item.surface_habitable_logement} m² | DPE: ${item.etiquette_dpe} | GES: ${item.etiquette_ges}<br>
+                        <span style="color: green; font-weight: bold; font-size: 0.85em;">Date: ${date}</span>
+                    </li>`;
+                });
+                html += '</ul>';
+                ademeResults.innerHTML = html;
+            } else {
+                ademeResults.innerHTML = '<p>Aucun DPE correspondant trouvé avec ces critères stricts.</p>';
+            }
+
+        } catch (error) {
+            console.error('ADEME API Error:', error);
+            ademeLoading.style.display = 'none';
+            searchBtn.textContent = "Lancer la recherche ADEME";
+            searchBtn.disabled = false;
+            ademeResults.innerHTML = '<p style="color: red;">Erreur lors de la recherche ADEME.</p>';
+            ademeDebug.innerHTML += `<br><strong style="color: red;">Erreur:</strong> ${error.message}`;
+        }
+    }
+
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
         if (!tabs[0] || !tabs[0].id) {
             errorMsg.textContent = "Erreur : Impossible d'accéder à l'onglet actif.";
@@ -340,6 +507,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 consoFinEl.textContent = res.conso_fin;
                 cityEl.textContent = res.city;
                 zipcodeEl.textContent = res.zipcode;
+
+                // Prepare ADEME Search (Manual)
+                prepareAdemeSearch(res);
+
             } else {
                 errorMsg.textContent = "Données non trouvées.";
                 errorMsg.style.display = 'block';
