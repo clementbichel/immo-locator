@@ -5,8 +5,8 @@ document.addEventListener('DOMContentLoaded', () => {
     async function extractRealEstateData() {
         // Check if we are in the correct category
         // URL check is fast and effective for Leboncoin
-        if (!window.location.href.includes('/ventes_immobilieres/')) {
-            return { error: "Cette extension ne fonctionne que pour les ventes immobilières." };
+        if (!window.location.href.includes('/ventes_immobilieres/') && !window.location.href.includes('/locations/')) {
+            return { error: "Cette extension ne fonctionne que pour les ventes immobilières et les locations." };
         }
 
         const data = {
