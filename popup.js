@@ -24,18 +24,31 @@ document.addEventListener('DOMContentLoaded', () => {
         // Helper to clean text
         const clean = (text) => text ? text.trim() : null;
 
+        const debug = [];
+
         // Strategy 1: __NEXT_DATA__ (Best source)
         try {
             const nextDataScript = document.getElementById('__NEXT_DATA__');
             if (nextDataScript) {
+                debug.push("Found __NEXT_DATA__");
                 const jsonData = JSON.parse(nextDataScript.textContent);
-                const ad = jsonData?.props?.pageProps?.ad;
+                debug.push("Parsed JSON");
+
+                // Navigate safely to ad
+                const pageProps = jsonData?.props?.pageProps;
+                if (!pageProps) debug.push("No pageProps");
+
+                const ad = pageProps?.ad;
 
                 if (ad) {
+                    debug.push("Found ad object");
                     // Extract Location
                     if (ad.location) {
+                        debug.push("Found location obj");
                         if (ad.location.city) data.city = ad.location.city;
                         if (ad.location.zipcode) data.zipcode = ad.location.zipcode;
+                    } else {
+                        debug.push("No location inside ad");
                     }
 
                     if (ad.attributes) {
@@ -76,11 +89,20 @@ document.addEventListener('DOMContentLoaded', () => {
                         const finAttr = attributes.find(a => a.label && a.label.includes('finale'));
                         if (finAttr) data.conso_fin = finAttr.value_label || finAttr.value;
                     }
+                } else {
+                    debug.push("No ad object in pageProps");
+                    // Inspect keys to see what we have
+                    if (pageProps) debug.push("pageProps keys: " + Object.keys(pageProps).join(', '));
                 }
+            } else {
+                debug.push("No __NEXT_DATA__ script found");
             }
         } catch (e) {
             console.log('Error parsing __NEXT_DATA__:', e);
+            debug.push("Error: " + e.message);
         }
+
+        data.debugLog = debug;
 
         // Check if we are missing data, if so, try to expand description
         const missingData = Object.values(data).some(v => v === 'Non trouvé');
@@ -555,6 +577,19 @@ document.addEventListener('DOMContentLoaded', () => {
                     errorMsg.style.display = 'block';
                     return;
                 }
+
+                // Display Results
+                const fields = ['city', 'zipcode', 'surface', 'terrain', 'dpe', 'ges', 'date_diag', 'conso_prim', 'conso_fin'];
+                fields.forEach(field => {
+                    const el = document.getElementById(field);
+                    if (el) {
+                        el.textContent = res[field] || 'Non trouvé';
+                        if (res[field] === 'Non trouvé') el.style.color = '#999';
+                        else el.style.color = '#1a1a1a';
+                    }
+                });
+
+
 
                 // Prepare ADEME Search (Manual)
                 prepareAdemeSearch(res);
