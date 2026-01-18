@@ -1,3 +1,6 @@
+// Cross-browser compatibility: use 'browser' if available, otherwise 'chrome'
+globalThis.browser ??= globalThis.chrome;
+
 document.addEventListener('DOMContentLoaded', () => {
     const errorMsg = document.getElementById('error-msg');
 
@@ -552,19 +555,19 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+    browser.tabs.query({ active: true, currentWindow: true }, (tabs) => {
         if (!tabs[0] || !tabs[0].id) {
             errorMsg.textContent = "Erreur : Impossible d'accéder à l'onglet actif.";
             errorMsg.style.display = 'block';
             return;
         }
 
-        chrome.scripting.executeScript({
+        browser.scripting.executeScript({
             target: { tabId: tabs[0].id },
             func: extractRealEstateData,
         }, (results) => {
-            if (chrome.runtime.lastError) {
-                errorMsg.textContent = "Erreur : " + chrome.runtime.lastError.message;
+            if (browser.runtime.lastError) {
+                errorMsg.textContent = "Erreur : " + browser.runtime.lastError.message;
                 errorMsg.style.display = 'block';
                 return;
             }
