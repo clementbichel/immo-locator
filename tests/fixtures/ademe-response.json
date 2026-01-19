@@ -1,0 +1,32 @@
+{
+  "total": 3,
+  "results": [
+    {
+      "adresse_ban": "15 Rue de la République, 69003 Lyon",
+      "etiquette_dpe": "C",
+      "etiquette_ges": "D",
+      "date_etablissement_dpe": "2024-01-15",
+      "surface_habitable_logement": 148,
+      "nom_commune_ban": "Lyon",
+      "conso_5_usages_par_m2_ep": 182
+    },
+    {
+      "adresse_ban": "22 Avenue Jean Jaurès, 69003 Lyon",
+      "etiquette_dpe": "C",
+      "etiquette_ges": "D",
+      "date_etablissement_dpe": "2024-01-18",
+      "surface_habitable_logement": 155,
+      "nom_commune_ban": "Lyon",
+      "conso_5_usages_par_m2_ep": 190
+    },
+    {
+      "adresse_ban": "8 Place Bellecour, 69003 Lyon",
+      "etiquette_dpe": "C",
+      "etiquette_ges": "D",
+      "date_etablissement_dpe": "2024-01-10",
+      "surface_habitable_logement": 142,
+      "nom_commune_ban": "Lyon",
+      "conso_5_usages_par_m2_ep": 175
+    }
+  ]
+}
