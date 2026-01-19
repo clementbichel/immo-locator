@@ -3,40 +3,42 @@
  */
 
 const mockTabs = [
-  { id: 1, url: 'https://www.leboncoin.fr/ventes_immobilieres/1234567890.htm', active: true }
+  { id: 1, url: 'https://www.leboncoin.fr/ventes_immobilieres/1234567890.htm', active: true },
 ];
 
 const mockScriptingResults = {
-  default: [{
-    result: {
-      surface: '120 m²',
-      terrain: '500 m²',
-      dpe: 'D',
-      ges: 'E',
-      date_diag: '15/03/2024',
-      conso_prim: '250 kWh/m²/an',
-      conso_fin: '180 kWh/m²/an',
-      city: 'Paris',
-      zipcode: '75001',
-      debugLog: ['Found __NEXT_DATA__', 'Parsed JSON', 'Found ad object']
-    }
-  }]
+  default: [
+    {
+      result: {
+        surface: '120 m²',
+        terrain: '500 m²',
+        dpe: 'D',
+        ges: 'E',
+        date_diag: '15/03/2024',
+        conso_prim: '250 kWh/m²/an',
+        conso_fin: '180 kWh/m²/an',
+        city: 'Paris',
+        zipcode: '75001',
+        debugLog: ['Found __NEXT_DATA__', 'Parsed JSON', 'Found ad object'],
+      },
+    },
+  ],
 };
 
 const chrome = {
   tabs: {
     query: vi.fn((queryInfo, callback) => {
       callback(mockTabs);
-    })
+    }),
   },
   scripting: {
     executeScript: vi.fn((details, callback) => {
       callback(mockScriptingResults.default);
-    })
+    }),
   },
   runtime: {
-    lastError: null
-  }
+    lastError: null,
+  },
 };
 
 // Set global mocks

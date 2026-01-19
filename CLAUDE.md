@@ -11,6 +11,7 @@ This is a Chrome Extension (Manifest V3) for extracting real estate data from Le
 ## Architecture
 
 The extension consists of three files:
+
 - `manifest.json` - Chrome extension manifest (V3)
 - `popup.html` - Extension popup UI
 - `popup.js` - All logic for data extraction and ADEME API integration
@@ -24,6 +25,7 @@ The extension consists of three files:
 ### ADEME Integration
 
 The extension queries `https://data.ademe.fr/data-fair/api/v1/datasets/dpe03existant/lines` with filters:
+
 - Location (zipcode or city)
 - DPE/GES ratings (exact match)
 - Surface (+/- 10%)

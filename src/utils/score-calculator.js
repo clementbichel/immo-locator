@@ -14,7 +14,7 @@ export function calculateMatchScore(adData, ademeItem) {
   const surfItem = ademeItem.surface_habitable_logement;
 
   if (surfAd && surfItem) {
-    const diffPercent = Math.abs(surfAd - surfItem) / surfAd * 100;
+    const diffPercent = (Math.abs(surfAd - surfItem) / surfAd) * 100;
     score -= diffPercent * 2; // Penalty weight: 2 points per % deviation
   }
 
@@ -31,12 +31,16 @@ export function calculateMatchScore(adData, ademeItem) {
   }
 
   // 3. Primary Energy Deviation
-  if (adData.conso_prim && adData.conso_prim !== 'Non trouvé' && ademeItem.conso_5_usages_par_m2_ep) {
+  if (
+    adData.conso_prim &&
+    adData.conso_prim !== 'Non trouvé' &&
+    ademeItem.conso_5_usages_par_m2_ep
+  ) {
     const primAd = parseEnergyValue(adData.conso_prim);
     const primItem = ademeItem.conso_5_usages_par_m2_ep;
 
     if (primAd && primItem) {
-      const diffPercent = Math.abs(primAd - primItem) / primAd * 100;
+      const diffPercent = (Math.abs(primAd - primItem) / primAd) * 100;
       score -= diffPercent; // 1 point per % deviation
     }
   }
@@ -58,21 +62,21 @@ export function findOutlier(items, key) {
 
   // Calculate mode (most common value)
   const counts = {};
-  items.forEach(item => {
+  items.forEach((item) => {
     const val = Math.round(item[key] * 10) / 10; // Round to avoid float precision issues
     counts[val] = (counts[val] || 0) + 1;
   });
 
   // Find the value that appears most often (the "normal" size)
-  const commonVal = Object.keys(counts).reduce((a, b) =>
-    counts[a] > counts[b] ? a : b
-  );
+  const commonVal = Object.keys(counts).reduce((a, b) => (counts[a] > counts[b] ? a : b));
 
   // Find an item that is significantly larger than commonVal
-  return items.find(item => {
-    const val = Math.round(item[key] * 10) / 10;
-    return val > parseFloat(commonVal) * 1.1; // 10% larger
-  }) || null;
+  return (
+    items.find((item) => {
+      const val = Math.round(item[key] * 10) / 10;
+      return val > parseFloat(commonVal) * 1.1; // 10% larger
+    }) || null
+  );
 }
 
 /**

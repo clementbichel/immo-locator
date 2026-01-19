@@ -1,11 +1,13 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import {
   validateAdemeSearchData,
   buildAdemeParams,
   buildAdemeUrl,
   searchAdeme,
-  getGoogleMapsLink
+  getGoogleMapsLink,
+  fetchWithTimeout,
 } from '../../src/api/ademe-client.js';
+import { ERROR_CODES } from '../../src/utils/error-messages.js';
 import ademeResponse from '../fixtures/ademe-response.json';
 
 describe('ademe-client', () => {
@@ -17,7 +19,7 @@ describe('ademe-client', () => {
         date_diag: '15/03/2024',
         dpe: 'D',
         ges: 'E',
-        surface: '120 m²'
+        surface: '120 m²',
       };
       const result = validateAdemeSearchData(data);
       expect(result.isValid).toBe(true);
@@ -31,7 +33,7 @@ describe('ademe-client', () => {
         date_diag: '15/03/2024',
         dpe: 'Non trouvé',
         ges: 'E',
-        surface: '120 m²'
+        surface: '120 m²',
       };
       const result = validateAdemeSearchData(data);
       expect(result.isValid).toBe(false);
@@ -46,7 +48,7 @@ describe('ademe-client', () => {
         date_diag: '15/03/2024',
         dpe: 'D',
         ges: 'E',
-        surface: '120 m²'
+        surface: '120 m²',
       };
       const result = validateAdemeSearchData(data);
       expect(result.isValid).toBe(true);
@@ -59,7 +61,7 @@ describe('ademe-client', () => {
         date_diag: 'Non trouvé',
         dpe: 'Non trouvé',
         ges: 'Non trouvé',
-        surface: 'Non trouvé'
+        surface: 'Non trouvé',
       };
       const result = validateAdemeSearchData(data);
       expect(result.isValid).toBe(false);
@@ -79,7 +81,7 @@ describe('ademe-client', () => {
         dpe: 'D',
         ges: 'E',
         surface: '120 m²',
-        date_diag: '15/03/2024'
+        date_diag: '15/03/2024',
       };
       const params = buildAdemeParams(data);
       expect(params.get('code_postal_ban_eq')).toBe('75001');
@@ -94,7 +96,7 @@ describe('ademe-client', () => {
         dpe: 'D',
         ges: 'E',
         surface: '120 m²',
-        date_diag: '15/03/2024'
+        date_diag: '15/03/2024',
       };
       const params = buildAdemeParams(data);
       expect(params.get('nom_commune_ban_eq')).toBe('Paris');
@@ -107,7 +109,7 @@ describe('ademe-client', () => {
         dpe: 'D',
         ges: 'E',
         surface: '100 m²',
-        date_diag: '15/03/2024'
+        date_diag: '15/03/2024',
       };
       const params = buildAdemeParams(data);
       expect(params.get('surface_habitable_logement_gte')).toBe('90');
@@ -122,7 +124,7 @@ describe('ademe-client', () => {
         dpe: 'D',
         ges: 'E',
         surface: '100 m²',
-        date_diag: '15/03/2024'
+        date_diag: '15/03/2024',
       };
       const params = buildAdemeParams(data);
       expect(params.get('date_etablissement_dpe_gte')).toBe('2024-03-08');
@@ -136,7 +138,7 @@ describe('ademe-client', () => {
         ges: 'E',
         surface: '100 m²',
         date_diag: '15/03/2024',
-        conso_prim: '200 kWh/m²/an'
+        conso_prim: '200 kWh/m²/an',
       };
       const params = buildAdemeParams(data);
       expect(params.get('conso_5_usages_par_m2_ep_gte')).toBe('180');
@@ -152,7 +154,7 @@ describe('ademe-client', () => {
         ges: 'E',
         surface: '100 m²',
         date_diag: '15/03/2024',
-        conso_prim: 'Non trouvé'
+        conso_prim: 'Non trouvé',
       };
       const params = buildAdemeParams(data);
       expect(params.get('conso_5_usages_par_m2_ep_gte')).toBeNull();
@@ -164,7 +166,7 @@ describe('ademe-client', () => {
         dpe: 'D',
         ges: 'E',
         surface: '100 m²',
-        date_diag: '15/03/2024'
+        date_diag: '15/03/2024',
       };
       const params = buildAdemeParams(data);
       expect(params.get('size')).toBe('5');
@@ -179,7 +181,7 @@ describe('ademe-client', () => {
         dpe: 'D',
         ges: 'E',
         surface: '100 m²',
-        date_diag: '15/03/2024'
+        date_diag: '15/03/2024',
       };
       const url = buildAdemeUrl(data);
       expect(url).toContain('https://data.ademe.fr/data-fair/api/v1/datasets/dpe03existant/lines');
@@ -191,7 +193,7 @@ describe('ademe-client', () => {
     it('should call fetch with correct URL', async () => {
       const mockFetch = vi.fn().mockResolvedValue({
         ok: true,
-        json: () => Promise.resolve(ademeResponse)
+        json: () => Promise.resolve(ademeResponse),
       });
 
       const data = {
@@ -199,7 +201,7 @@ describe('ademe-client', () => {
         dpe: 'D',
         ges: 'E',
         surface: '100 m²',
-        date_diag: '15/03/2024'
+        date_diag: '15/03/2024',
       };
 
       const result = await searchAdeme(data, mockFetch);
@@ -217,17 +219,19 @@ describe('ademe-client', () => {
         dpe: 'D',
         ges: 'E',
         surface: '100 m²',
-        date_diag: '15/03/2024'
+        date_diag: '15/03/2024',
       };
 
-      await expect(searchAdeme(data, mockFetch)).rejects.toThrow('Missing required fields');
+      await expect(searchAdeme(data, mockFetch)).rejects.toThrow(
+        'Informations manquantes pour effectuer la recherche.'
+      );
       expect(mockFetch).not.toHaveBeenCalled();
     });
 
     it('should throw error on API failure', async () => {
       const mockFetch = vi.fn().mockResolvedValue({
         ok: false,
-        status: 500
+        status: 500,
       });
 
       const data = {
@@ -235,10 +239,12 @@ describe('ademe-client', () => {
         dpe: 'D',
         ges: 'E',
         surface: '100 m²',
-        date_diag: '15/03/2024'
+        date_diag: '15/03/2024',
       };
 
-      await expect(searchAdeme(data, mockFetch)).rejects.toThrow('ADEME API error: 500');
+      await expect(searchAdeme(data, mockFetch)).rejects.toThrow(
+        "Erreur lors de la communication avec l'API ADEME."
+      );
     });
   });
 
@@ -252,6 +258,73 @@ describe('ademe-client', () => {
     it('should handle special characters', () => {
       const link = getGoogleMapsLink('Café & Restaurant');
       expect(link).toContain(encodeURIComponent('Café & Restaurant'));
+    });
+  });
+
+  describe('fetchWithTimeout', () => {
+    it('should return response on success', async () => {
+      const mockResponse = { ok: true, json: () => Promise.resolve({ data: 'test' }) };
+      global.fetch = vi.fn().mockResolvedValue(mockResponse);
+
+      const response = await fetchWithTimeout('https://example.com', {}, 5000);
+      expect(response).toBe(mockResponse);
+      expect(fetch).toHaveBeenCalledWith('https://example.com', expect.any(Object));
+    });
+
+    it('should throw timeout error when aborted', async () => {
+      // Simulate fetch that respects abort signal
+      global.fetch = vi.fn().mockImplementation((_url, options) => {
+        return new Promise((_resolve, reject) => {
+          if (options?.signal) {
+            options.signal.addEventListener('abort', () => {
+              const error = new Error('The operation was aborted');
+              error.name = 'AbortError';
+              reject(error);
+            });
+          }
+        });
+      });
+
+      // Use very short timeout
+      await expect(fetchWithTimeout('https://example.com', {}, 10)).rejects.toThrow(
+        'La connexion a expiré'
+      );
+    });
+
+    it('should throw network error on fetch failure', async () => {
+      global.fetch = vi.fn().mockRejectedValue(new Error('Network failure'));
+
+      await expect(fetchWithTimeout('https://example.com')).rejects.toThrow('Erreur de connexion');
+    });
+
+    it('should include error code on timeout error', async () => {
+      global.fetch = vi.fn().mockImplementation((_url, options) => {
+        return new Promise((_resolve, reject) => {
+          if (options?.signal) {
+            options.signal.addEventListener('abort', () => {
+              const error = new Error('Aborted');
+              error.name = 'AbortError';
+              reject(error);
+            });
+          }
+        });
+      });
+
+      try {
+        await fetchWithTimeout('https://example.com', {}, 10);
+      } catch (error) {
+        expect(error.code).toBe(ERROR_CODES.NETWORK_TIMEOUT);
+      }
+    });
+
+    it('should include error code on network error', async () => {
+      global.fetch = vi.fn().mockRejectedValue(new Error('Network failure'));
+
+      try {
+        await fetchWithTimeout('https://example.com');
+      } catch (error) {
+        expect(error.code).toBe(ERROR_CODES.NETWORK_ERROR);
+      }
     });
   });
 });

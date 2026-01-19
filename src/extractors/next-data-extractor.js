@@ -10,9 +10,8 @@ export function findAttribute(attributes, key, labelPart) {
     return undefined;
   }
 
-  return attributes.find(a =>
-    a.key === key ||
-    (a.label && a.label.toLowerCase().includes(labelPart))
+  return attributes.find(
+    (a) => a.key === key || (a.label && a.label.toLowerCase().includes(labelPart))
   );
 }
 
@@ -26,12 +25,11 @@ export function findGesAttribute(attributes) {
     return undefined;
   }
 
-  return attributes.find(a =>
-    a.key === 'ges_rate' ||
-    (a.label && (
-      a.label.toLowerCase() === 'ges' ||
-      a.label.toLowerCase().includes('gaz à effet de serre')
-    ))
+  return attributes.find(
+    (a) =>
+      a.key === 'ges_rate' ||
+      (a.label &&
+        (a.label.toLowerCase() === 'ges' || a.label.toLowerCase().includes('gaz à effet de serre')))
   );
 }
 
@@ -46,9 +44,7 @@ export function findAttributeByLabel(attributes, labelPart) {
     return undefined;
   }
 
-  return attributes.find(a =>
-    a.label && a.label.includes(labelPart)
-  );
+  return attributes.find((a) => a.label && a.label.includes(labelPart));
 }
 
 /**
@@ -66,7 +62,7 @@ export function extractFromNextData(jsonData) {
     conso_prim: null,
     conso_fin: null,
     city: null,
-    zipcode: null
+    zipcode: null,
   };
 
   const debug = [];
@@ -159,5 +155,5 @@ export function extractFromNextData(jsonData) {
  */
 export function getAttributeValue(attr, suffix = '') {
   if (!attr) return null;
-  return attr.value_label || (attr.value + suffix);
+  return attr.value_label || attr.value + suffix;
 }

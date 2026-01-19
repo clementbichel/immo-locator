@@ -6,8 +6,8 @@ export default defineWorkspace([
     test: {
       name: 'unit',
       include: ['tests/unit/**/*.test.js'],
-      environment: 'node'
-    }
+      environment: 'node',
+    },
   },
   {
     extends: './vitest.config.js',
@@ -15,15 +15,15 @@ export default defineWorkspace([
       name: 'integration',
       include: ['tests/integration/**/*.test.js'],
       environment: 'jsdom',
-      setupFiles: ['./tests/mocks/chrome-api.js']
-    }
+      setupFiles: ['./tests/mocks/chrome-api.js'],
+    },
   },
   {
     extends: './vitest.config.js',
     test: {
       name: 'e2e',
       include: ['tests/e2e/**/*.test.js'],
-      environment: 'jsdom'
-    }
-  }
+      environment: 'jsdom',
+    },
+  },
 ]);

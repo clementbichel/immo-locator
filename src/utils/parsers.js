@@ -94,7 +94,9 @@ export function extractDiagnosticDateFromText(text) {
     return null;
   }
 
-  const dateMatch = text.match(/Date de réalisation du diagnostic(?: énergétique)?\s*:\s*(\d{2}\/\d{2}\/\d{4})/i);
+  const dateMatch = text.match(
+    /Date de réalisation du diagnostic(?: énergétique)?\s*:\s*(\d{2}\/\d{2}\/\d{4})/i
+  );
   return dateMatch ? dateMatch[1] : null;
 }
 
@@ -201,4 +203,98 @@ export function parseEnergyValue(energyStr) {
  */
 export function cleanText(text) {
   return text ? text.trim() : null;
+}
+
+// Import validation functions for strict mode
+import {
+  isValidSurface,
+  isValidTerrain,
+  isValidEnergyConsumption,
+  isValidDiagnosticDate,
+  isValidEnergyLetter,
+  isValidZipcode,
+} from './validation-constants.js';
+
+/**
+ * Parse surface with strict validation
+ * @param {string} surfaceStr - Surface string (e.g., "120 m²")
+ * @param {Object} options - Options object
+ * @param {boolean} options.strict - If true, validate against bounds
+ * @returns {number | null} - Parsed and validated surface or null
+ */
+export function parseSurfaceStrict(surfaceStr, { strict = false } = {}) {
+  const value = parseSurface(surfaceStr);
+  if (value === null) return null;
+  if (strict && !isValidSurface(value)) return null;
+  return value;
+}
+
+/**
+ * Parse terrain with strict validation
+ * @param {string} terrainStr - Terrain string
+ * @param {Object} options - Options object
+ * @param {boolean} options.strict - If true, validate against bounds
+ * @returns {number | null} - Parsed and validated terrain or null
+ */
+export function parseTerrainStrict(terrainStr, { strict = false } = {}) {
+  const value = parseSurface(terrainStr); // Same format as surface
+  if (value === null) return null;
+  if (strict && !isValidTerrain(value)) return null;
+  return value;
+}
+
+/**
+ * Parse energy value with strict validation
+ * @param {string} energyStr - Energy string
+ * @param {Object} options - Options object
+ * @param {boolean} options.strict - If true, validate against bounds
+ * @returns {number | null} - Parsed and validated energy or null
+ */
+export function parseEnergyValueStrict(energyStr, { strict = false } = {}) {
+  const value = parseEnergyValue(energyStr);
+  if (value === null) return null;
+  if (strict && !isValidEnergyConsumption(value)) return null;
+  return value;
+}
+
+/**
+ * Parse French date with strict validation
+ * @param {string} dateStr - Date string (DD/MM/YYYY)
+ * @param {Object} options - Options object
+ * @param {boolean} options.strict - If true, validate against reasonable date range
+ * @returns {Date | null} - Parsed and validated date or null
+ */
+export function parseFrenchDateStrict(dateStr, { strict = false } = {}) {
+  const date = parseFrenchDate(dateStr);
+  if (date === null) return null;
+  if (strict && !isValidDiagnosticDate(date)) return null;
+  return date;
+}
+
+/**
+ * Validate and normalize DPE/GES letter
+ * @param {string} letter - Energy letter
+ * @param {Object} options - Options object
+ * @param {boolean} options.strict - If true, validate is A-G
+ * @returns {string | null} - Uppercase letter or null if invalid
+ */
+export function parseEnergyLetter(letter, { strict = false } = {}) {
+  if (!letter || typeof letter !== 'string') return null;
+  const upper = letter.toUpperCase().trim();
+  if (strict && !isValidEnergyLetter(upper)) return null;
+  return upper;
+}
+
+/**
+ * Validate zipcode
+ * @param {string} zipcode - Zipcode string
+ * @param {Object} options - Options object
+ * @param {boolean} options.strict - If true, validate is 5-digit French zipcode
+ * @returns {string | null} - Zipcode or null if invalid
+ */
+export function parseZipcode(zipcode, { strict = false } = {}) {
+  if (!zipcode || typeof zipcode !== 'string') return null;
+  const trimmed = zipcode.trim();
+  if (strict && !isValidZipcode(trimmed)) return null;
+  return trimmed;
 }

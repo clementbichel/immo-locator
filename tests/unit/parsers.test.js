@@ -12,7 +12,7 @@ import {
   extractGesFromText,
   extractZipcodeFromText,
   parseEnergyValue,
-  cleanText
+  cleanText,
 } from '../../src/utils/parsers.js';
 
 describe('parsers', () => {

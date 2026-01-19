@@ -5,7 +5,7 @@ import {
   findAttribute,
   findGesAttribute,
   findAttributeByLabel,
-  getAttributeValue
+  getAttributeValue,
 } from '../../src/extractors/next-data-extractor.js';
 import leboncoinNextData from '../fixtures/leboncoin-next-data.json';
 
@@ -14,7 +14,7 @@ describe('next-data-extractor', () => {
     const attributes = [
       { key: 'square', label: 'Surface habitable', value: 120, value_label: '120 m²' },
       { key: 'energy_rate', label: 'Classe énergie', value: 'D', value_label: 'D' },
-      { key: 'rooms', label: 'Pièces', value: 6, value_label: '6' }
+      { key: 'rooms', label: 'Pièces', value: 6, value_label: '6' },
     ];
 
     it('should find attribute by key', () => {
@@ -42,26 +42,20 @@ describe('next-data-extractor', () => {
 
   describe('findGesAttribute', () => {
     it('should find by ges_rate key', () => {
-      const attributes = [
-        { key: 'ges_rate', label: 'GES', value: 'D' }
-      ];
+      const attributes = [{ key: 'ges_rate', label: 'GES', value: 'D' }];
       const attr = findGesAttribute(attributes);
       expect(attr).toBeDefined();
       expect(attr.value).toBe('D');
     });
 
     it('should find by label "ges"', () => {
-      const attributes = [
-        { key: 'other', label: 'ges', value: 'E' }
-      ];
+      const attributes = [{ key: 'other', label: 'ges', value: 'E' }];
       const attr = findGesAttribute(attributes);
       expect(attr).toBeDefined();
     });
 
     it('should find by label containing "gaz à effet de serre"', () => {
-      const attributes = [
-        { key: 'other', label: 'Indice gaz à effet de serre', value: 'C' }
-      ];
+      const attributes = [{ key: 'other', label: 'Indice gaz à effet de serre', value: 'C' }];
       const attr = findGesAttribute(attributes);
       expect(attr).toBeDefined();
     });
@@ -74,7 +68,7 @@ describe('next-data-extractor', () => {
   describe('findAttributeByLabel', () => {
     const attributes = [
       { key: 'diag_date', label: 'Date de réalisation du DPE', value: '15/01/2024' },
-      { key: 'primary_energy', label: 'Consommation énergie primaire', value: 185 }
+      { key: 'primary_energy', label: 'Consommation énergie primaire', value: 185 },
     ];
 
     it('should find attribute containing label part', () => {
@@ -106,7 +100,7 @@ describe('next-data-extractor', () => {
 
   describe('extractFromNextData', () => {
     it('should extract all data from valid JSON', () => {
-      const { data, debug } = extractFromNextData(leboncoinNextData);
+      const { data } = extractFromNextData(leboncoinNextData);
 
       expect(data.city).toBe('Lyon');
       expect(data.zipcode).toBe('69003');
@@ -144,10 +138,10 @@ describe('next-data-extractor', () => {
         props: {
           pageProps: {
             ad: {
-              attributes: []
-            }
-          }
-        }
+              attributes: [],
+            },
+          },
+        },
       };
       const { data, debug } = extractFromNextData(jsonData);
       expect(data.city).toBeNull();
@@ -161,7 +155,8 @@ describe('DOM extraction integration', () => {
   let document;
 
   beforeEach(() => {
-    dom = new JSDOM(`
+    dom = new JSDOM(
+      `
       <!DOCTYPE html>
       <html>
         <head></head>
@@ -181,7 +176,9 @@ describe('DOM extraction integration', () => {
           </div>
         </body>
       </html>
-    `, { url: 'https://www.leboncoin.fr/ventes_immobilieres/1234567890.htm' });
+    `,
+      { url: 'https://www.leboncoin.fr/ventes_immobilieres/1234567890.htm' }
+    );
     document = dom.window.document;
   });
 

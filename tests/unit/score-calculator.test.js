@@ -3,7 +3,7 @@ import {
   calculateMatchScore,
   findOutlier,
   sortResultsByScore,
-  getScoreColor
+  getScoreColor,
 } from '../../src/utils/score-calculator.js';
 
 describe('score-calculator', () => {
@@ -12,12 +12,12 @@ describe('score-calculator', () => {
       const adData = {
         surface: '150 m²',
         date_diag: '15/01/2024',
-        conso_prim: '185 kWh/m²/an'
+        conso_prim: '185 kWh/m²/an',
       };
       const ademeItem = {
         surface_habitable_logement: 150,
         date_etablissement_dpe: '2024-01-15',
-        conso_5_usages_par_m2_ep: 185
+        conso_5_usages_par_m2_ep: 185,
       };
       // Score should be very high (98-100) for perfect match
       // Small timezone differences may cause 1-2 point variation
@@ -29,11 +29,11 @@ describe('score-calculator', () => {
     it('should penalize surface deviation', () => {
       const adData = {
         surface: '150 m²',
-        date_diag: '15/01/2024'
+        date_diag: '15/01/2024',
       };
       const ademeItem = {
         surface_habitable_logement: 165, // 10% more
-        date_etablissement_dpe: '2024-01-15'
+        date_etablissement_dpe: '2024-01-15',
       };
       const score = calculateMatchScore(adData, ademeItem);
       expect(score).toBeLessThan(100);
@@ -43,11 +43,11 @@ describe('score-calculator', () => {
     it('should penalize date deviation', () => {
       const adData = {
         surface: '150 m²',
-        date_diag: '15/01/2024'
+        date_diag: '15/01/2024',
       };
       const ademeItem = {
         surface_habitable_logement: 150,
-        date_etablissement_dpe: '2024-01-20' // 5 days later
+        date_etablissement_dpe: '2024-01-20', // 5 days later
       };
       const score = calculateMatchScore(adData, ademeItem);
       expect(score).toBeLessThan(100);
@@ -58,12 +58,12 @@ describe('score-calculator', () => {
       const adData = {
         surface: '150 m²',
         date_diag: '15/01/2024',
-        conso_prim: '200 kWh/m²/an'
+        conso_prim: '200 kWh/m²/an',
       };
       const ademeItem = {
         surface_habitable_logement: 150,
         date_etablissement_dpe: '2024-01-15',
-        conso_5_usages_par_m2_ep: 220 // 10% more
+        conso_5_usages_par_m2_ep: 220, // 10% more
       };
       const score = calculateMatchScore(adData, ademeItem);
       expect(score).toBeLessThan(100);
@@ -74,12 +74,12 @@ describe('score-calculator', () => {
       const adData = {
         surface: '150 m²',
         date_diag: '15/01/2024',
-        conso_prim: 'Non trouvé'
+        conso_prim: 'Non trouvé',
       };
       const ademeItem = {
         surface_habitable_logement: 150,
         date_etablissement_dpe: '2024-01-15',
-        conso_5_usages_par_m2_ep: 220
+        conso_5_usages_par_m2_ep: 220,
       };
       // Score should be very high (98-100) when energy is not penalized
       // Small timezone differences may cause 1-2 point variation
@@ -91,11 +91,11 @@ describe('score-calculator', () => {
     it('should return minimum 0', () => {
       const adData = {
         surface: '100 m²',
-        date_diag: '01/01/2020'
+        date_diag: '01/01/2020',
       };
       const ademeItem = {
         surface_habitable_logement: 500, // 400% deviation
-        date_etablissement_dpe: '2024-12-31' // years apart
+        date_etablissement_dpe: '2024-12-31', // years apart
       };
       expect(calculateMatchScore(adData, ademeItem)).toBe(0);
     });
@@ -103,11 +103,11 @@ describe('score-calculator', () => {
     it('should handle missing date in ADEME item', () => {
       const adData = {
         surface: '150 m²',
-        date_diag: '15/01/2024'
+        date_diag: '15/01/2024',
       };
       const ademeItem = {
         surface_habitable_logement: 150,
-        date_etablissement_dpe: null
+        date_etablissement_dpe: null,
       };
       expect(calculateMatchScore(adData, ademeItem)).toBe(100);
     });
@@ -122,7 +122,7 @@ describe('score-calculator', () => {
         { height: 20 },
         { height: 30 }, // Outlier (50% larger)
         { height: 20 },
-        { height: 20 }
+        { height: 20 },
       ];
       const outlier = findOutlier(items, 'height');
       expect(outlier).not.toBeNull();
@@ -136,16 +136,13 @@ describe('score-calculator', () => {
         { height: 20 },
         { height: 20 },
         { height: 21 }, // Only 5% larger
-        { height: 20 }
+        { height: 20 },
       ];
       expect(findOutlier(items, 'height')).toBeNull();
     });
 
     it('should return null for less than 3 items', () => {
-      const items = [
-        { height: 20 },
-        { height: 30 }
-      ];
+      const items = [{ height: 20 }, { height: 30 }];
       expect(findOutlier(items, 'height')).toBeNull();
     });
 
@@ -159,7 +156,7 @@ describe('score-calculator', () => {
         { fontSize: 12.0 },
         { fontSize: 12.0 },
         { fontSize: 12.0 },
-        { fontSize: 14.5 } // Outlier
+        { fontSize: 14.5 }, // Outlier
       ];
       const outlier = findOutlier(items, 'fontSize');
       expect(outlier).not.toBeNull();
@@ -169,11 +166,7 @@ describe('score-calculator', () => {
 
   describe('sortResultsByScore', () => {
     it('should sort by score descending', () => {
-      const results = [
-        { score: 50 },
-        { score: 90 },
-        { score: 70 }
-      ];
+      const results = [{ score: 50 }, { score: 90 }, { score: 70 }];
       const sorted = sortResultsByScore(results);
       expect(sorted[0].score).toBe(90);
       expect(sorted[1].score).toBe(70);
@@ -181,10 +174,7 @@ describe('score-calculator', () => {
     });
 
     it('should not mutate original array', () => {
-      const results = [
-        { score: 50 },
-        { score: 90 }
-      ];
+      const results = [{ score: 50 }, { score: 90 }];
       sortResultsByScore(results);
       expect(results[0].score).toBe(50);
     });

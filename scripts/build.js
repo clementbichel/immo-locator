@@ -36,7 +36,8 @@ async function build() {
     const content = readFileSync(outputPath, 'utf-8');
 
     // Check if the browser compatibility line already exists
-    const browserCompatLine = '// Cross-browser compatibility: use \'browser\' if available, otherwise \'chrome\'\nglobalThis.browser ??= globalThis.chrome;\n\n';
+    const browserCompatLine =
+      "// Cross-browser compatibility: use 'browser' if available, otherwise 'chrome'\nglobalThis.browser ??= globalThis.chrome;\n\n";
 
     if (!content.includes('globalThis.browser ??= globalThis.chrome')) {
       writeFileSync(outputPath, browserCompatLine + content);
@@ -49,13 +50,12 @@ async function build() {
       bundle: true,
       format: 'iife',
       write: false,
-      metafile: true
+      metafile: true,
     });
 
     const text = await esbuild.analyzeMetafile(stats.metafile);
     console.log('\nBundle analysis:');
     console.log(text);
-
   } catch (error) {
     console.error('Build failed:', error);
     process.exit(1);

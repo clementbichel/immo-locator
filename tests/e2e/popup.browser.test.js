@@ -19,7 +19,7 @@ describe('Popup UI E2E Tests', () => {
     // Create a JSDOM instance with the popup HTML
     dom = new JSDOM(popupHtml, {
       url: 'chrome-extension://test/popup.html',
-      runScripts: 'outside-only'
+      runScripts: 'outside-only',
     });
     document = dom.window.document;
   });
@@ -33,7 +33,7 @@ describe('Popup UI E2E Tests', () => {
 
     it('should display all data fields', () => {
       const labels = document.querySelectorAll('.label');
-      const labelTexts = Array.from(labels).map(l => l.textContent);
+      const labelTexts = Array.from(labels).map((l) => l.textContent);
 
       expect(labelTexts).toContain('Ville');
       expect(labelTexts).toContain('Code Postal');
@@ -108,12 +108,14 @@ describe('Popup UI E2E Tests', () => {
     it('should have loading indicator with correct text', () => {
       const loading = document.getElementById('ademe-loading');
       expect(loading).not.toBeNull();
-      expect(loading.textContent).toBe('Recherche en cours...');
+      expect(loading.textContent.trim()).toBe('Recherche en cours...');
     });
 
     it('should have script tag for popup.js', () => {
       const scripts = document.querySelectorAll('script');
-      const popupScript = Array.from(scripts).find(s => s.src?.includes('popup.js') || s.getAttribute('src') === 'popup.js');
+      const popupScript = Array.from(scripts).find(
+        (s) => s.src?.includes('popup.js') || s.getAttribute('src') === 'popup.js'
+      );
       expect(popupScript).not.toBeNull();
     });
   });

@@ -35,7 +35,9 @@ describe('url-validator', () => {
     });
 
     it('should return false for other Leboncoin categories', () => {
-      expect(isValidLeboncoinRealEstateUrl('https://www.leboncoin.fr/electromenager/123.htm')).toBe(false);
+      expect(isValidLeboncoinRealEstateUrl('https://www.leboncoin.fr/electromenager/123.htm')).toBe(
+        false
+      );
       expect(isValidLeboncoinRealEstateUrl('https://www.leboncoin.fr/emploi/456.htm')).toBe(false);
     });
   });

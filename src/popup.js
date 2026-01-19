@@ -1,24 +1,14 @@
 // Cross-browser compatibility: use 'browser' if available, otherwise 'chrome'
 globalThis.browser ??= globalThis.chrome;
 
-import { isValidLeboncoinRealEstateUrl } from './utils/url-validator.js';
 import {
-  extractSurfaceFromText,
-  extractTerrainFromText,
-  extractDiagnosticDateFromText,
-  extractPrimaryEnergyFromText,
-  extractFinalEnergyFromText,
-  extractDpeFromText,
-  extractGesFromText,
-  extractZipcodeFromText,
-  parseSurface,
-  parseFrenchDate,
-  formatDateISO,
-  parseEnergyValue
-} from './utils/parsers.js';
-import { calculateMatchScore, findOutlier, getScoreColor, sortResultsByScore } from './utils/score-calculator.js';
-import { extractFromNextData } from './extractors/next-data-extractor.js';
-import { validateAdemeSearchData, buildAdemeParams, buildAdemeUrl, getGoogleMapsLink } from './api/ademe-client.js';
+  calculateMatchScore,
+  getScoreColor,
+  sortResultsByScore,
+} from './utils/score-calculator.js';
+import { validateAdemeSearchData, buildAdemeUrl, getGoogleMapsLink } from './api/ademe-client.js';
+import { clearElement, createMessage, createAdemeResultsList } from './utils/dom-helpers.js';
+import { getErrorMessage, ERROR_CODES } from './utils/error-messages.js';
 
 document.addEventListener('DOMContentLoaded', () => {
   const errorMsg = document.getElementById('error-msg');
@@ -27,8 +17,13 @@ document.addEventListener('DOMContentLoaded', () => {
   async function extractRealEstateData() {
     // Check if we are in the correct category
     // URL check is fast and effective for Leboncoin
-    if (!window.location.href.includes('/ventes_immobilieres/') && !window.location.href.includes('/locations/')) {
-      return { error: "Cette extension ne fonctionne que pour les ventes immobilières et les locations." };
+    if (
+      !window.location.href.includes('/ventes_immobilieres/') &&
+      !window.location.href.includes('/locations/')
+    ) {
+      return {
+        error: 'Cette extension ne fonctionne que pour les ventes immobilières et les locations.',
+      };
     }
 
     const data = {
@@ -40,11 +35,8 @@ document.addEventListener('DOMContentLoaded', () => {
       conso_prim: 'Non trouvé',
       conso_fin: 'Non trouvé',
       city: 'Non trouvé',
-      zipcode: 'Non trouvé'
+      zipcode: 'Non trouvé',
     };
-
-    // Helper to clean text
-    const clean = (text) => text ? text.trim() : null;
 
     const debug = [];
 
@@ -52,25 +44,25 @@ document.addEventListener('DOMContentLoaded', () => {
     try {
       const nextDataScript = document.getElementById('__NEXT_DATA__');
       if (nextDataScript) {
-        debug.push("Found __NEXT_DATA__");
+        debug.push('Found __NEXT_DATA__');
         const jsonData = JSON.parse(nextDataScript.textContent);
-        debug.push("Parsed JSON");
+        debug.push('Parsed JSON');
 
         // Navigate safely to ad
         const pageProps = jsonData?.props?.pageProps;
-        if (!pageProps) debug.push("No pageProps");
+        if (!pageProps) debug.push('No pageProps');
 
         const ad = pageProps?.ad;
 
         if (ad) {
-          debug.push("Found ad object");
+          debug.push('Found ad object');
           // Extract Location
           if (ad.location) {
-            debug.push("Found location obj");
+            debug.push('Found location obj');
             if (ad.location.city) data.city = ad.location.city;
             if (ad.location.zipcode) data.zipcode = ad.location.zipcode;
           } else {
-            debug.push("No location inside ad");
+            debug.push('No location inside ad');
           }
 
           if (ad.attributes) {
@@ -78,9 +70,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Helper to find attribute by key or label
             const findAttr = (key, labelPart) => {
-              return attributes.find(a =>
-                a.key === key ||
-                (a.label && a.label.toLowerCase().includes(labelPart))
+              return attributes.find(
+                (a) => a.key === key || (a.label && a.label.toLowerCase().includes(labelPart))
               );
             };
 
@@ -93,53 +84,63 @@ document.addEventListener('DOMContentLoaded', () => {
             const dpeAttr = findAttr('energy_rate', 'énergie');
             if (dpeAttr) data.dpe = (dpeAttr.value_label || dpeAttr.value).toUpperCase();
 
-            const gesAttr = attributes.find(a =>
-              a.key === 'ges_rate' ||
-              (a.label && (
-                a.label.toLowerCase() === 'ges' ||
-                a.label.toLowerCase().includes('gaz à effet de serre')
-              ))
+            const gesAttr = attributes.find(
+              (a) =>
+                a.key === 'ges_rate' ||
+                (a.label &&
+                  (a.label.toLowerCase() === 'ges' ||
+                    a.label.toLowerCase().includes('gaz à effet de serre')))
             );
             if (gesAttr) data.ges = (gesAttr.value_label || gesAttr.value).toUpperCase();
 
-            const dateAttr = attributes.find(a => a.label && a.label.includes('Date de réalisation'));
+            const dateAttr = attributes.find(
+              (a) => a.label && a.label.includes('Date de réalisation')
+            );
             if (dateAttr) data.date_diag = dateAttr.value_label || dateAttr.value;
 
-            const primAttr = attributes.find(a => a.label && a.label.includes('primaire'));
+            const primAttr = attributes.find((a) => a.label && a.label.includes('primaire'));
             if (primAttr) data.conso_prim = primAttr.value_label || primAttr.value;
 
-            const finAttr = attributes.find(a => a.label && a.label.includes('finale'));
+            const finAttr = attributes.find((a) => a.label && a.label.includes('finale'));
             if (finAttr) data.conso_fin = finAttr.value_label || finAttr.value;
           }
         } else {
-          debug.push("No ad object in pageProps");
+          debug.push('No ad object in pageProps');
           // Inspect keys to see what we have
-          if (pageProps) debug.push("pageProps keys: " + Object.keys(pageProps).join(', '));
+          if (pageProps) debug.push('pageProps keys: ' + Object.keys(pageProps).join(', '));
         }
       } else {
-        debug.push("No __NEXT_DATA__ script found");
+        debug.push('No __NEXT_DATA__ script found');
       }
     } catch (e) {
       console.log('Error parsing __NEXT_DATA__:', e);
-      debug.push("Error: " + e.message);
+      debug.push('Error: ' + e.message);
     }
 
     data.debugLog = debug;
 
     // Check if we are missing data, if so, try to expand description
-    const missingData = Object.values(data).some(v => v === 'Non trouvé');
+    const missingData = Object.values(data).some((v) => v === 'Non trouvé');
 
     if (missingData) {
       // Try to find "Voir plus" button
       // 1. Try specific QA ID
-      let seeMoreBtn = document.querySelector('button[data-qa-id="adview_description_expand_button"]');
+      let seeMoreBtn = document.querySelector(
+        'button[data-qa-id="adview_description_expand_button"]'
+      );
 
       // 2. Try by text content if not found
       if (!seeMoreBtn) {
-        const buttons = Array.from(document.querySelectorAll('button, div[role="button"], span[role="button"]'));
-        seeMoreBtn = buttons.find(b => {
+        const buttons = Array.from(
+          document.querySelectorAll('button, div[role="button"], span[role="button"]')
+        );
+        seeMoreBtn = buttons.find((b) => {
           const text = b.innerText.toLowerCase();
-          return text.includes('voir plus') || text.includes('afficher plus') || text.includes('lire la suite');
+          return (
+            text.includes('voir plus') ||
+            text.includes('afficher plus') ||
+            text.includes('lire la suite')
+          );
         });
       }
 
@@ -147,23 +148,22 @@ document.addEventListener('DOMContentLoaded', () => {
         // Scroll to button to ensure it's interactive
         seeMoreBtn.scrollIntoView({ behavior: 'smooth', block: 'center' });
         // Small delay for scroll
-        await new Promise(r => setTimeout(r, 100));
+        await new Promise((r) => setTimeout(r, 100));
         seeMoreBtn.click();
         // Wait for expansion (increased delay)
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        await new Promise((resolve) => setTimeout(resolve, 1000));
       }
     }
 
     // Strategy 2: DOM Scraping (Fallback & Supplement)
-    // We scan all elements with text content matching our labels
-    const allDivs = document.querySelectorAll('div, p, span');
-
     if (data.surface === 'Non trouvé') {
       const bodyText = document.body.innerText;
       const surfaceMatch = bodyText.match(/Surface habitable\s*[:\n]?\s*(\d+(?:[.,]\d+)?\s*m²)/i);
       if (surfaceMatch) data.surface = surfaceMatch[1];
 
-      const terrainMatch = bodyText.match(/Surface totale du terrain\s*[:\n]?\s*(\d+(?:[.,]\d+)?\s*m²)/i);
+      const terrainMatch = bodyText.match(
+        /Surface totale du terrain\s*[:\n]?\s*(\d+(?:[.,]\d+)?\s*m²)/i
+      );
       if (terrainMatch) data.terrain = terrainMatch[1];
     }
 
@@ -184,11 +184,14 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Regex on Description Text (now expanded)
-    const descriptionEl = document.querySelector('[data-qa-id="adview_description_container"]') || document.body;
+    const descriptionEl =
+      document.querySelector('[data-qa-id="adview_description_container"]') || document.body;
     const descText = descriptionEl.innerText;
 
     if (data.date_diag === 'Non trouvé') {
-      const dateMatch = descText.match(/Date de réalisation du diagnostic(?: énergétique)?\s*:\s*(\d{2}\/\d{2}\/\d{4})/i);
+      const dateMatch = descText.match(
+        /Date de réalisation du diagnostic(?: énergétique)?\s*:\s*(\d{2}\/\d{2}\/\d{4})/i
+      );
       if (dateMatch) data.date_diag = dateMatch[1];
     }
 
@@ -204,9 +207,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // DPE/GES from badges if not found
     if (data.dpe === 'Non trouvé') {
-      const dpeBadge = document.querySelector('[aria-label*="Diagnostic énergétique"], [aria-label*="Classe énergie"]');
+      const dpeBadge = document.querySelector(
+        '[aria-label*="Diagnostic énergétique"], [aria-label*="Classe énergie"]'
+      );
       if (dpeBadge) {
-        const match = dpeBadge.getAttribute('aria-label').match(/(?:Diagnostic énergétique|Classe énergie)\s*:\s*([A-G])/i);
+        const match = dpeBadge
+          .getAttribute('aria-label')
+          .match(/(?:Diagnostic énergétique|Classe énergie)\s*:\s*([A-G])/i);
         if (match) data.dpe = match[1].toUpperCase();
       } else {
         const dpeMatch = document.body.innerText.match(/Classe énergie\s*([A-G])(?!\s*[A-G])/i);
@@ -215,9 +222,13 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (data.ges === 'Non trouvé') {
-      const gesBadge = document.querySelector('[aria-label*="Indice émission de gaz à effet de serre"], [aria-label*="GES"]');
+      const gesBadge = document.querySelector(
+        '[aria-label*="Indice émission de gaz à effet de serre"], [aria-label*="GES"]'
+      );
       if (gesBadge) {
-        const match = gesBadge.getAttribute('aria-label').match(/(?:Indice émission de gaz à effet de serre|GES)\s*:\s*([A-G])/i);
+        const match = gesBadge
+          .getAttribute('aria-label')
+          .match(/(?:Indice émission de gaz à effet de serre|GES)\s*:\s*([A-G])/i);
         if (match) data.ges = match[1].toUpperCase();
       } else {
         // Fallback regex
@@ -237,7 +248,9 @@ document.addEventListener('DOMContentLoaded', () => {
     function findValueFromVisualScale(labelPart) {
       // Find all elements containing the label
       const allElements = Array.from(document.querySelectorAll('div, p, span, h3, h4'));
-      const labelEl = allElements.find(el => el.innerText.includes(labelPart) && el.innerText.length < 50); // Ensure it's a short label
+      const labelEl = allElements.find(
+        (el) => el.innerText.includes(labelPart) && el.innerText.length < 50
+      ); // Ensure it's a short label
 
       if (!labelEl) return null;
 
@@ -254,12 +267,15 @@ document.addEventListener('DOMContentLoaded', () => {
         // CRITICAL FIX: Only consider letters that are AFTER the label in the DOM
         // This prevents GES from picking up DPE letters if they share a parent
         // and ensures DPE picks up its own letters (closest following)
-        letters = candidates.filter(el => {
-          return /^[A-G]$/.test(el.innerText.trim()) &&
-            (labelEl.compareDocumentPosition(el) & Node.DOCUMENT_POSITION_FOLLOWING);
+        letters = candidates.filter((el) => {
+          return (
+            /^[A-G]$/.test(el.innerText.trim()) &&
+            labelEl.compareDocumentPosition(el) & Node.DOCUMENT_POSITION_FOLLOWING
+          );
         });
 
-        if (letters.length >= 5) { // Found the scale!
+        if (letters.length >= 5) {
+          // Found the scale!
           // If we found too many (e.g. both DPE and GES scales), take the first 7 (A-G)
           // This assumes the closest scale is the correct one
           if (letters.length > 7) {
@@ -277,7 +293,7 @@ document.addEventListener('DOMContentLoaded', () => {
       // Since all letters might have different colors (A=Green, G=Red), we can't rely on unique background color.
       // Instead, we look for the one that is LARGER or BOLDER.
 
-      const metrics = letters.map(el => {
+      const metrics = letters.map((el) => {
         const style = window.getComputedStyle(el);
         const rect = el.getBoundingClientRect();
         return {
@@ -285,7 +301,7 @@ document.addEventListener('DOMContentLoaded', () => {
           height: rect.height,
           width: rect.width,
           fontWeight: parseInt(style.fontWeight) || 400,
-          fontSize: parseFloat(style.fontSize) || 12
+          fontSize: parseFloat(style.fontSize) || 12,
         };
       });
 
@@ -294,16 +310,16 @@ document.addEventListener('DOMContentLoaded', () => {
         if (items.length < 3) return null;
         // Calculate mode (most common value)
         const counts = {};
-        items.forEach(i => {
+        items.forEach((i) => {
           const val = Math.round(i[key] * 10) / 10; // Round to avoid float precision issues
           counts[val] = (counts[val] || 0) + 1;
         });
 
         // Find the value that appears most often (the "normal" size)
-        const commonVal = Object.keys(counts).reduce((a, b) => counts[a] > counts[b] ? a : b);
+        const commonVal = Object.keys(counts).reduce((a, b) => (counts[a] > counts[b] ? a : b));
 
         // Find an item that is significantly larger than commonVal
-        return items.find(i => {
+        return items.find((i) => {
           const val = Math.round(i[key] * 10) / 10;
           return val > parseFloat(commonVal) * 1.1; // 10% larger
         });
@@ -323,12 +339,15 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (data.dpe === 'Non trouvé') {
-      const visualDpe = findValueFromVisualScale('Classe énergie') || findValueFromVisualScale('Diagnostic énergétique');
+      const visualDpe =
+        findValueFromVisualScale('Classe énergie') ||
+        findValueFromVisualScale('Diagnostic énergétique');
       if (visualDpe) data.dpe = visualDpe;
     }
 
     if (data.ges === 'Non trouvé') {
-      const visualGes = findValueFromVisualScale('GES') || findValueFromVisualScale('Gaz à effet de serre');
+      const visualGes =
+        findValueFromVisualScale('GES') || findValueFromVisualScale('Gaz à effet de serre');
       if (visualGes) data.ges = visualGes;
     }
 
@@ -343,15 +362,20 @@ document.addEventListener('DOMContentLoaded', () => {
     const ademeResults = document.getElementById('ademe-results');
 
     // Reset
-    ademeResults.innerHTML = '';
-    paramsList.innerHTML = '';
+    clearElement(ademeResults);
+    clearElement(paramsList);
     ademeParams.style.display = 'none';
     searchBtn.style.display = 'none';
 
     // Validate data
     const validation = validateAdemeSearchData(data);
     if (!validation.isValid) {
-      ademeResults.innerHTML = `<p style="color: #999; font-size: 0.8em;">Recherche ADEME non disponible : informations manquantes (${validation.missing.join(', ')}).</p>`;
+      const msg = createMessage(
+        `Recherche ADEME non disponible : informations manquantes (${validation.missing.join(', ')}).`,
+        '#999'
+      );
+      msg.style.fontSize = '0.8em';
+      ademeResults.appendChild(msg);
       return;
     }
 
@@ -396,9 +420,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const searchBtn = document.getElementById('search-ademe-btn');
 
     searchBtn.disabled = true;
-    searchBtn.textContent = "Recherche en cours...";
+    searchBtn.textContent = 'Recherche en cours...';
     ademeLoading.style.display = 'block';
-    ademeResults.innerHTML = '';
+    clearElement(ademeResults);
 
     try {
       const url = buildAdemeUrl(data);
@@ -406,59 +430,56 @@ document.addEventListener('DOMContentLoaded', () => {
       const result = await response.json();
 
       ademeLoading.style.display = 'none';
-      searchBtn.textContent = "Lancer la recherche";
+      searchBtn.textContent = 'Lancer la recherche';
       searchBtn.disabled = false;
 
       if (result.results && result.results.length > 0) {
         // Calculate scores
-        const scoredResults = result.results.map(item => ({
+        const scoredResults = result.results.map((item) => ({
           ...item,
-          score: calculateMatchScore(data, item)
+          score: calculateMatchScore(data, item),
         }));
 
         // Sort by score descending
         const sortedResults = sortResultsByScore(scoredResults);
 
-        let html = '<p><strong>Correspondances trouvées :</strong></p><ul style="padding-left: 20px; margin-top: 5px;">';
-        sortedResults.forEach(item => {
-          const date = item.date_etablissement_dpe ? new Date(item.date_etablissement_dpe).toLocaleDateString() : 'N/A';
-          const address = item.adresse_ban || item.nom_commune_ban || 'Adresse inconnue';
-          const mapsLink = getGoogleMapsLink(address);
-
-          // Color code score
-          const scoreColor = getScoreColor(item.score);
-
-          html += `<li style="margin-bottom: 12px; border-bottom: 1px solid #eee; padding-bottom: 8px;">
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-              <strong>${address}</strong>
-              <span style="background: ${scoreColor}; color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.8em; font-weight: bold;">${item.score}%</span>
-            </div>
-            <a href="${mapsLink}" target="_blank" style="display: inline-block; margin-top: 4px; font-size: 0.85em; color: #3498db; text-decoration: none;">📍 Voir sur Google Maps</a>
-          </li>`;
-        });
-        html += '</ul>';
-        ademeResults.innerHTML = html;
+        // Use safe DOM helpers instead of innerHTML
+        const resultsList = createAdemeResultsList(sortedResults, getGoogleMapsLink, getScoreColor);
+        ademeResults.appendChild(resultsList);
       } else {
-        ademeResults.innerHTML = '<p>Aucun DPE correspondant trouvé avec ces critères stricts.</p>';
+        ademeResults.appendChild(
+          createMessage('Aucun DPE correspondant trouvé avec ces critères stricts.')
+        );
       }
 
       if (!data.zipcode || data.zipcode === 'Non trouvé') {
-        ademeResults.innerHTML = '<p style="color: orange;">Code postal non trouvé, impossible de chercher dans la base.</p>';
+        clearElement(ademeResults);
+        ademeResults.appendChild(
+          createMessage('Code postal non trouvé, impossible de chercher dans la base.', 'orange')
+        );
         return;
       }
 
       // New condition: only proceed if diagnostic date is found
       if (!data.date_diag || data.date_diag === 'Non trouvé') {
-        ademeResults.innerHTML = '<p style="color: orange;">Date du diagnostic non trouvée, recherche annulée.</p>';
+        clearElement(ademeResults);
+        ademeResults.appendChild(
+          createMessage('Date du diagnostic non trouvée, recherche annulée.', 'orange')
+        );
         return;
       }
-
     } catch (error) {
       console.error('API Error:', error);
       ademeLoading.style.display = 'none';
-      searchBtn.textContent = "Lancer la recherche";
+      searchBtn.textContent = 'Lancer la recherche';
       searchBtn.disabled = false;
-      ademeResults.innerHTML = '<p style="color: red;">Erreur lors de la recherche.</p>';
+      clearElement(ademeResults);
+      // Use error code if available, otherwise generic message
+      const errorMessage =
+        error.code && ERROR_CODES[error.code]
+          ? getErrorMessage(error.code)
+          : 'Erreur lors de la recherche.';
+      ademeResults.appendChild(createMessage(errorMessage, 'red'));
     }
   }
 
@@ -469,45 +490,55 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    browser.scripting.executeScript({
-      target: { tabId: tabs[0].id },
-      func: extractRealEstateData,
-    }, (results) => {
-      if (browser.runtime.lastError) {
-        errorMsg.textContent = "Erreur : " + browser.runtime.lastError.message;
-        errorMsg.style.display = 'block';
-        return;
-      }
-
-      if (results && results[0] && results[0].result) {
-        const res = results[0].result;
-
-        if (res.error) {
-          errorMsg.textContent = res.error;
+    browser.scripting.executeScript(
+      {
+        target: { tabId: tabs[0].id },
+        func: extractRealEstateData,
+      },
+      (results) => {
+        if (browser.runtime.lastError) {
+          errorMsg.textContent = 'Erreur : ' + browser.runtime.lastError.message;
           errorMsg.style.display = 'block';
           return;
         }
 
-        // Display Results
-        const fields = ['city', 'zipcode', 'surface', 'terrain', 'dpe', 'ges', 'date_diag', 'conso_prim', 'conso_fin'];
-        fields.forEach(field => {
-          const el = document.getElementById(field);
-          if (el) {
-            el.textContent = res[field] || 'Non trouvé';
-            if (res[field] === 'Non trouvé') el.style.color = '#999';
-            else el.style.color = '#1a1a1a';
+        if (results && results[0] && results[0].result) {
+          const res = results[0].result;
+
+          if (res.error) {
+            errorMsg.textContent = res.error;
+            errorMsg.style.display = 'block';
+            return;
           }
-        });
 
+          // Display Results
+          const fields = [
+            'city',
+            'zipcode',
+            'surface',
+            'terrain',
+            'dpe',
+            'ges',
+            'date_diag',
+            'conso_prim',
+            'conso_fin',
+          ];
+          fields.forEach((field) => {
+            const el = document.getElementById(field);
+            if (el) {
+              el.textContent = res[field] || 'Non trouvé';
+              if (res[field] === 'Non trouvé') el.style.color = '#999';
+              else el.style.color = '#1a1a1a';
+            }
+          });
 
-
-        // Prepare ADEME Search (Manual)
-        prepareAdemeSearch(res);
-
-      } else {
-        errorMsg.textContent = "Données non trouvées.";
-        errorMsg.style.display = 'block';
+          // Prepare ADEME Search (Manual)
+          prepareAdemeSearch(res);
+        } else {
+          errorMsg.textContent = 'Données non trouvées.';
+          errorMsg.style.display = 'block';
+        }
       }
-    });
+    );
   });
 });

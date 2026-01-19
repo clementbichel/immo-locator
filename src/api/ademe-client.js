@@ -1,6 +1,40 @@
-import { parseSurface, parseFrenchDate, formatDateISO, parseEnergyValue } from '../utils/parsers.js';
+import {
+  parseSurface,
+  parseFrenchDate,
+  formatDateISO,
+  parseEnergyValue,
+} from '../utils/parsers.js';
+import { ERROR_CODES, createError } from '../utils/error-messages.js';
 
 const ADEME_API_BASE_URL = 'https://data.ademe.fr/data-fair/api/v1/datasets/dpe03existant/lines';
+const DEFAULT_TIMEOUT_MS = 10000; // 10 seconds
+
+/**
+ * Fetch with timeout support
+ * @param {string} url - URL to fetch
+ * @param {Object} [options] - Fetch options
+ * @param {number} [timeoutMs] - Timeout in milliseconds
+ * @returns {Promise<Response>} - Fetch response
+ */
+export async function fetchWithTimeout(url, options = {}, timeoutMs = DEFAULT_TIMEOUT_MS) {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+
+  try {
+    const response = await fetch(url, {
+      ...options,
+      signal: controller.signal,
+    });
+    return response;
+  } catch (error) {
+    if (error.name === 'AbortError') {
+      throw createError(ERROR_CODES.NETWORK_TIMEOUT);
+    }
+    throw createError(ERROR_CODES.NETWORK_ERROR, error.message);
+  } finally {
+    clearTimeout(timeoutId);
+  }
+}
 
 /**
  * Validate data required for ADEME search
@@ -10,8 +44,8 @@ const ADEME_API_BASE_URL = 'https://data.ademe.fr/data-fair/api/v1/datasets/dpe0
 export function validateAdemeSearchData(data) {
   const missing = [];
 
-  const hasLocation = (data.zipcode && data.zipcode !== 'Non trouvé') ||
-                      (data.city && data.city !== 'Non trouvé');
+  const hasLocation =
+    (data.zipcode && data.zipcode !== 'Non trouvé') || (data.city && data.city !== 'Non trouvé');
   const hasDate = data.date_diag && data.date_diag !== 'Non trouvé';
   const hasDpe = data.dpe && data.dpe !== 'Non trouvé';
   const hasGes = data.ges && data.ges !== 'Non trouvé';
@@ -25,7 +59,7 @@ export function validateAdemeSearchData(data) {
 
   return {
     isValid: missing.length === 0,
-    missing
+    missing,
   };
 }
 
@@ -88,7 +122,10 @@ export function buildAdemeParams(data) {
 
   // Add standard parameters
   params.append('size', '5');
-  params.append('select', 'adresse_ban,etiquette_dpe,etiquette_ges,date_etablissement_dpe,surface_habitable_logement,nom_commune_ban,conso_5_usages_par_m2_ep');
+  params.append(
+    'select',
+    'adresse_ban,etiquette_dpe,etiquette_ges,date_etablissement_dpe,surface_habitable_logement,nom_commune_ban,conso_5_usages_par_m2_ep'
+  );
 
   return params;
 }
@@ -107,19 +144,26 @@ export function buildAdemeUrl(data) {
  * Search ADEME database
  * @param {Object} data - Ad data
  * @param {Function} fetchFn - Fetch function (for testing)
+ * @param {number} [timeoutMs] - Timeout in milliseconds
  * @returns {Promise<Object>} - API response
  */
-export async function searchAdeme(data, fetchFn = fetch) {
+export async function searchAdeme(data, fetchFn = null, timeoutMs = DEFAULT_TIMEOUT_MS) {
   const validation = validateAdemeSearchData(data);
   if (!validation.isValid) {
-    throw new Error(`Missing required fields: ${validation.missing.join(', ')}`);
+    const error = createError(ERROR_CODES.MISSING_FIELDS, validation.missing.join(', '));
+    error.missing = validation.missing;
+    throw error;
   }
 
   const url = buildAdemeUrl(data);
-  const response = await fetchFn(url);
+
+  // Use provided fetch function or fetchWithTimeout
+  const response = fetchFn ? await fetchFn(url) : await fetchWithTimeout(url, {}, timeoutMs);
 
   if (!response.ok) {
-    throw new Error(`ADEME API error: ${response.status}`);
+    const error = createError(ERROR_CODES.API_ERROR, `Status: ${response.status}`);
+    error.status = response.status;
+    throw error;
   }
 
   return response.json();
