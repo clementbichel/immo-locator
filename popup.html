@@ -9,7 +9,7 @@
 
       html,
       body {
-        width: 400px;
+        width: 420px;
         margin: 0;
         padding: 0;
         overflow-x: hidden;
@@ -19,141 +19,438 @@
       body {
         font-family:
           -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100%;
+      }
+
+      .container {
         padding: 16px;
-        background-color: #f4f6f8;
       }
 
-      h1 {
-        font-size: 18px;
-        margin-top: 0;
+      /* Header */
+      .header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
         margin-bottom: 16px;
-        color: #1a1a1a;
-        border-bottom: 1px solid #eee;
-        padding-bottom: 8px;
+        color: white;
       }
 
+      .header-icon {
+        font-size: 28px;
+      }
+
+      .header h1 {
+        font-size: 18px;
+        margin: 0;
+        font-weight: 600;
+      }
+
+      .header .subtitle {
+        font-size: 12px;
+        opacity: 0.85;
+        margin-top: 2px;
+      }
+
+      /* Cards */
+      .card {
+        background: white;
+        border-radius: 12px;
+        padding: 16px;
+        margin-bottom: 12px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      }
+
+      .card-title {
+        font-size: 13px;
+        font-weight: 600;
+        color: #667eea;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      /* Data rows */
       .data-row {
         display: flex;
         justify-content: space-between;
-        margin-bottom: 12px;
-        padding-bottom: 8px;
+        align-items: center;
+        padding: 10px 0;
         border-bottom: 1px solid #f0f0f0;
       }
 
       .data-row:last-child {
         border-bottom: none;
+        padding-bottom: 0;
+      }
+
+      .data-row:first-of-type {
+        padding-top: 0;
       }
 
       .label {
-        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-weight: 500;
         color: #555;
-      }
-
-      .value {
-        font-weight: 400;
-        color: #1a1a1a;
-      }
-
-      .error {
-        color: #d32f2f;
-        font-style: italic;
-        margin-bottom: 12px;
-      }
-
-      button {
-        margin-top: 16px;
-        background-color: #ec5a13;
-        /* Leboncoin orange-ish */
-        color: white;
-        border: none;
-        padding: 10px 16px;
-        border-radius: 4px;
-        cursor: pointer;
-        font-weight: bold;
-        width: 100%;
         font-size: 14px;
       }
 
-      button:hover {
-        background-color: #d84d0b;
+      .label-icon {
+        font-size: 16px;
+        width: 20px;
+        text-align: center;
+      }
+
+      .value {
+        font-weight: 600;
+        color: #1a1a1a;
+        font-size: 14px;
+      }
+
+      .value.loading {
+        color: #999;
+        font-style: italic;
+        font-weight: 400;
+      }
+
+      .value.not-found {
+        color: #999;
+        font-weight: 400;
+      }
+
+      /* DPE/GES Badges */
+      .energy-badges {
+        display: flex;
+        gap: 16px;
+        justify-content: center;
+        padding: 8px 0;
+      }
+
+      .energy-badge {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .energy-badge-label {
+        font-size: 11px;
+        font-weight: 600;
+        color: #666;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .energy-badge-value {
+        width: 48px;
+        height: 48px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        font-weight: 700;
+        color: white;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+        box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+      }
+
+      .energy-badge-value.not-found {
+        background: #e0e0e0;
+        color: #999;
+        font-size: 14px;
+        text-shadow: none;
+      }
+
+      /* Energy colors */
+      .energy-A {
+        background: linear-gradient(135deg, #319834, #28a428);
+      }
+      .energy-B {
+        background: linear-gradient(135deg, #33cc31, #2db82d);
+      }
+      .energy-C {
+        background: linear-gradient(135deg, #9fce35, #8fbc2f);
+      }
+      .energy-D {
+        background: linear-gradient(135deg, #fcee34, #e6d92f);
+      }
+      .energy-E {
+        background: linear-gradient(135deg, #fbcc05, #e6b904);
+      }
+      .energy-F {
+        background: linear-gradient(135deg, #f58231, #e0752d);
+      }
+      .energy-G {
+        background: linear-gradient(135deg, #d1251b, #bc2118);
+      }
+
+      /* ADEME Section */
+      #ademe-section {
+        margin-top: 4px;
+      }
+
+      .ademe-params {
+        background: #f8f9fa;
+        border-radius: 8px;
+        padding: 12px;
+        margin-bottom: 12px;
+        display: none;
+      }
+
+      .ademe-params-title {
+        font-size: 12px;
+        font-weight: 600;
+        color: #666;
+        margin-bottom: 8px;
+      }
+
+      #params-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        font-size: 12px;
+        color: #555;
+      }
+
+      #params-list li {
+        padding: 3px 0;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      #params-list li::before {
+        content: '•';
+        color: #667eea;
+        font-weight: bold;
+      }
+
+      /* Button */
+      .btn {
+        width: 100%;
+        padding: 12px 16px;
+        border: none;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+      }
+
+      .btn-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+      }
+
+      .btn-primary:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+      }
+
+      .btn-primary:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
+        transform: none;
+      }
+
+      #search-ademe-btn {
+        display: none;
+        margin-bottom: 12px;
+      }
+
+      /* Loading */
+      #ademe-loading {
+        display: none;
+        text-align: center;
+        padding: 16px;
+        color: #666;
+        font-size: 13px;
+      }
+
+      .loading-spinner {
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        border: 2px solid #e0e0e0;
+        border-top-color: #667eea;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+        margin-right: 8px;
+        vertical-align: middle;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      /* Results */
+      #ademe-results {
+        font-size: 13px;
+      }
+
+      #ademe-results p {
+        margin: 0;
+        padding: 12px;
+        background: #f8f9fa;
+        border-radius: 8px;
+        color: #666;
+        text-align: center;
+      }
+
+      #ademe-results ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+
+      #ademe-results > ul > li {
+        background: #f8f9fa;
+        border-radius: 8px;
+        padding: 12px;
+        margin-bottom: 8px;
+      }
+
+      #ademe-results > ul > li:last-child {
+        margin-bottom: 0;
+      }
+
+      /* Error */
+      .error {
+        background: #ffebee;
+        color: #c62828;
+        padding: 12px;
+        border-radius: 8px;
+        font-size: 13px;
+        text-align: center;
+        display: none;
       }
     </style>
   </head>
 
   <body>
-    <div id="data-container">
-      <h1>Détails de l'annonce</h1>
-      <div class="data-row">
-        <span class="label">Ville</span>
-        <span class="value" id="city">Chargement...</span>
+    <div class="container">
+      <!-- Header -->
+      <div class="header">
+        <span class="header-icon">🏠</span>
+        <div>
+          <h1>Annonce Immo Locator</h1>
+          <div class="subtitle">Extraction des données immobilières</div>
+        </div>
       </div>
-      <div class="data-row">
-        <span class="label">Code Postal</span>
-        <span class="value" id="zipcode">Chargement...</span>
+
+      <!-- Location Card -->
+      <div class="card">
+        <div class="card-title">📍 Localisation</div>
+        <div class="data-row">
+          <span class="label">
+            <span class="label-icon">🏙️</span>
+            Ville
+          </span>
+          <span class="value loading" id="city">Chargement...</span>
+        </div>
+        <div class="data-row">
+          <span class="label">
+            <span class="label-icon">📮</span>
+            Code Postal
+          </span>
+          <span class="value loading" id="zipcode">Chargement...</span>
+        </div>
       </div>
-      <div class="data-row">
-        <span class="label">Surface</span>
-        <span class="value" id="surface">--</span>
+
+      <!-- Surface Card -->
+      <div class="card">
+        <div class="card-title">📐 Surfaces</div>
+        <div class="data-row">
+          <span class="label">
+            <span class="label-icon">🏠</span>
+            Habitable
+          </span>
+          <span class="value" id="surface">--</span>
+        </div>
+        <div class="data-row">
+          <span class="label">
+            <span class="label-icon">🌳</span>
+            Terrain
+          </span>
+          <span class="value" id="terrain">--</span>
+        </div>
       </div>
-      <div class="data-row">
-        <span class="label">Terrain</span>
-        <span class="value" id="terrain">--</span>
+
+      <!-- Energy Card -->
+      <div class="card">
+        <div class="card-title">⚡ Performance énergétique</div>
+        <div class="energy-badges">
+          <div class="energy-badge">
+            <span class="energy-badge-label">DPE</span>
+            <div class="energy-badge-value not-found" id="dpe">--</div>
+          </div>
+          <div class="energy-badge">
+            <span class="energy-badge-label">GES</span>
+            <div class="energy-badge-value not-found" id="ges">--</div>
+          </div>
+        </div>
+        <div class="data-row">
+          <span class="label">
+            <span class="label-icon">📅</span>
+            Date diagnostic
+          </span>
+          <span class="value" id="date_diag">--</span>
+        </div>
+        <div class="data-row">
+          <span class="label">
+            <span class="label-icon">🔥</span>
+            Conso. primaire
+          </span>
+          <span class="value" id="conso_prim">--</span>
+        </div>
+        <div class="data-row">
+          <span class="label">
+            <span class="label-icon">💡</span>
+            Conso. finale
+          </span>
+          <span class="value" id="conso_fin">--</span>
+        </div>
       </div>
-      <div class="data-row">
-        <span class="label">DPE</span>
-        <span class="value" id="dpe">--</span>
+
+      <!-- ADEME Section -->
+      <div class="card" id="ademe-section">
+        <div class="card-title">🔍 Recherche ADEME</div>
+
+        <div class="ademe-params" id="ademe-params">
+          <div class="ademe-params-title">Paramètres de recherche</div>
+          <ul id="params-list"></ul>
+        </div>
+
+        <button class="btn btn-primary" id="search-ademe-btn">
+          <span>🔎</span>
+          Rechercher dans la base ADEME
+        </button>
+
+        <div id="ademe-loading">
+          <span class="loading-spinner"></span>
+          Recherche en cours...
+        </div>
+
+        <div id="ademe-results"></div>
       </div>
-      <div class="data-row">
-        <span class="label">GES</span>
-        <span class="value" id="ges">--</span>
-      </div>
-      <div class="data-row">
-        <span class="label">Date Diag</span>
-        <span class="value" id="date_diag">--</span>
-      </div>
-      <div class="data-row">
-        <span class="label">Conso. Primaire</span>
-        <span class="value" id="conso_prim">--</span>
-      </div>
-      <div class="data-row">
-        <span class="label">Conso. Finale</span>
-        <span class="value" id="conso_fin">--</span>
-      </div>
+
+      <!-- Error -->
+      <div id="error-msg" class="error"></div>
     </div>
 
-    <div id="ademe-section" style="margin-top: 16px; padding-top: 16px; border-top: 1px solid #eee">
-      <div
-        id="ademe-params"
-        style="margin-bottom: 10px; font-size: 0.9em; color: #555; display: none"
-      >
-        <strong>Paramètres de recherche :</strong>
-        <ul id="params-list" style="padding-left: 20px; margin: 5px 0"></ul>
-      </div>
-
-      <button
-        id="search-ademe-btn"
-        style="
-          display: none;
-          width: 100%;
-          margin-bottom: 10px;
-          background-color: #2c3e50;
-          color: white;
-          border: none;
-          padding: 8px;
-          border-radius: 4px;
-          cursor: pointer;
-        "
-      >
-        Lancer la recherche
-      </button>
-
-      <div id="ademe-loading" style="display: none; color: #666; font-style: italic">
-        Recherche en cours...
-      </div>
-      <div id="ademe-results" style="font-size: 0.9em"></div>
-    </div>
-
-    <div id="error-msg" class="error" style="display: none"></div>
     <script src="popup.js"></script>
   </body>
 </html>

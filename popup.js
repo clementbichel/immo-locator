@@ -707,8 +707,6 @@
               'zipcode',
               'surface',
               'terrain',
-              'dpe',
-              'ges',
               'date_diag',
               'conso_prim',
               'conso_fin',
@@ -716,9 +714,35 @@
             fields.forEach((field) => {
               const el = document.getElementById(field);
               if (el) {
-                el.textContent = res[field] || 'Non trouv\xE9';
-                if (res[field] === 'Non trouv\xE9') el.style.color = '#999';
-                else el.style.color = '#1a1a1a';
+                const value = res[field] || 'Non trouv\xE9';
+                el.textContent = value;
+                el.classList.remove('loading', 'not-found');
+                if (value === 'Non trouv\xE9' || value === '--') {
+                  el.classList.add('not-found');
+                }
+              }
+            });
+            ['dpe', 'ges'].forEach((field) => {
+              const el = document.getElementById(field);
+              if (el) {
+                const value = res[field];
+                el.classList.remove(
+                  'not-found',
+                  'energy-A',
+                  'energy-B',
+                  'energy-C',
+                  'energy-D',
+                  'energy-E',
+                  'energy-F',
+                  'energy-G'
+                );
+                if (value && value !== 'Non trouv\xE9' && /^[A-G]$/i.test(value)) {
+                  el.textContent = value.toUpperCase();
+                  el.classList.add(`energy-${value.toUpperCase()}`);
+                } else {
+                  el.textContent = '--';
+                  el.classList.add('not-found');
+                }
               }
             });
             prepareAdemeSearch(res);

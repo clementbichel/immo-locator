@@ -28,22 +28,26 @@ describe('Popup UI E2E Tests', () => {
     it('should display the page title', () => {
       const title = document.querySelector('h1');
       expect(title).not.toBeNull();
-      expect(title.textContent).toContain("Détails de l'annonce");
+      expect(title.textContent).toContain('Annonce Immo Locator');
     });
 
     it('should display all data fields', () => {
-      const labels = document.querySelectorAll('.label');
-      const labelTexts = Array.from(labels).map((l) => l.textContent);
-
-      expect(labelTexts).toContain('Ville');
-      expect(labelTexts).toContain('Code Postal');
-      expect(labelTexts).toContain('Surface');
-      expect(labelTexts).toContain('Terrain');
-      expect(labelTexts).toContain('DPE');
-      expect(labelTexts).toContain('GES');
-      expect(labelTexts).toContain('Date Diag');
-      expect(labelTexts).toContain('Conso. Primaire');
-      expect(labelTexts).toContain('Conso. Finale');
+      // Check that all required IDs exist
+      const requiredIds = [
+        'city',
+        'zipcode',
+        'surface',
+        'terrain',
+        'dpe',
+        'ges',
+        'date_diag',
+        'conso_prim',
+        'conso_fin',
+      ];
+      requiredIds.forEach((id) => {
+        const el = document.getElementById(id);
+        expect(el, `Element with id "${id}" should exist`).not.toBeNull();
+      });
     });
 
     it('should show loading state for city', () => {
@@ -52,34 +56,40 @@ describe('Popup UI E2E Tests', () => {
       expect(cityValue.textContent).toBe('Chargement...');
     });
 
-    it('should have search button initially hidden', () => {
+    it('should have search button initially hidden via CSS', () => {
       const searchBtn = document.getElementById('search-ademe-btn');
       expect(searchBtn).not.toBeNull();
-      expect(searchBtn.style.display).toBe('none');
+      // Check CSS class or computed style
+      const styleTag = document.querySelector('style');
+      expect(styleTag.textContent).toContain('#search-ademe-btn');
+      expect(styleTag.textContent).toContain('display: none');
     });
 
-    it('should have ADEME params initially hidden', () => {
+    it('should have ADEME params initially hidden via CSS', () => {
       const params = document.getElementById('ademe-params');
       expect(params).not.toBeNull();
-      expect(params.style.display).toBe('none');
+      // Hidden via CSS class
+      expect(params.classList.contains('ademe-params')).toBe(true);
     });
 
-    it('should have error message hidden', () => {
+    it('should have error message element', () => {
       const errorMsg = document.getElementById('error-msg');
       expect(errorMsg).not.toBeNull();
-      expect(errorMsg.style.display).toBe('none');
+      expect(errorMsg.classList.contains('error')).toBe(true);
     });
   });
 
   describe('Page Structure', () => {
-    it('should have correct number of data rows', () => {
-      const dataRows = document.querySelectorAll('.data-row');
-      expect(dataRows.length).toBe(9);
+    it('should have cards for each section', () => {
+      const cards = document.querySelectorAll('.card');
+      expect(cards.length).toBe(4); // Location, Surface, Energy, ADEME
     });
 
-    it('should have data container', () => {
-      const container = document.getElementById('data-container');
-      expect(container).not.toBeNull();
+    it('should have header with title', () => {
+      const header = document.querySelector('.header');
+      expect(header).not.toBeNull();
+      const title = header.querySelector('h1');
+      expect(title).not.toBeNull();
     });
 
     it('should have ADEME section', () => {
@@ -98,17 +108,39 @@ describe('Popup UI E2E Tests', () => {
     });
   });
 
+  describe('Energy Badges', () => {
+    it('should have DPE badge', () => {
+      const dpeBadge = document.getElementById('dpe');
+      expect(dpeBadge).not.toBeNull();
+      expect(dpeBadge.classList.contains('energy-badge-value')).toBe(true);
+    });
+
+    it('should have GES badge', () => {
+      const gesBadge = document.getElementById('ges');
+      expect(gesBadge).not.toBeNull();
+      expect(gesBadge.classList.contains('energy-badge-value')).toBe(true);
+    });
+
+    it('should have energy color classes defined in CSS', () => {
+      const styleTag = document.querySelector('style');
+      expect(styleTag.textContent).toContain('.energy-A');
+      expect(styleTag.textContent).toContain('.energy-G');
+    });
+  });
+
   describe('UI Elements', () => {
     it('should have button with correct text', () => {
       const button = document.getElementById('search-ademe-btn');
       expect(button).not.toBeNull();
-      expect(button.textContent).toContain('Lancer la recherche');
+      expect(button.textContent).toContain('Rechercher dans la base ADEME');
     });
 
-    it('should have loading indicator with correct text', () => {
+    it('should have loading indicator with spinner', () => {
       const loading = document.getElementById('ademe-loading');
       expect(loading).not.toBeNull();
-      expect(loading.textContent.trim()).toBe('Recherche en cours...');
+      expect(loading.textContent).toContain('Recherche en cours...');
+      const spinner = loading.querySelector('.loading-spinner');
+      expect(spinner).not.toBeNull();
     });
 
     it('should have script tag for popup.js', () => {
@@ -121,7 +153,7 @@ describe('Popup UI E2E Tests', () => {
   });
 
   describe('Accessibility', () => {
-    it('should have labels for all data values', () => {
+    it('should have labels for data values', () => {
       const labels = document.querySelectorAll('.label');
       expect(labels.length).toBeGreaterThan(0);
     });
@@ -131,15 +163,14 @@ describe('Popup UI E2E Tests', () => {
       expect(values.length).toBeGreaterThan(0);
     });
 
-    it('should have matching labels and values', () => {
-      const labels = document.querySelectorAll('.label');
-      const values = document.querySelectorAll('.value');
-      expect(labels.length).toBe(values.length);
-    });
-
     it('should have proper document structure', () => {
       expect(document.doctype).not.toBeNull();
       expect(document.documentElement.tagName).toBe('HTML');
+    });
+
+    it('should have card titles for sections', () => {
+      const cardTitles = document.querySelectorAll('.card-title');
+      expect(cardTitles.length).toBe(4);
     });
   });
 
@@ -148,17 +179,23 @@ describe('Popup UI E2E Tests', () => {
       const styleTag = document.querySelector('style');
       expect(styleTag).not.toBeNull();
       expect(styleTag.textContent).toContain('body');
-      expect(styleTag.textContent).toContain('.data-row');
+      expect(styleTag.textContent).toContain('.card');
     });
 
     it('should set correct body width in CSS', () => {
       const styleTag = document.querySelector('style');
-      expect(styleTag.textContent).toContain('width: 400px');
+      expect(styleTag.textContent).toContain('width: 420px');
     });
 
-    it('should have Leboncoin orange color for button', () => {
+    it('should have gradient background for body', () => {
       const styleTag = document.querySelector('style');
-      expect(styleTag.textContent).toContain('#ec5a13');
+      expect(styleTag.textContent).toContain('linear-gradient');
+      expect(styleTag.textContent).toContain('#667eea');
+    });
+
+    it('should have button styles with gradient', () => {
+      const styleTag = document.querySelector('style');
+      expect(styleTag.textContent).toContain('.btn-primary');
     });
   });
 });

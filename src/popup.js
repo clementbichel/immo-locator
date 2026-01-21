@@ -517,8 +517,6 @@ document.addEventListener('DOMContentLoaded', () => {
             'zipcode',
             'surface',
             'terrain',
-            'dpe',
-            'ges',
             'date_diag',
             'conso_prim',
             'conso_fin',
@@ -526,9 +524,39 @@ document.addEventListener('DOMContentLoaded', () => {
           fields.forEach((field) => {
             const el = document.getElementById(field);
             if (el) {
-              el.textContent = res[field] || 'Non trouvé';
-              if (res[field] === 'Non trouvé') el.style.color = '#999';
-              else el.style.color = '#1a1a1a';
+              const value = res[field] || 'Non trouvé';
+              el.textContent = value;
+              el.classList.remove('loading', 'not-found');
+              if (value === 'Non trouvé' || value === '--') {
+                el.classList.add('not-found');
+              }
+            }
+          });
+
+          // Handle DPE/GES badges with colors
+          ['dpe', 'ges'].forEach((field) => {
+            const el = document.getElementById(field);
+            if (el) {
+              const value = res[field];
+              // Remove all energy classes
+              el.classList.remove(
+                'not-found',
+                'energy-A',
+                'energy-B',
+                'energy-C',
+                'energy-D',
+                'energy-E',
+                'energy-F',
+                'energy-G'
+              );
+
+              if (value && value !== 'Non trouvé' && /^[A-G]$/i.test(value)) {
+                el.textContent = value.toUpperCase();
+                el.classList.add(`energy-${value.toUpperCase()}`);
+              } else {
+                el.textContent = '--';
+                el.classList.add('not-found');
+              }
             }
           });
 
