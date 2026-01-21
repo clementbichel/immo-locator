@@ -278,6 +278,12 @@
         textDecoration: 'none',
       },
     });
+    link.addEventListener('click', (e) => {
+      e.preventDefault();
+      const browserApi = globalThis.browser || globalThis.chrome;
+      browserApi.tabs.create({ url: mapsLink });
+      window.close();
+    });
     li.appendChild(header);
     li.appendChild(link);
     return li;

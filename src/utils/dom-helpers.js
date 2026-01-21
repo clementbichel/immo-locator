@@ -125,6 +125,15 @@ export function createAdemeResultItem(item, mapsLink, scoreColor) {
     },
   });
 
+  // Firefox doesn't auto-close popup on external link click, handle manually
+  link.addEventListener('click', (e) => {
+    e.preventDefault();
+    // Cross-browser: use browser if available, otherwise chrome
+    const browserApi = globalThis.browser || globalThis.chrome;
+    browserApi.tabs.create({ url: mapsLink });
+    window.close();
+  });
+
   li.appendChild(header);
   li.appendChild(link);
 
