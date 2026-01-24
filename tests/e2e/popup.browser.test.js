@@ -82,7 +82,7 @@ describe('Popup UI E2E Tests', () => {
   describe('Page Structure', () => {
     it('should have cards for each section', () => {
       const cards = document.querySelectorAll('.card');
-      expect(cards.length).toBe(4); // Location, Surface, Energy, ADEME
+      expect(cards.length).toBe(3); // Property info, Energy, ADEME
     });
 
     it('should have header with title', () => {
@@ -170,7 +170,7 @@ describe('Popup UI E2E Tests', () => {
 
     it('should have card titles for sections', () => {
       const cardTitles = document.querySelectorAll('.card-title');
-      expect(cardTitles.length).toBe(4);
+      expect(cardTitles.length).toBe(3);
     });
   });
 
@@ -184,7 +184,7 @@ describe('Popup UI E2E Tests', () => {
 
     it('should set correct body width in CSS', () => {
       const styleTag = document.querySelector('style');
-      expect(styleTag.textContent).toContain('width: 420px');
+      expect(styleTag.textContent).toContain('width: 360px');
     });
 
     it('should have gradient background for body', () => {
