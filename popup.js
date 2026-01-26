@@ -591,44 +591,19 @@
       return data;
     }
     function prepareAdemeSearch(data) {
-      const ademeParams = document.getElementById('ademe-params');
-      const paramsList = document.getElementById('params-list');
       const searchBtn = document.getElementById('search-ademe-btn');
       const ademeResults = document.getElementById('ademe-results');
       clearElement(ademeResults);
-      clearElement(paramsList);
-      ademeParams.style.display = 'none';
       searchBtn.style.display = 'none';
       const validation = validateAdemeSearchData(data);
       if (!validation.isValid) {
         const msg = createMessage(
-          `Recherche ADEME non disponible : informations manquantes (${validation.missing.join(', ')}).`,
+          `Recherche non disponible : ${validation.missing.join(', ')} manquant(s).`,
           '#999'
         );
-        msg.style.fontSize = '0.8em';
+        msg.style.fontSize = '12px';
         ademeResults.appendChild(msg);
         return;
-      }
-      ademeParams.style.display = 'block';
-      const liLoc = document.createElement('li');
-      liLoc.textContent = `Localisation : ${data.zipcode !== 'Non trouv\xE9' ? data.zipcode : data.city}`;
-      paramsList.appendChild(liLoc);
-      const liDate = document.createElement('li');
-      liDate.textContent = `Date : ${data.date_diag} (+/- 7 jours)`;
-      paramsList.appendChild(liDate);
-      const liDpe = document.createElement('li');
-      liDpe.textContent = `DPE : ${data.dpe}`;
-      paramsList.appendChild(liDpe);
-      const liGes = document.createElement('li');
-      liGes.textContent = `GES : ${data.ges}`;
-      paramsList.appendChild(liGes);
-      const liSurf = document.createElement('li');
-      liSurf.textContent = `Surface : ${data.surface} (+/- 10%)`;
-      paramsList.appendChild(liSurf);
-      if (data.conso_prim && data.conso_prim !== 'Non trouv\xE9') {
-        const liPrim = document.createElement('li');
-        liPrim.textContent = `Conso. Primaire : ${data.conso_prim} (+/- 10%)`;
-        paramsList.appendChild(liPrim);
       }
       searchBtn.style.display = 'block';
       searchBtn.onclick = () => executeAdemeSearch(data);

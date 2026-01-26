@@ -65,13 +65,6 @@ describe('Popup UI E2E Tests', () => {
       expect(styleTag.textContent).toContain('display: none');
     });
 
-    it('should have ADEME params initially hidden via CSS', () => {
-      const params = document.getElementById('ademe-params');
-      expect(params).not.toBeNull();
-      // Hidden via CSS class
-      expect(params.classList.contains('ademe-params')).toBe(true);
-    });
-
     it('should have error message element', () => {
       const errorMsg = document.getElementById('error-msg');
       expect(errorMsg).not.toBeNull();
@@ -82,7 +75,7 @@ describe('Popup UI E2E Tests', () => {
   describe('Page Structure', () => {
     it('should have cards for each section', () => {
       const cards = document.querySelectorAll('.card');
-      expect(cards.length).toBe(3); // Property info, Energy, ADEME
+      expect(cards.length).toBe(2); // Property info, Energy
     });
 
     it('should have header with title', () => {
@@ -95,11 +88,6 @@ describe('Popup UI E2E Tests', () => {
     it('should have ADEME section', () => {
       const section = document.getElementById('ademe-section');
       expect(section).not.toBeNull();
-    });
-
-    it('should have params list element', () => {
-      const paramsList = document.getElementById('params-list');
-      expect(paramsList).not.toBeNull();
     });
 
     it('should have results container', () => {
@@ -180,7 +168,7 @@ describe('Popup UI E2E Tests', () => {
 
     it('should have card titles for sections', () => {
       const cardTitles = document.querySelectorAll('.card-title');
-      expect(cardTitles.length).toBe(3);
+      expect(cardTitles.length).toBe(2);
     });
   });
 

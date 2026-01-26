@@ -377,56 +377,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Function to prepare ADEME Search (Manual Trigger)
   function prepareAdemeSearch(data) {
-    const ademeParams = document.getElementById('ademe-params');
-    const paramsList = document.getElementById('params-list');
     const searchBtn = document.getElementById('search-ademe-btn');
     const ademeResults = document.getElementById('ademe-results');
 
     // Reset
     clearElement(ademeResults);
-    clearElement(paramsList);
-    ademeParams.style.display = 'none';
     searchBtn.style.display = 'none';
 
     // Validate data
     const validation = validateAdemeSearchData(data);
     if (!validation.isValid) {
       const msg = createMessage(
-        `Recherche ADEME non disponible : informations manquantes (${validation.missing.join(', ')}).`,
+        `Recherche non disponible : ${validation.missing.join(', ')} manquant(s).`,
         '#999'
       );
-      msg.style.fontSize = '0.8em';
+      msg.style.fontSize = '12px';
       ademeResults.appendChild(msg);
       return;
-    }
-
-    // Show Parameters
-    ademeParams.style.display = 'block';
-
-    const liLoc = document.createElement('li');
-    liLoc.textContent = `Localisation : ${data.zipcode !== 'Non trouvé' ? data.zipcode : data.city}`;
-    paramsList.appendChild(liLoc);
-
-    const liDate = document.createElement('li');
-    liDate.textContent = `Date : ${data.date_diag} (+/- 7 jours)`;
-    paramsList.appendChild(liDate);
-
-    const liDpe = document.createElement('li');
-    liDpe.textContent = `DPE : ${data.dpe}`;
-    paramsList.appendChild(liDpe);
-
-    const liGes = document.createElement('li');
-    liGes.textContent = `GES : ${data.ges}`;
-    paramsList.appendChild(liGes);
-
-    const liSurf = document.createElement('li');
-    liSurf.textContent = `Surface : ${data.surface} (+/- 10%)`;
-    paramsList.appendChild(liSurf);
-
-    if (data.conso_prim && data.conso_prim !== 'Non trouvé') {
-      const liPrim = document.createElement('li');
-      liPrim.textContent = `Conso. Primaire : ${data.conso_prim} (+/- 10%)`;
-      paramsList.appendChild(liPrim);
     }
 
     // Show Button

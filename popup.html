@@ -291,45 +291,8 @@
       }
 
       /* ===== ADEME SECTION ===== */
-      .ademe-params {
-        background: var(--bg);
-        border-radius: 8px;
-        padding: 10px 12px;
-        margin-bottom: 12px;
-        display: none;
-      }
-
-      .ademe-params-title {
-        font-size: 10px;
-        font-weight: 600;
-        color: var(--text-tertiary);
-        text-transform: uppercase;
-        letter-spacing: 0.3px;
-        margin-bottom: 8px;
-      }
-
-      #params-list {
-        list-style: none;
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 4px 12px;
-        font-size: 11px;
-        color: var(--text-secondary);
-      }
-
-      #params-list li {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-      }
-
-      #params-list li::before {
-        content: '';
-        width: 4px;
-        height: 4px;
-        background: var(--accent);
-        border-radius: 50%;
-        flex-shrink: 0;
+      #ademe-section {
+        margin-top: 4px;
       }
 
       /* ===== BUTTONS ===== */
@@ -722,17 +685,8 @@
         </div>
       </div>
 
-      <!-- ADEME Card -->
-      <div class="card" id="ademe-section">
-        <div class="card-header">
-          <span class="card-title">Recherche ADEME</span>
-        </div>
-
-        <div class="ademe-params" id="ademe-params">
-          <div class="ademe-params-title">Critères de recherche</div>
-          <ul id="params-list"></ul>
-        </div>
-
+      <!-- ADEME Search -->
+      <div id="ademe-section">
         <button class="btn btn-primary" id="search-ademe-btn">Rechercher le DPE officiel</button>
 
         <div id="ademe-loading">
