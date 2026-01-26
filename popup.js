@@ -315,6 +315,23 @@
   globalThis.browser ??= globalThis.chrome;
   document.addEventListener('DOMContentLoaded', () => {
     const errorMsg = document.getElementById('error-msg');
+    const errorPage = document.getElementById('error-page');
+    const errorCta = document.getElementById('error-cta');
+    function showErrorPage(message) {
+      document.body.classList.add('show-error-page');
+      const detailEl = document.getElementById('error-page-detail');
+      if (detailEl && message) {
+        detailEl.textContent = message;
+      }
+    }
+    if (errorCta) {
+      errorCta.addEventListener('click', (e) => {
+        e.preventDefault();
+        const browserApi = globalThis.browser || globalThis.chrome;
+        browserApi.tabs.create({ url: errorCta.href });
+        window.close();
+      });
+    }
     async function extractRealEstateData() {
       var _a;
       if (
@@ -680,8 +697,14 @@
     }
     browser.tabs.query({ active: true, currentWindow: true }, (tabs) => {
       if (!tabs[0] || !tabs[0].id) {
-        errorMsg.textContent = "Erreur : Impossible d'acc\xE9der \xE0 l'onglet actif.";
-        errorMsg.style.display = 'block';
+        showErrorPage("Impossible d'acc\xE9der \xE0 l'onglet actif.");
+        return;
+      }
+      const tabUrl = tabs[0].url || '';
+      if (!tabUrl.includes('leboncoin.fr')) {
+        showErrorPage(
+          "Cette extension fonctionne uniquement sur Leboncoin. Rendez-vous sur une annonce de vente ou de location pour l'utiliser."
+        );
         return;
       }
       browser.scripting.executeScript(
@@ -691,15 +714,15 @@
         },
         (results) => {
           if (browser.runtime.lastError) {
-            errorMsg.textContent = 'Erreur : ' + browser.runtime.lastError.message;
-            errorMsg.style.display = 'block';
+            showErrorPage(
+              "Impossible d'acc\xE9der \xE0 cette page. V\xE9rifiez que vous \xEAtes sur une annonce Leboncoin."
+            );
             return;
           }
           if (results && results[0] && results[0].result) {
             const res = results[0].result;
             if (res.error) {
-              errorMsg.textContent = res.error;
-              errorMsg.style.display = 'block';
+              showErrorPage(res.error);
               return;
             }
             const fields = [
@@ -747,8 +770,9 @@
             });
             prepareAdemeSearch(res);
           } else {
-            errorMsg.textContent = 'Donn\xE9es non trouv\xE9es.';
-            errorMsg.style.display = 'block';
+            showErrorPage(
+              "Donn\xE9es non trouv\xE9es sur cette page. Assurez-vous d'\xEAtre sur une annonce immobili\xE8re."
+            );
           }
         }
       );

@@ -12,6 +12,27 @@ import { getErrorMessage, ERROR_CODES } from './utils/error-messages.js';
 
 document.addEventListener('DOMContentLoaded', () => {
   const errorMsg = document.getElementById('error-msg');
+  const errorPage = document.getElementById('error-page');
+  const errorCta = document.getElementById('error-cta');
+
+  // Show full error page for invalid page errors
+  function showErrorPage(message) {
+    document.body.classList.add('show-error-page');
+    const detailEl = document.getElementById('error-page-detail');
+    if (detailEl && message) {
+      detailEl.textContent = message;
+    }
+  }
+
+  // Handle CTA click to open in new tab
+  if (errorCta) {
+    errorCta.addEventListener('click', (e) => {
+      e.preventDefault();
+      const browserApi = globalThis.browser || globalThis.chrome;
+      browserApi.tabs.create({ url: errorCta.href });
+      window.close();
+    });
+  }
 
   // Function to be injected into the page
   async function extractRealEstateData() {
@@ -485,8 +506,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
   browser.tabs.query({ active: true, currentWindow: true }, (tabs) => {
     if (!tabs[0] || !tabs[0].id) {
-      errorMsg.textContent = "Erreur : Impossible d'accéder à l'onglet actif.";
-      errorMsg.style.display = 'block';
+      showErrorPage("Impossible d'accéder à l'onglet actif.");
+      return;
+    }
+
+    // Check if we're on a Leboncoin page before trying to inject
+    const tabUrl = tabs[0].url || '';
+    if (!tabUrl.includes('leboncoin.fr')) {
+      showErrorPage(
+        "Cette extension fonctionne uniquement sur Leboncoin. Rendez-vous sur une annonce de vente ou de location pour l'utiliser."
+      );
       return;
     }
 
@@ -497,8 +526,9 @@ document.addEventListener('DOMContentLoaded', () => {
       },
       (results) => {
         if (browser.runtime.lastError) {
-          errorMsg.textContent = 'Erreur : ' + browser.runtime.lastError.message;
-          errorMsg.style.display = 'block';
+          showErrorPage(
+            "Impossible d'accéder à cette page. Vérifiez que vous êtes sur une annonce Leboncoin."
+          );
           return;
         }
 
@@ -506,8 +536,8 @@ document.addEventListener('DOMContentLoaded', () => {
           const res = results[0].result;
 
           if (res.error) {
-            errorMsg.textContent = res.error;
-            errorMsg.style.display = 'block';
+            // Show full error page for invalid page type
+            showErrorPage(res.error);
             return;
           }
 
@@ -563,8 +593,9 @@ document.addEventListener('DOMContentLoaded', () => {
           // Prepare ADEME Search (Manual)
           prepareAdemeSearch(res);
         } else {
-          errorMsg.textContent = 'Données non trouvées.';
-          errorMsg.style.display = 'block';
+          showErrorPage(
+            "Données non trouvées sur cette page. Assurez-vous d'être sur une annonce immobilière."
+          );
         }
       }
     );
