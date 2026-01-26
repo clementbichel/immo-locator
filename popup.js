@@ -700,15 +700,6 @@
               showErrorPage(res.error);
               return;
             }
-            const extractionTimeEl = document.getElementById('extraction-time');
-            if (extractionTimeEl) {
-              const now = /* @__PURE__ */ new Date();
-              const timeStr = now.toLocaleTimeString('fr-FR', {
-                hour: '2-digit',
-                minute: '2-digit',
-              });
-              extractionTimeEl.textContent = `Extrait \xE0 ${timeStr}`;
-            }
             const fields = [
               'city',
               'zipcode',

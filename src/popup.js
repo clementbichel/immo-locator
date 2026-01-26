@@ -509,17 +509,6 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
           }
 
-          // Display extraction time
-          const extractionTimeEl = document.getElementById('extraction-time');
-          if (extractionTimeEl) {
-            const now = new Date();
-            const timeStr = now.toLocaleTimeString('fr-FR', {
-              hour: '2-digit',
-              minute: '2-digit',
-            });
-            extractionTimeEl.textContent = `Extrait à ${timeStr}`;
-          }
-
           // Display Results
           const fields = [
             'city',

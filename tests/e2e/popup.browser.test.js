@@ -139,11 +139,6 @@ describe('Popup UI E2E Tests', () => {
       expect(popupScript).not.toBeNull();
     });
 
-    it('should have extraction time placeholder in footer', () => {
-      const extractionTime = document.getElementById('extraction-time');
-      expect(extractionTime).not.toBeNull();
-    });
-
     it('should have data status badge element', () => {
       const dataStatus = document.getElementById('data-status');
       expect(dataStatus).not.toBeNull();
