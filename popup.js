@@ -725,6 +725,15 @@
               showErrorPage(res.error);
               return;
             }
+            const extractionTimeEl = document.getElementById('extraction-time');
+            if (extractionTimeEl) {
+              const now = /* @__PURE__ */ new Date();
+              const timeStr = now.toLocaleTimeString('fr-FR', {
+                hour: '2-digit',
+                minute: '2-digit',
+              });
+              extractionTimeEl.textContent = `Extrait \xE0 ${timeStr}`;
+            }
             const fields = [
               'city',
               'zipcode',
@@ -734,14 +743,18 @@
               'conso_prim',
               'conso_fin',
             ];
+            let foundCount = 0;
+            const totalFields = fields.length + 2;
             fields.forEach((field) => {
               const el = document.getElementById(field);
               if (el) {
                 const value = res[field] || 'Non trouv\xE9';
-                el.textContent = value;
+                el.textContent = value === 'Non trouv\xE9' ? '\u2014' : value;
                 el.classList.remove('loading', 'not-found');
-                if (value === 'Non trouv\xE9' || value === '--') {
+                if (value === 'Non trouv\xE9' || value === '--' || value === '\u2014') {
                   el.classList.add('not-found');
+                } else {
+                  foundCount++;
                 }
               }
             });
@@ -762,12 +775,28 @@
                 if (value && value !== 'Non trouv\xE9' && /^[A-G]$/i.test(value)) {
                   el.textContent = value.toUpperCase();
                   el.classList.add(`energy-${value.toUpperCase()}`);
+                  foundCount++;
                 } else {
-                  el.textContent = '--';
+                  el.textContent = '\u2014';
                   el.classList.add('not-found');
                 }
               }
             });
+            const dataStatusEl = document.getElementById('data-status');
+            if (dataStatusEl) {
+              const ratio = foundCount / totalFields;
+              if (ratio >= 0.8) {
+                dataStatusEl.textContent = 'Complet';
+                dataStatusEl.className = 'card-badge success';
+              } else if (ratio >= 0.5) {
+                dataStatusEl.textContent = 'Partiel';
+                dataStatusEl.className = 'card-badge warning';
+              } else {
+                dataStatusEl.textContent = 'Incomplet';
+                dataStatusEl.className = 'card-badge warning';
+              }
+              dataStatusEl.style.display = 'inline-block';
+            }
             prepareAdemeSearch(res);
           } else {
             showErrorPage(

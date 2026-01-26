@@ -510,8 +510,9 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    // Check if we're on a Leboncoin page before trying to inject
     const tabUrl = tabs[0].url || '';
+
+    // Check if we're on a Leboncoin page before trying to inject
     if (!tabUrl.includes('leboncoin.fr')) {
       showErrorPage(
         "Cette extension fonctionne uniquement sur Leboncoin. Rendez-vous sur une annonce de vente ou de location pour l'utiliser."
@@ -541,6 +542,17 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
           }
 
+          // Display extraction time
+          const extractionTimeEl = document.getElementById('extraction-time');
+          if (extractionTimeEl) {
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString('fr-FR', {
+              hour: '2-digit',
+              minute: '2-digit',
+            });
+            extractionTimeEl.textContent = `Extrait à ${timeStr}`;
+          }
+
           // Display Results
           const fields = [
             'city',
@@ -551,14 +563,20 @@ document.addEventListener('DOMContentLoaded', () => {
             'conso_prim',
             'conso_fin',
           ];
+
+          let foundCount = 0;
+          const totalFields = fields.length + 2; // +2 for DPE and GES
+
           fields.forEach((field) => {
             const el = document.getElementById(field);
             if (el) {
               const value = res[field] || 'Non trouvé';
-              el.textContent = value;
+              el.textContent = value === 'Non trouvé' ? '—' : value;
               el.classList.remove('loading', 'not-found');
-              if (value === 'Non trouvé' || value === '--') {
+              if (value === 'Non trouvé' || value === '--' || value === '—') {
                 el.classList.add('not-found');
+              } else {
+                foundCount++;
               }
             }
           });
@@ -583,12 +601,30 @@ document.addEventListener('DOMContentLoaded', () => {
               if (value && value !== 'Non trouvé' && /^[A-G]$/i.test(value)) {
                 el.textContent = value.toUpperCase();
                 el.classList.add(`energy-${value.toUpperCase()}`);
+                foundCount++;
               } else {
-                el.textContent = '--';
+                el.textContent = '—';
                 el.classList.add('not-found');
               }
             }
           });
+
+          // Update data status badge
+          const dataStatusEl = document.getElementById('data-status');
+          if (dataStatusEl) {
+            const ratio = foundCount / totalFields;
+            if (ratio >= 0.8) {
+              dataStatusEl.textContent = 'Complet';
+              dataStatusEl.className = 'card-badge success';
+            } else if (ratio >= 0.5) {
+              dataStatusEl.textContent = 'Partiel';
+              dataStatusEl.className = 'card-badge warning';
+            } else {
+              dataStatusEl.textContent = 'Incomplet';
+              dataStatusEl.className = 'card-badge warning';
+            }
+            dataStatusEl.style.display = 'inline-block';
+          }
 
           // Prepare ADEME Search (Manual)
           prepareAdemeSearch(res);

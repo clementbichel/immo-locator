@@ -28,7 +28,7 @@ describe('Popup UI E2E Tests', () => {
     it('should display the page title', () => {
       const title = document.querySelector('h1');
       expect(title).not.toBeNull();
-      expect(title.textContent).toContain('Annonce Immo Locator');
+      expect(title.textContent).toContain('Immo Locator');
     });
 
     it('should display all data fields', () => {
@@ -50,10 +50,10 @@ describe('Popup UI E2E Tests', () => {
       });
     });
 
-    it('should show loading state for city', () => {
+    it('should show loading state for city with shimmer animation', () => {
       const cityValue = document.getElementById('city');
       expect(cityValue).not.toBeNull();
-      expect(cityValue.textContent).toBe('Chargement...');
+      expect(cityValue.classList.contains('loading')).toBe(true);
     });
 
     it('should have search button initially hidden via CSS', () => {
@@ -132,7 +132,7 @@ describe('Popup UI E2E Tests', () => {
     it('should have button with correct text', () => {
       const button = document.getElementById('search-ademe-btn');
       expect(button).not.toBeNull();
-      expect(button.textContent).toContain('Rechercher dans la base ADEME');
+      expect(button.textContent).toContain('Rechercher le DPE officiel');
     });
 
     it('should have loading indicator with spinner', () => {
@@ -150,16 +150,26 @@ describe('Popup UI E2E Tests', () => {
       );
       expect(popupScript).not.toBeNull();
     });
+
+    it('should have extraction time placeholder in footer', () => {
+      const extractionTime = document.getElementById('extraction-time');
+      expect(extractionTime).not.toBeNull();
+    });
+
+    it('should have data status badge element', () => {
+      const dataStatus = document.getElementById('data-status');
+      expect(dataStatus).not.toBeNull();
+    });
   });
 
   describe('Accessibility', () => {
     it('should have labels for data values', () => {
-      const labels = document.querySelectorAll('.label');
+      const labels = document.querySelectorAll('.data-label');
       expect(labels.length).toBeGreaterThan(0);
     });
 
     it('should have values elements', () => {
-      const values = document.querySelectorAll('.value');
+      const values = document.querySelectorAll('.data-value');
       expect(values.length).toBeGreaterThan(0);
     });
 
@@ -184,18 +194,42 @@ describe('Popup UI E2E Tests', () => {
 
     it('should set correct body width in CSS', () => {
       const styleTag = document.querySelector('style');
-      expect(styleTag.textContent).toContain('width: 360px');
+      expect(styleTag.textContent).toContain('width: 380px');
     });
 
-    it('should have gradient background for body', () => {
+    it('should use CSS custom properties for theming', () => {
       const styleTag = document.querySelector('style');
-      expect(styleTag.textContent).toContain('linear-gradient');
-      expect(styleTag.textContent).toContain('#667eea');
+      expect(styleTag.textContent).toContain(':root');
+      expect(styleTag.textContent).toContain('--bg');
+      expect(styleTag.textContent).toContain('--text-primary');
     });
 
-    it('should have button styles with gradient', () => {
+    it('should have button styles', () => {
       const styleTag = document.querySelector('style');
       expect(styleTag.textContent).toContain('.btn-primary');
+    });
+
+    it('should have shimmer animation for loading state', () => {
+      const styleTag = document.querySelector('style');
+      expect(styleTag.textContent).toContain('@keyframes shimmer');
+    });
+  });
+
+  describe('Error Page', () => {
+    it('should have error page element', () => {
+      const errorPage = document.getElementById('error-page');
+      expect(errorPage).not.toBeNull();
+    });
+
+    it('should have error CTA link', () => {
+      const errorCta = document.getElementById('error-cta');
+      expect(errorCta).not.toBeNull();
+      expect(errorCta.href).toContain('leboncoin.fr');
+    });
+
+    it('should have accepted pages badges', () => {
+      const badges = document.querySelectorAll('.page-badge');
+      expect(badges.length).toBe(2); // Ventes and Locations
     });
   });
 });

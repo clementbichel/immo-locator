@@ -2,153 +2,217 @@
 <html>
   <head>
     <meta charset="utf-8" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
     <style>
+      :root {
+        --bg: #fafafa;
+        --card-bg: #ffffff;
+        --text-primary: #1a1a1a;
+        --text-secondary: #6b7280;
+        --text-tertiary: #9ca3af;
+        --border: #e5e7eb;
+        --border-light: #f3f4f6;
+        --accent: #64748b;
+        --accent-light: #f1f5f9;
+        --success: #10b981;
+        --warning: #f59e0b;
+        --error: #ef4444;
+      }
+
       * {
         box-sizing: border-box;
+        margin: 0;
+        padding: 0;
       }
 
       html {
-        width: 360px;
-        margin: 0;
-        padding: 0;
+        width: 380px;
       }
 
       body {
-        width: 360px;
-        margin: 0;
-        padding: 0;
-        overflow-x: hidden;
-        overflow-y: scroll;
+        width: 380px;
         font-family:
-          -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        min-height: 100%;
+          'Plus Jakarta Sans',
+          -apple-system,
+          sans-serif;
+        background: var(--bg);
+        color: var(--text-primary);
+        font-size: 13px;
+        line-height: 1.5;
+        overflow-x: hidden;
+        overflow-y: auto;
       }
 
       .container {
-        padding: 10px;
+        padding: 16px;
       }
 
-      /* Header */
+      /* ===== HEADER ===== */
       .header {
         display: flex;
         align-items: center;
-        gap: 8px;
-        margin-bottom: 10px;
-        color: white;
+        justify-content: space-between;
+        margin-bottom: 16px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid var(--border-light);
+      }
+
+      .header-left {
+        display: flex;
+        align-items: center;
+        gap: 10px;
       }
 
       .header-icon {
-        font-size: 22px;
+        width: 32px;
+        height: 32px;
+        background: var(--accent-light);
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
       }
 
       .header h1 {
-        font-size: 15px;
-        margin: 0;
+        font-size: 14px;
         font-weight: 600;
+        letter-spacing: -0.3px;
       }
 
-      .header .subtitle {
-        font-size: 11px;
-        opacity: 0.85;
-        margin-top: 1px;
-      }
-
-      /* Cards */
+      /* ===== CARDS ===== */
       .card {
-        background: white;
+        background: var(--card-bg);
+        border: 1px solid var(--border);
         border-radius: 10px;
-        padding: 10px 12px;
-        margin-bottom: 8px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        padding: 14px 16px;
+        margin-bottom: 12px;
+        animation: fadeIn 0.3s ease-out both;
+      }
+
+      .card:nth-child(2) {
+        animation-delay: 0.05s;
+      }
+      .card:nth-child(3) {
+        animation-delay: 0.1s;
+      }
+      .card:nth-child(4) {
+        animation-delay: 0.15s;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .card-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 12px;
       }
 
       .card-title {
         font-size: 11px;
         font-weight: 600;
-        color: #667eea;
+        color: var(--text-secondary);
         text-transform: uppercase;
-        letter-spacing: 0.4px;
-        margin-bottom: 8px;
-        display: flex;
-        align-items: center;
-        gap: 5px;
+        letter-spacing: 0.5px;
       }
 
-      /* Data grid for compact 2-column layout */
+      .card-badge {
+        font-size: 10px;
+        padding: 2px 8px;
+        border-radius: 10px;
+        font-weight: 500;
+      }
+
+      .card-badge.success {
+        background: #ecfdf5;
+        color: #059669;
+      }
+
+      .card-badge.warning {
+        background: #fffbeb;
+        color: #d97706;
+      }
+
+      /* ===== DATA GRID ===== */
       .data-grid {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 0 12px;
+        gap: 8px 20px;
       }
 
-      /* Data rows */
-      .data-row {
+      .data-item {
         display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 4px 0;
-        border-bottom: 1px solid #f0f0f0;
+        flex-direction: column;
+        gap: 2px;
       }
 
-      .data-grid .data-row {
-        border-bottom: none;
-        padding: 3px 0;
-      }
-
-      .data-row:last-child {
-        border-bottom: none;
-        padding-bottom: 0;
-      }
-
-      .data-row:first-of-type {
-        padding-top: 0;
-      }
-
-      .label {
-        font-weight: 500;
-        color: #666;
+      .data-label {
         font-size: 11px;
+        color: var(--text-tertiary);
+        font-weight: 500;
       }
 
-      .value {
+      .data-value {
+        font-size: 14px;
         font-weight: 600;
-        color: #1a1a1a;
-        font-size: 12px;
+        color: var(--text-primary);
       }
 
-      .value.loading {
-        color: #999;
+      .data-value.loading {
+        background: linear-gradient(
+          90deg,
+          var(--border-light) 25%,
+          var(--border) 50%,
+          var(--border-light) 75%
+        );
+        background-size: 200% 100%;
+        animation: shimmer 1.5s infinite;
+        border-radius: 4px;
+        height: 20px;
+        width: 80px;
+      }
+
+      @keyframes shimmer {
+        0% {
+          background-position: 200% 0;
+        }
+        100% {
+          background-position: -200% 0;
+        }
+      }
+
+      .data-value.not-found {
+        color: var(--text-tertiary);
+        font-weight: 400;
         font-style: italic;
-        font-weight: 400;
       }
 
-      .value.not-found {
-        color: #999;
-        font-weight: 400;
-      }
-
-      /* Energy row layout */
-      .energy-row {
-        display: flex;
+      /* ===== ENERGY SECTION ===== */
+      .energy-grid {
+        display: grid;
+        grid-template-columns: auto 1fr;
         gap: 16px;
-        align-items: flex-start;
+        align-items: start;
       }
 
-      .energy-details {
-        flex: 1;
-      }
-
-      .energy-details .data-row {
-        border-bottom: none;
-        padding: 2px 0;
-      }
-
-      /* DPE/GES Badges */
       .energy-badges {
         display: flex;
         gap: 8px;
-        padding: 0;
       }
 
       .energy-badge {
@@ -161,155 +225,174 @@
       .energy-badge-label {
         font-size: 10px;
         font-weight: 600;
-        color: #666;
+        color: var(--text-tertiary);
         text-transform: uppercase;
-        letter-spacing: 0.4px;
+        letter-spacing: 0.3px;
       }
 
       .energy-badge-value {
-        width: 36px;
-        height: 36px;
-        border-radius: 8px;
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
         display: flex;
         align-items: center;
         justify-content: center;
         font-size: 18px;
         font-weight: 700;
         color: white;
-        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+        position: relative;
       }
 
       .energy-badge-value.not-found {
-        background: #e0e0e0;
-        color: #999;
-        font-size: 12px;
-        text-shadow: none;
+        background: var(--border);
+        color: var(--text-tertiary);
+        font-size: 14px;
       }
 
-      /* Energy colors */
+      /* Energy colors - flat, modern */
       .energy-A {
-        background: linear-gradient(135deg, #319834, #28a428);
+        background: #22c55e;
       }
       .energy-B {
-        background: linear-gradient(135deg, #33cc31, #2db82d);
+        background: #84cc16;
       }
       .energy-C {
-        background: linear-gradient(135deg, #9fce35, #8fbc2f);
+        background: #eab308;
       }
       .energy-D {
-        background: linear-gradient(135deg, #fcee34, #e6d92f);
+        background: #f59e0b;
       }
       .energy-E {
-        background: linear-gradient(135deg, #fbcc05, #e6b904);
+        background: #f97316;
       }
       .energy-F {
-        background: linear-gradient(135deg, #f58231, #e0752d);
+        background: #ef4444;
       }
       .energy-G {
-        background: linear-gradient(135deg, #d1251b, #bc2118);
+        background: #dc2626;
       }
 
-      /* ADEME Section */
-      #ademe-section {
-        margin-top: 2px;
+      .energy-details {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
       }
 
+      .energy-detail-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 4px 0;
+        border-bottom: 1px solid var(--border-light);
+      }
+
+      .energy-detail-row:last-child {
+        border-bottom: none;
+      }
+
+      /* ===== ADEME SECTION ===== */
       .ademe-params {
-        background: #f8f9fa;
-        border-radius: 6px;
-        padding: 8px 10px;
-        margin-bottom: 8px;
+        background: var(--bg);
+        border-radius: 8px;
+        padding: 10px 12px;
+        margin-bottom: 12px;
         display: none;
       }
 
       .ademe-params-title {
         font-size: 10px;
         font-weight: 600;
-        color: #666;
-        margin-bottom: 6px;
+        color: var(--text-tertiary);
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+        margin-bottom: 8px;
       }
 
       #params-list {
         list-style: none;
-        padding: 0;
-        margin: 0;
-        font-size: 11px;
-        color: #555;
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 2px 8px;
+        gap: 4px 12px;
+        font-size: 11px;
+        color: var(--text-secondary);
       }
 
       #params-list li {
-        padding: 2px 0;
         display: flex;
         align-items: center;
-        gap: 4px;
-      }
-
-      #params-list li::before {
-        content: '•';
-        color: #667eea;
-        font-weight: bold;
-      }
-
-      /* Button */
-      .btn {
-        width: 100%;
-        padding: 8px 12px;
-        border: none;
-        border-radius: 6px;
-        font-size: 12px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        display: flex;
-        align-items: center;
-        justify-content: center;
         gap: 6px;
       }
 
+      #params-list li::before {
+        content: '';
+        width: 4px;
+        height: 4px;
+        background: var(--accent);
+        border-radius: 50%;
+        flex-shrink: 0;
+      }
+
+      /* ===== BUTTONS ===== */
+      .btn {
+        width: 100%;
+        padding: 10px 16px;
+        border: none;
+        border-radius: 8px;
+        font-size: 13px;
+        font-weight: 600;
+        font-family: inherit;
+        cursor: pointer;
+        transition: all 0.15s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+      }
+
       .btn-primary {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: var(--text-primary);
         color: white;
-        box-shadow: 0 2px 10px rgba(102, 126, 234, 0.4);
       }
 
       .btn-primary:hover {
+        background: #374151;
         transform: translateY(-1px);
-        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.5);
+      }
+
+      .btn-primary:active {
+        transform: translateY(0);
       }
 
       .btn-primary:disabled {
-        opacity: 0.7;
+        background: var(--border);
+        color: var(--text-tertiary);
         cursor: not-allowed;
         transform: none;
       }
 
       #search-ademe-btn {
         display: none;
-        margin-bottom: 8px;
+        margin-bottom: 12px;
       }
 
-      /* Loading */
+      /* ===== LOADING ===== */
       #ademe-loading {
         display: none;
         text-align: center;
-        padding: 10px;
-        color: #666;
-        font-size: 11px;
+        padding: 16px;
+        color: var(--text-secondary);
+        font-size: 12px;
       }
 
       .loading-spinner {
         display: inline-block;
-        width: 14px;
-        height: 14px;
-        border: 2px solid #e0e0e0;
-        border-top-color: #667eea;
+        width: 16px;
+        height: 16px;
+        border: 2px solid var(--border);
+        border-top-color: var(--accent);
         border-radius: 50%;
         animation: spin 0.8s linear infinite;
-        margin-right: 6px;
+        margin-right: 8px;
         vertical-align: middle;
       }
 
@@ -319,46 +402,68 @@
         }
       }
 
-      /* Results */
+      /* ===== RESULTS ===== */
       #ademe-results {
-        font-size: 11px;
+        font-size: 12px;
       }
 
       #ademe-results p {
         margin: 0;
-        padding: 8px 10px;
-        background: #f8f9fa;
-        border-radius: 6px;
-        color: #666;
+        padding: 12px;
+        background: var(--bg);
+        border-radius: 8px;
+        color: var(--text-secondary);
         text-align: center;
       }
 
       #ademe-results ul {
         list-style: none;
-        padding: 0;
-        margin: 0;
       }
 
       #ademe-results > ul > li {
-        background: #f8f9fa;
-        border-radius: 6px;
-        padding: 8px 10px;
-        margin-bottom: 6px;
+        background: var(--bg);
+        border-radius: 8px;
+        padding: 12px;
+        margin-bottom: 8px;
+        border: 1px solid var(--border-light);
+        transition: border-color 0.15s;
+      }
+
+      #ademe-results > ul > li:hover {
+        border-color: var(--border);
       }
 
       #ademe-results > ul > li:last-child {
         margin-bottom: 0;
       }
 
-      /* Error */
+      /* ===== EMPTY STATE ===== */
+      .empty-state {
+        text-align: center;
+        padding: 20px;
+        color: var(--text-tertiary);
+      }
+
+      .empty-state-icon {
+        font-size: 32px;
+        margin-bottom: 8px;
+        opacity: 0.5;
+      }
+
+      .empty-state-text {
+        font-size: 12px;
+      }
+
+      /* ===== ERROR (small) ===== */
       .error {
-        background: #ffebee;
-        color: #c62828;
-        padding: 8px 10px;
-        border-radius: 6px;
-        font-size: 11px;
+        background: #fef2f2;
+        color: #dc2626;
+        padding: 10px 12px;
+        border-radius: 8px;
+        font-size: 12px;
         text-align: center;
         display: none;
+        border: 1px solid #fecaca;
       }
 
       /* ===== ERROR PAGE STATE ===== */
@@ -368,186 +473,97 @@
         align-items: center;
         justify-content: center;
         text-align: center;
-        padding: 24px 20px;
-        min-height: 380px;
-        color: white;
+        padding: 40px 24px;
+        min-height: 400px;
         animation: fadeIn 0.4s ease-out;
       }
 
-      @keyframes fadeIn {
-        from {
-          opacity: 0;
-          transform: translateY(10px);
-        }
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
+      body.show-error-page .main-content {
+        display: none;
       }
 
-      .error-page.visible {
+      body.show-error-page .error-page {
         display: flex;
       }
 
-      /* House illustration */
       .error-illustration {
         position: relative;
-        width: 120px;
-        height: 120px;
-        margin-bottom: 20px;
+        width: 80px;
+        height: 80px;
+        margin-bottom: 24px;
       }
 
-      .house-icon {
-        position: relative;
-        width: 100%;
-        height: 100%;
+      .error-icon-circle {
+        width: 80px;
+        height: 80px;
+        background: var(--border-light);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 36px;
       }
 
-      /* Isometric house with CSS */
-      .house-base {
+      .error-badge {
         position: absolute;
-        bottom: 10px;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 70px;
-        height: 50px;
-        background: linear-gradient(145deg, #fff 0%, #e8e8f0 100%);
-        border-radius: 4px;
-        box-shadow:
-          0 4px 0 #c4c4d4,
-          0 8px 20px rgba(0, 0, 0, 0.2);
-      }
-
-      .house-roof {
-        position: absolute;
-        bottom: 55px;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 0;
-        height: 0;
-        border-left: 45px solid transparent;
-        border-right: 45px solid transparent;
-        border-bottom: 35px solid #ff6b6b;
-        filter: drop-shadow(0 -2px 4px rgba(0, 0, 0, 0.1));
-      }
-
-      .house-door {
-        position: absolute;
-        bottom: 10px;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 18px;
+        bottom: -4px;
+        right: -4px;
+        width: 28px;
         height: 28px;
-        background: linear-gradient(180deg, #667eea 0%, #5a6fd6 100%);
-        border-radius: 2px 2px 0 0;
+        background: var(--error);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 14px;
+        font-weight: 700;
+        border: 3px solid var(--bg);
+        animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.2s both;
       }
 
-      .house-window {
-        position: absolute;
-        width: 14px;
-        height: 14px;
-        background: linear-gradient(135deg, #a8d4ff 0%, #7eb8e8 100%);
-        border: 2px solid #fff;
-        border-radius: 2px;
-      }
-
-      .house-window.left {
-        bottom: 32px;
-        left: calc(50% - 28px);
-      }
-
-      .house-window.right {
-        bottom: 32px;
-        left: calc(50% + 14px);
-      }
-
-      /* X mark overlay */
-      .error-x {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        width: 90px;
-        height: 90px;
-        animation: stampIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.2s both;
-      }
-
-      @keyframes stampIn {
-        0% {
-          transform: translate(-50%, -50%) scale(2) rotate(-20deg);
+      @keyframes popIn {
+        from {
+          transform: scale(0);
           opacity: 0;
         }
-        60% {
-          transform: translate(-50%, -50%) scale(0.9) rotate(5deg);
-        }
-        100% {
-          transform: translate(-50%, -50%) scale(1) rotate(-8deg);
+        to {
+          transform: scale(1);
           opacity: 1;
         }
       }
 
-      .error-x::before,
-      .error-x::after {
-        content: '';
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        width: 80px;
-        height: 8px;
-        background: #ff6b6b;
-        border-radius: 4px;
-        box-shadow: 0 2px 8px rgba(255, 107, 107, 0.4);
-      }
-
-      .error-x::before {
-        transform: translate(-50%, -50%) rotate(45deg);
-      }
-
-      .error-x::after {
-        transform: translate(-50%, -50%) rotate(-45deg);
-      }
-
-      /* Error text content */
       .error-title {
-        font-family: 'Georgia', 'Times New Roman', serif;
-        font-size: 22px;
+        font-size: 18px;
         font-weight: 700;
-        margin: 0 0 8px 0;
-        letter-spacing: -0.5px;
-        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        color: var(--text-primary);
+        margin-bottom: 8px;
+        letter-spacing: -0.3px;
       }
 
       .error-subtitle {
         font-size: 13px;
-        opacity: 0.9;
-        margin: 0 0 6px 0;
-        line-height: 1.5;
+        color: var(--text-secondary);
+        margin-bottom: 24px;
+        max-width: 260px;
+        line-height: 1.6;
       }
 
-      .error-detail {
-        font-size: 11px;
-        opacity: 0.75;
-        margin: 0 0 24px 0;
-        max-width: 280px;
-        line-height: 1.5;
-      }
-
-      /* Accepted pages badge */
       .accepted-pages {
-        background: rgba(255, 255, 255, 0.15);
-        backdrop-filter: blur(10px);
+        background: var(--card-bg);
+        border: 1px solid var(--border);
         border-radius: 10px;
         padding: 12px 16px;
         margin-bottom: 20px;
-        border: 1px solid rgba(255, 255, 255, 0.2);
       }
 
       .accepted-pages-title {
         font-size: 10px;
         text-transform: uppercase;
-        letter-spacing: 1px;
-        opacity: 0.8;
+        letter-spacing: 0.5px;
+        color: var(--text-tertiary);
         margin-bottom: 8px;
+        font-weight: 600;
       }
 
       .accepted-pages-list {
@@ -557,11 +573,12 @@
       }
 
       .page-badge {
-        background: rgba(255, 255, 255, 0.2);
-        padding: 4px 10px;
+        background: var(--accent-light);
+        color: var(--accent);
+        padding: 4px 12px;
         border-radius: 20px;
         font-size: 11px;
-        font-weight: 500;
+        font-weight: 600;
         display: flex;
         align-items: center;
         gap: 4px;
@@ -570,64 +587,52 @@
       .page-badge::before {
         content: '✓';
         font-size: 10px;
-        opacity: 0.8;
       }
 
-      /* CTA Button */
       .error-cta {
         display: inline-flex;
         align-items: center;
         gap: 8px;
-        background: white;
-        color: #667eea;
+        background: var(--text-primary);
+        color: white;
         padding: 10px 20px;
-        border-radius: 25px;
+        border-radius: 8px;
         font-size: 13px;
         font-weight: 600;
         text-decoration: none;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-        transition: all 0.2s ease;
+        transition: all 0.15s ease;
       }
 
       .error-cta:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+        background: #374151;
+        transform: translateY(-1px);
       }
 
-      .error-cta-icon {
-        font-size: 16px;
+      /* ===== FOOTER ===== */
+      .footer {
+        text-align: center;
+        padding: 8px 16px 16px;
+        font-size: 10px;
+        color: var(--text-tertiary);
       }
 
-      /* Hide main content when error page is shown */
-      body.show-error-page .main-content {
-        display: none;
-      }
-
-      body.show-error-page .error-page {
-        display: flex;
+      .footer span {
+        opacity: 0.7;
       }
     </style>
   </head>
 
   <body>
-    <!-- Error Page (shown on invalid pages) -->
+    <!-- Error Page -->
     <div class="error-page" id="error-page">
       <div class="error-illustration">
-        <div class="house-icon">
-          <div class="house-roof"></div>
-          <div class="house-base"></div>
-          <div class="house-door"></div>
-          <div class="house-window left"></div>
-          <div class="house-window right"></div>
-        </div>
-        <div class="error-x"></div>
+        <div class="error-icon-circle">🏠</div>
+        <div class="error-badge">✕</div>
       </div>
 
-      <h2 class="error-title">Mauvaise adresse !</h2>
-      <p class="error-subtitle">Cette page n'est pas une annonce immobilière</p>
-      <p class="error-detail" id="error-page-detail">
-        Rendez-vous sur une annonce de vente ou de location sur Leboncoin pour utiliser cette
-        extension.
+      <h2 class="error-title">Page non compatible</h2>
+      <p class="error-subtitle" id="error-page-detail">
+        Cette extension fonctionne uniquement sur les annonces immobilières Leboncoin.
       </p>
 
       <div class="accepted-pages">
@@ -644,88 +649,91 @@
         class="error-cta"
         id="error-cta"
       >
-        <span class="error-cta-icon">🏠</span>
-        Voir les annonces
+        Voir les annonces →
       </a>
     </div>
 
+    <!-- Main Content -->
     <div class="container main-content">
       <!-- Header -->
-      <div class="header">
-        <span class="header-icon">🏠</span>
-        <div>
-          <h1>Annonce Immo Locator</h1>
-          <div class="subtitle">Extraction des données immobilières</div>
+      <header class="header">
+        <div class="header-left">
+          <div class="header-icon">🏠</div>
+          <h1>Immo Locator</h1>
         </div>
-      </div>
+      </header>
 
-      <!-- Property Info Card -->
+      <!-- Property Card -->
       <div class="card">
-        <div class="card-title">📍 Bien immobilier</div>
+        <div class="card-header">
+          <span class="card-title">Bien immobilier</span>
+          <span class="card-badge success" id="data-status" style="display: none">Complet</span>
+        </div>
         <div class="data-grid">
-          <div class="data-row">
-            <span class="label">Ville</span>
-            <span class="value loading" id="city">Chargement...</span>
+          <div class="data-item">
+            <span class="data-label">Ville</span>
+            <span class="data-value loading" id="city"></span>
           </div>
-          <div class="data-row">
-            <span class="label">CP</span>
-            <span class="value loading" id="zipcode">Chargement...</span>
+          <div class="data-item">
+            <span class="data-label">Code postal</span>
+            <span class="data-value loading" id="zipcode"></span>
           </div>
-          <div class="data-row">
-            <span class="label">Surface</span>
-            <span class="value" id="surface">--</span>
+          <div class="data-item">
+            <span class="data-label">Surface habitable</span>
+            <span class="data-value" id="surface">—</span>
           </div>
-          <div class="data-row">
-            <span class="label">Terrain</span>
-            <span class="value" id="terrain">--</span>
+          <div class="data-item">
+            <span class="data-label">Terrain</span>
+            <span class="data-value" id="terrain">—</span>
           </div>
         </div>
       </div>
 
       <!-- Energy Card -->
       <div class="card">
-        <div class="card-title">⚡ Performance énergétique</div>
-        <div class="energy-row">
+        <div class="card-header">
+          <span class="card-title">Performance énergétique</span>
+        </div>
+        <div class="energy-grid">
           <div class="energy-badges">
             <div class="energy-badge">
               <span class="energy-badge-label">DPE</span>
-              <div class="energy-badge-value not-found" id="dpe">--</div>
+              <div class="energy-badge-value not-found" id="dpe">—</div>
             </div>
             <div class="energy-badge">
               <span class="energy-badge-label">GES</span>
-              <div class="energy-badge-value not-found" id="ges">--</div>
+              <div class="energy-badge-value not-found" id="ges">—</div>
             </div>
           </div>
           <div class="energy-details">
-            <div class="data-row">
-              <span class="label">Date diag.</span>
-              <span class="value" id="date_diag">--</span>
+            <div class="energy-detail-row">
+              <span class="data-label">Date diagnostic</span>
+              <span class="data-value" id="date_diag">—</span>
             </div>
-            <div class="data-row">
-              <span class="label">Primaire</span>
-              <span class="value" id="conso_prim">--</span>
+            <div class="energy-detail-row">
+              <span class="data-label">Conso. primaire</span>
+              <span class="data-value" id="conso_prim">—</span>
             </div>
-            <div class="data-row">
-              <span class="label">Finale</span>
-              <span class="value" id="conso_fin">--</span>
+            <div class="energy-detail-row">
+              <span class="data-label">Conso. finale</span>
+              <span class="data-value" id="conso_fin">—</span>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- ADEME Section -->
+      <!-- ADEME Card -->
       <div class="card" id="ademe-section">
-        <div class="card-title">🔍 Recherche ADEME</div>
+        <div class="card-header">
+          <span class="card-title">Recherche ADEME</span>
+        </div>
 
         <div class="ademe-params" id="ademe-params">
-          <div class="ademe-params-title">Paramètres de recherche</div>
+          <div class="ademe-params-title">Critères de recherche</div>
           <ul id="params-list"></ul>
         </div>
 
-        <button class="btn btn-primary" id="search-ademe-btn">
-          <span>🔎</span>
-          Rechercher dans la base ADEME
-        </button>
+        <button class="btn btn-primary" id="search-ademe-btn">Rechercher le DPE officiel</button>
 
         <div id="ademe-loading">
           <span class="loading-spinner"></span>
@@ -735,8 +743,13 @@
         <div id="ademe-results"></div>
       </div>
 
-      <!-- Error -->
+      <!-- Error (small) -->
       <div id="error-msg" class="error"></div>
+
+      <!-- Footer -->
+      <div class="footer">
+        <span id="extraction-time"></span>
+      </div>
     </div>
 
     <script src="popup.js"></script>
