@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <!-- Pin shape -->
+  <path d="M64 8 C35 8 12 31 12 58 C12 85 64 120 64 120 C64 120 116 85 116 58 C116 31 93 8 64 8 Z" fill="#ef4444"/>
+  <!-- Inner circle -->
+  <circle cx="64" cy="54" r="32" fill="white"/>
+  <!-- House inside -->
+  <path d="M44 58 L64 40 L84 58 L84 72 L44 72 Z" fill="#ef4444"/>
+</svg>

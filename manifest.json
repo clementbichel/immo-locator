@@ -1,17 +1,22 @@
 {
   "manifest_version": 3,
-  "name": "Leboncoin Description Viewer",
+  "name": "Immo Locator",
   "version": "1.0",
-  "description": "Affiche la description d'une annonce Leboncoin dans une popup.",
+  "description": "Extrait les données immobilières des annonces Leboncoin et recherche le DPE officiel dans la base ADEME.",
   "permissions": ["activeTab", "scripting"],
   "action": {
     "default_popup": "popup.html",
     "default_icon": {
+      "16": "icons/icon-16.png",
+      "32": "icons/icon-32.png",
       "48": "icons/icon-48.png"
     }
   },
   "icons": {
-    "48": "icons/icon-48.png"
+    "16": "icons/icon-16.png",
+    "32": "icons/icon-32.png",
+    "48": "icons/icon-48.png",
+    "128": "icons/icon-128.png"
   },
   "content_security_policy": {
     "extension_pages": "script-src 'self'; object-src 'self'; connect-src https://data.ademe.fr https://www.google.com"
