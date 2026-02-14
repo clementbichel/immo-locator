@@ -290,8 +290,8 @@
         border-bottom: none;
       }
 
-      /* ===== ADEME SECTION ===== */
-      #ademe-section {
+      /* ===== LOCATION SECTION ===== */
+      #location-section {
         margin-top: 4px;
       }
 
@@ -333,13 +333,13 @@
         transform: none;
       }
 
-      #search-ademe-btn {
+      #search-location-btn {
         display: none;
         margin-bottom: 12px;
       }
 
       /* ===== LOADING ===== */
-      #ademe-loading {
+      #location-loading {
         display: none;
         text-align: center;
         padding: 16px;
@@ -366,11 +366,11 @@
       }
 
       /* ===== RESULTS ===== */
-      #ademe-results {
+      #location-results {
         font-size: 12px;
       }
 
-      #ademe-results p {
+      #location-results p {
         margin: 0;
         padding: 12px;
         background: var(--bg);
@@ -379,11 +379,11 @@
         text-align: center;
       }
 
-      #ademe-results ul {
+      #location-results ul {
         list-style: none;
       }
 
-      #ademe-results > ul > li {
+      #location-results > ul > li {
         background: var(--bg);
         border-radius: 8px;
         padding: 12px;
@@ -392,11 +392,11 @@
         transition: border-color 0.15s;
       }
 
-      #ademe-results > ul > li:hover {
+      #location-results > ul > li:hover {
         border-color: var(--border);
       }
 
-      #ademe-results > ul > li:last-child {
+      #location-results > ul > li:last-child {
         margin-bottom: 0;
       }
 
@@ -673,16 +673,16 @@
         </div>
       </div>
 
-      <!-- ADEME Search -->
-      <div id="ademe-section">
-        <button class="btn btn-primary" id="search-ademe-btn">Rechercher le DPE officiel</button>
+      <!-- LOCATION Search -->
+      <div id="location-section">
+        <button class="btn btn-primary" id="search-location-btn">Rechercher le DPE officiel</button>
 
-        <div id="ademe-loading">
+        <div id="location-loading">
           <span class="loading-spinner"></span>
           Recherche en cours...
         </div>
 
-        <div id="ademe-results"></div>
+        <div id="location-results"></div>
       </div>
 
       <!-- Error (small) -->

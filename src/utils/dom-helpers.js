@@ -72,13 +72,13 @@ export function setTextContent(element, text) {
 }
 
 /**
- * Create an ADEME result item element
- * @param {Object} item - ADEME result item
+ * Create an location result item element
+ * @param {Object} item - location result item
  * @param {string} mapsLink - Google Maps link
  * @param {string} scoreColor - Score badge color
  * @returns {HTMLLIElement}
  */
-export function createAdemeResultItem(item, mapsLink, scoreColor) {
+export function createLocationResultItem(item, mapsLink, scoreColor) {
   const li = createElement('li', '', {
     style: {
       marginBottom: '12px',
@@ -141,13 +141,13 @@ export function createAdemeResultItem(item, mapsLink, scoreColor) {
 }
 
 /**
- * Create the ADEME results list
- * @param {Array} results - Array of ADEME results with scores
+ * Create the location results list
+ * @param {Array} results - Array of location results with scores
  * @param {Function} getMapsLink - Function to get Google Maps link
  * @param {Function} getScoreColor - Function to get score color
  * @returns {HTMLElement}
  */
-export function createAdemeResultsList(results, getMapsLink, getScoreColor) {
+export function createLocationResultsList(results, getMapsLink, getScoreColor) {
   const container = document.createDocumentFragment();
 
   const title = createElement('p');
@@ -166,7 +166,7 @@ export function createAdemeResultsList(results, getMapsLink, getScoreColor) {
     const address = item.address || 'Adresse inconnue';
     const mapsLink = getMapsLink(address);
     const scoreColor = getScoreColor(item.score);
-    const li = createAdemeResultItem(item, mapsLink, scoreColor);
+    const li = createLocationResultItem(item, mapsLink, scoreColor);
     ul.appendChild(li);
   });
 

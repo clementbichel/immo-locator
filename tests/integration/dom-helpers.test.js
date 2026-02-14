@@ -6,8 +6,8 @@ import {
   createMessage,
   clearElement,
   setTextContent,
-  createAdemeResultItem,
-  createAdemeResultsList,
+  createLocationResultItem,
+  createLocationResultsList,
 } from '../../src/utils/dom-helpers.js';
 
 describe('dom-helpers', () => {
@@ -119,7 +119,7 @@ describe('dom-helpers', () => {
     });
   });
 
-  describe('createAdemeResultItem', () => {
+  describe('createLocationResultItem', () => {
     it('should create a list item with address and score', () => {
       const item = {
         address: '15 Rue Test, 75001 Paris',
@@ -128,7 +128,7 @@ describe('dom-helpers', () => {
       const mapsLink = 'https://maps.google.com/?q=test';
       const scoreColor = 'green';
 
-      const li = createAdemeResultItem(item, mapsLink, scoreColor);
+      const li = createLocationResultItem(item, mapsLink, scoreColor);
 
       expect(li.tagName).toBe('LI');
       expect(li.textContent).toContain('15 Rue Test, 75001 Paris');
@@ -142,18 +142,18 @@ describe('dom-helpers', () => {
         score: 70,
       };
 
-      const li = createAdemeResultItem(item, 'https://maps.google.com', 'orange');
+      const li = createLocationResultItem(item, 'https://maps.google.com', 'orange');
       expect(li.textContent).toContain('Paris');
     });
 
     it('should show "Adresse inconnue" when no address is available', () => {
       const item = { score: 50 };
-      const li = createAdemeResultItem(item, 'https://maps.google.com', 'red');
+      const li = createLocationResultItem(item, 'https://maps.google.com', 'red');
       expect(li.textContent).toContain('Adresse inconnue');
     });
   });
 
-  describe('createAdemeResultsList', () => {
+  describe('createLocationResultsList', () => {
     it('should create a results list', () => {
       const results = [
         { address: 'Address 1', score: 90 },
@@ -162,7 +162,7 @@ describe('dom-helpers', () => {
       const getMapsLink = (addr) => `https://maps.google.com/?q=${encodeURIComponent(addr)}`;
       const getScoreColor = (score) => (score >= 80 ? 'green' : 'orange');
 
-      const fragment = createAdemeResultsList(results, getMapsLink, getScoreColor);
+      const fragment = createLocationResultsList(results, getMapsLink, getScoreColor);
 
       // Append to document to query
       const container = document.createElement('div');
@@ -173,7 +173,7 @@ describe('dom-helpers', () => {
     });
 
     it('should handle empty results', () => {
-      const fragment = createAdemeResultsList(
+      const fragment = createLocationResultsList(
         [],
         () => '',
         () => 'gray'

@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Immo Locator",
   "version": "1.0",
-  "description": "Extrait les données immobilières des annonces Leboncoin et recherche le DPE officiel dans la base ADEME.",
+  "description": "Extrait les données immobilières des annonces Leboncoin et recherche le DPE officiel.",
   "permissions": ["activeTab", "scripting"],
   "action": {
     "default_popup": "popup.html",

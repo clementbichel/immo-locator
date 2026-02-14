@@ -1,7 +1,7 @@
 {
   "name": "annonce-immo-locator",
   "version": "1.0.0",
-  "description": "Chrome Extension for extracting real estate data from Leboncoin and cross-referencing with ADEME",
+  "description": "Chrome Extension for extracting real estate data from Leboncoin and cross-referencing location data",
   "type": "module",
   "scripts": {
     "test": "vitest",

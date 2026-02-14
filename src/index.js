@@ -3,4 +3,4 @@ export * from './utils/url-validator.js';
 export * from './utils/parsers.js';
 export * from './utils/score-calculator.js';
 export * from './extractors/next-data-extractor.js';
-export * from './api/ademe-client.js';
+export * from './api/location-client.js';

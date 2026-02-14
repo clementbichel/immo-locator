@@ -3,9 +3,9 @@ import {
   validateSearchData,
   buildSearchPayload,
   getGoogleMapsLink,
-} from '../../src/api/ademe-client.js';
+} from '../../src/api/location-client.js';
 
-describe('ademe-client (backend proxy)', () => {
+describe('location-client (backend proxy)', () => {
   describe('validateSearchData', () => {
     it('should return valid for complete data', () => {
       const data = {

@@ -2,8 +2,8 @@
 globalThis.browser ??= globalThis.chrome;
 
 import { getScoreColor } from './utils/score-calculator.js';
-import { validateSearchData, searchLocation, getGoogleMapsLink } from './api/ademe-client.js';
-import { clearElement, createMessage, createAdemeResultsList } from './utils/dom-helpers.js';
+import { validateSearchData, searchLocation, getGoogleMapsLink } from './api/location-client.js';
+import { clearElement, createMessage, createLocationResultsList } from './utils/dom-helpers.js';
 import { getErrorMessage, ERROR_CODES } from './utils/error-messages.js';
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -371,13 +371,13 @@ document.addEventListener('DOMContentLoaded', () => {
     return data;
   }
 
-  // Function to prepare ADEME Search (Manual Trigger)
-  function prepareAdemeSearch(data) {
-    const searchBtn = document.getElementById('search-ademe-btn');
-    const ademeResults = document.getElementById('ademe-results');
+  // Function to prepare Location Search (Manual Trigger)
+  function prepareLocationSearch(data) {
+    const searchBtn = document.getElementById('search-location-btn');
+    const locationResults = document.getElementById('location-results');
 
     // Reset
-    clearElement(ademeResults);
+    clearElement(locationResults);
     searchBtn.style.display = 'none';
 
     // Validate data
@@ -388,55 +388,55 @@ document.addEventListener('DOMContentLoaded', () => {
         '#999'
       );
       msg.style.fontSize = '12px';
-      ademeResults.appendChild(msg);
+      locationResults.appendChild(msg);
       return;
     }
 
     // Show Button
     searchBtn.style.display = 'block';
-    searchBtn.onclick = () => executeAdemeSearch(data);
+    searchBtn.onclick = () => executeLocationSearch(data);
   }
 
-  async function executeAdemeSearch(data) {
-    const ademeLoading = document.getElementById('ademe-loading');
-    const ademeResults = document.getElementById('ademe-results');
-    const searchBtn = document.getElementById('search-ademe-btn');
+  async function executeLocationSearch(data) {
+    const locationLoading = document.getElementById('location-loading');
+    const locationResults = document.getElementById('location-results');
+    const searchBtn = document.getElementById('search-location-btn');
 
     searchBtn.disabled = true;
     searchBtn.textContent = 'Recherche en cours...';
-    ademeLoading.style.display = 'block';
-    clearElement(ademeResults);
+    locationLoading.style.display = 'block';
+    clearElement(locationResults);
 
     try {
       const result = await searchLocation(data);
 
-      ademeLoading.style.display = 'none';
+      locationLoading.style.display = 'none';
       searchBtn.textContent = 'Lancer la recherche';
       searchBtn.disabled = false;
 
       if (result.results && result.results.length > 0) {
-        const resultsList = createAdemeResultsList(
+        const resultsList = createLocationResultsList(
           result.results,
           getGoogleMapsLink,
           getScoreColor
         );
-        ademeResults.appendChild(resultsList);
+        locationResults.appendChild(resultsList);
       } else {
-        ademeResults.appendChild(
+        locationResults.appendChild(
           createMessage('Aucun DPE correspondant trouvé avec ces critères stricts.')
         );
       }
     } catch (error) {
       console.error('API Error:', error);
-      ademeLoading.style.display = 'none';
+      locationLoading.style.display = 'none';
       searchBtn.textContent = 'Lancer la recherche';
       searchBtn.disabled = false;
-      clearElement(ademeResults);
+      clearElement(locationResults);
       const errorMessage =
         error.code && ERROR_CODES[error.code]
           ? getErrorMessage(error.code)
           : error.message || 'Erreur lors de la recherche.';
-      ademeResults.appendChild(createMessage(errorMessage, 'red'));
+      locationResults.appendChild(createMessage(errorMessage, 'red'));
     }
   }
 
@@ -551,8 +551,8 @@ document.addEventListener('DOMContentLoaded', () => {
             dataStatusEl.style.display = 'inline-block';
           }
 
-          // Prepare ADEME Search (Manual)
-          prepareAdemeSearch(res);
+          // Prepare Location Search (Manual)
+          prepareLocationSearch(res);
         } else {
           showErrorPage(
             "Données non trouvées sur cette page. Assurez-vous d'être sur une annonce immobilière."

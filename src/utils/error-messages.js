@@ -30,7 +30,7 @@ export const ERROR_MESSAGES = {
   [ERROR_CODES.NETWORK_TIMEOUT]:
     'La connexion a expiré. Vérifiez votre connexion internet et réessayez.',
   [ERROR_CODES.NETWORK_ERROR]: 'Erreur de connexion. Vérifiez votre connexion internet.',
-  [ERROR_CODES.API_ERROR]: "Erreur lors de la communication avec l'API ADEME.",
+  [ERROR_CODES.API_ERROR]: "Erreur lors de la communication avec l'API.",
 
   // Data extraction errors
   [ERROR_CODES.INVALID_PAGE]:

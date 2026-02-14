@@ -7,7 +7,7 @@
     return 'red';
   }
 
-  // src/api/ademe-client.js
+  // src/api/location-client.js
   var API_BASE_URL = 'http://vps-9f0f5451.vps.ovh.net';
   function validateSearchData(data) {
     const missing = [];
@@ -94,7 +94,7 @@
       element.removeChild(element.firstChild);
     }
   }
-  function createAdemeResultItem(item, mapsLink, scoreColor) {
+  function createLocationResultItem(item, mapsLink, scoreColor) {
     const li = createElement('li', '', {
       style: {
         marginBottom: '12px',
@@ -143,7 +143,7 @@
     li.appendChild(link);
     return li;
   }
-  function createAdemeResultsList(results, getMapsLink, getScoreColor2) {
+  function createLocationResultsList(results, getMapsLink, getScoreColor2) {
     const container = document.createDocumentFragment();
     const title = createElement('p');
     const strong = createElement('strong', 'Correspondances trouv\xE9es :');
@@ -159,7 +159,7 @@
       const address = item.address || 'Adresse inconnue';
       const mapsLink = getMapsLink(address);
       const scoreColor = getScoreColor2(item.score);
-      const li = createAdemeResultItem(item, mapsLink, scoreColor);
+      const li = createLocationResultItem(item, mapsLink, scoreColor);
       ul.appendChild(li);
     });
     container.appendChild(ul);
@@ -191,7 +191,7 @@
     [ERROR_CODES.NETWORK_TIMEOUT]:
       'La connexion a expir\xE9. V\xE9rifiez votre connexion internet et r\xE9essayez.',
     [ERROR_CODES.NETWORK_ERROR]: 'Erreur de connexion. V\xE9rifiez votre connexion internet.',
-    [ERROR_CODES.API_ERROR]: "Erreur lors de la communication avec l'API ADEME.",
+    [ERROR_CODES.API_ERROR]: "Erreur lors de la communication avec l'API.",
     // Data extraction errors
     [ERROR_CODES.INVALID_PAGE]:
       'Cette extension ne fonctionne que pour les ventes immobili\xE8res et les locations.',
@@ -490,10 +490,10 @@
       }
       return data;
     }
-    function prepareAdemeSearch(data) {
-      const searchBtn = document.getElementById('search-ademe-btn');
-      const ademeResults = document.getElementById('ademe-results');
-      clearElement(ademeResults);
+    function prepareLocationSearch(data) {
+      const searchBtn = document.getElementById('search-location-btn');
+      const locationResults = document.getElementById('location-results');
+      clearElement(locationResults);
       searchBtn.style.display = 'none';
       const validation = validateSearchData(data);
       if (!validation.isValid) {
@@ -502,48 +502,48 @@
           '#999'
         );
         msg.style.fontSize = '12px';
-        ademeResults.appendChild(msg);
+        locationResults.appendChild(msg);
         return;
       }
       searchBtn.style.display = 'block';
-      searchBtn.onclick = () => executeAdemeSearch(data);
+      searchBtn.onclick = () => executeLocationSearch(data);
     }
-    async function executeAdemeSearch(data) {
-      const ademeLoading = document.getElementById('ademe-loading');
-      const ademeResults = document.getElementById('ademe-results');
-      const searchBtn = document.getElementById('search-ademe-btn');
+    async function executeLocationSearch(data) {
+      const locationLoading = document.getElementById('location-loading');
+      const locationResults = document.getElementById('location-results');
+      const searchBtn = document.getElementById('search-location-btn');
       searchBtn.disabled = true;
       searchBtn.textContent = 'Recherche en cours...';
-      ademeLoading.style.display = 'block';
-      clearElement(ademeResults);
+      locationLoading.style.display = 'block';
+      clearElement(locationResults);
       try {
         const result = await searchLocation(data);
-        ademeLoading.style.display = 'none';
+        locationLoading.style.display = 'none';
         searchBtn.textContent = 'Lancer la recherche';
         searchBtn.disabled = false;
         if (result.results && result.results.length > 0) {
-          const resultsList = createAdemeResultsList(
+          const resultsList = createLocationResultsList(
             result.results,
             getGoogleMapsLink,
             getScoreColor
           );
-          ademeResults.appendChild(resultsList);
+          locationResults.appendChild(resultsList);
         } else {
-          ademeResults.appendChild(
+          locationResults.appendChild(
             createMessage('Aucun DPE correspondant trouv\xE9 avec ces crit\xE8res stricts.')
           );
         }
       } catch (error) {
         console.error('API Error:', error);
-        ademeLoading.style.display = 'none';
+        locationLoading.style.display = 'none';
         searchBtn.textContent = 'Lancer la recherche';
         searchBtn.disabled = false;
-        clearElement(ademeResults);
+        clearElement(locationResults);
         const errorMessage =
           error.code && ERROR_CODES[error.code]
             ? getErrorMessage(error.code)
             : error.message || 'Erreur lors de la recherche.';
-        ademeResults.appendChild(createMessage(errorMessage, 'red'));
+        locationResults.appendChild(createMessage(errorMessage, 'red'));
       }
     }
     browser.tabs.query({ active: true, currentWindow: true }, (tabs) => {
@@ -639,7 +639,7 @@
               }
               dataStatusEl.style.display = 'inline-block';
             }
-            prepareAdemeSearch(res);
+            prepareLocationSearch(res);
           } else {
             showErrorPage(
               "Donn\xE9es non trouv\xE9es sur cette page. Assurez-vous d'\xEAtre sur une annonce immobili\xE8re."

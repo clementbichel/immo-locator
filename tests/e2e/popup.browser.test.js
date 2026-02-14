@@ -57,11 +57,11 @@ describe('Popup UI E2E Tests', () => {
     });
 
     it('should have search button initially hidden via CSS', () => {
-      const searchBtn = document.getElementById('search-ademe-btn');
+      const searchBtn = document.getElementById('search-location-btn');
       expect(searchBtn).not.toBeNull();
       // Check CSS class or computed style
       const styleTag = document.querySelector('style');
-      expect(styleTag.textContent).toContain('#search-ademe-btn');
+      expect(styleTag.textContent).toContain('#search-location-btn');
       expect(styleTag.textContent).toContain('display: none');
     });
 
@@ -85,13 +85,13 @@ describe('Popup UI E2E Tests', () => {
       expect(title).not.toBeNull();
     });
 
-    it('should have ADEME section', () => {
-      const section = document.getElementById('ademe-section');
+    it('should have Location section', () => {
+      const section = document.getElementById('location-section');
       expect(section).not.toBeNull();
     });
 
     it('should have results container', () => {
-      const results = document.getElementById('ademe-results');
+      const results = document.getElementById('location-results');
       expect(results).not.toBeNull();
     });
   });
@@ -118,13 +118,13 @@ describe('Popup UI E2E Tests', () => {
 
   describe('UI Elements', () => {
     it('should have button with correct text', () => {
-      const button = document.getElementById('search-ademe-btn');
+      const button = document.getElementById('search-location-btn');
       expect(button).not.toBeNull();
       expect(button.textContent).toContain('Rechercher le DPE officiel');
     });
 
     it('should have loading indicator with spinner', () => {
-      const loading = document.getElementById('ademe-loading');
+      const loading = document.getElementById('location-loading');
       expect(loading).not.toBeNull();
       expect(loading.textContent).toContain('Recherche en cours...');
       const spinner = loading.querySelector('.loading-spinner');
