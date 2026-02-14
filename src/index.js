@@ -13,7 +13,7 @@ export function createApp() {
   const allowedOrigins = [
     process.env.CORS_CHROME_ORIGIN,
     process.env.CORS_FIREFOX_ORIGIN,
-  ].filter(Boolean);
+  ].filter(Boolean).filter(o => o !== '*');
 
   app.use(cors({
     origin: allowedOrigins.length > 0 ? allowedOrigins : '*',
@@ -31,9 +31,8 @@ export function createApp() {
   return app;
 }
 
-// Start server when run directly
-const isDirectRun = process.argv[1] && import.meta.url === `file://${process.argv[1]}`;
-if (isDirectRun) {
+// Start server (unless imported by tests via NODE_ENV=test)
+if (process.env.NODE_ENV !== 'test') {
   const port = process.env.PORT || 3000;
   createApp().listen(port, () => {
     console.log(`Server running on port ${port}`);

@@ -1,6 +1,6 @@
 #!/bin/bash
 # Setup script for immo-locator-api on Debian VPS
-# Run as: ssh -p 65422 debian@vps-9f0f5451.vps.ovh.net 'bash -s' < deploy/setup-vps.sh
+# Run as: ssh -p 65422 -i ~/.ssh/id_ed25519_vps debian@vps-9f0f5451.vps.ovh.net 'bash -s' < deploy/setup-vps.sh
 set -euo pipefail
 
 echo "=== 1. System update ==="
