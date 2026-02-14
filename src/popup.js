@@ -1,12 +1,8 @@
 // Cross-browser compatibility: use 'browser' if available, otherwise 'chrome'
 globalThis.browser ??= globalThis.chrome;
 
-import {
-  calculateMatchScore,
-  getScoreColor,
-  sortResultsByScore,
-} from './utils/score-calculator.js';
-import { validateAdemeSearchData, buildAdemeUrl, getGoogleMapsLink } from './api/ademe-client.js';
+import { getScoreColor } from './utils/score-calculator.js';
+import { validateSearchData, searchLocation, getGoogleMapsLink } from './api/ademe-client.js';
 import { clearElement, createMessage, createAdemeResultsList } from './utils/dom-helpers.js';
 import { getErrorMessage, ERROR_CODES } from './utils/error-messages.js';
 
@@ -385,7 +381,7 @@ document.addEventListener('DOMContentLoaded', () => {
     searchBtn.style.display = 'none';
 
     // Validate data
-    const validation = validateAdemeSearchData(data);
+    const validation = validateSearchData(data);
     if (!validation.isValid) {
       const msg = createMessage(
         `Recherche non disponible : ${validation.missing.join(', ')} manquant(s).`,
@@ -401,7 +397,6 @@ document.addEventListener('DOMContentLoaded', () => {
     searchBtn.onclick = () => executeAdemeSearch(data);
   }
 
-  // Function to execute ADEME API Search
   async function executeAdemeSearch(data) {
     const ademeLoading = document.getElementById('ademe-loading');
     const ademeResults = document.getElementById('ademe-results');
@@ -413,48 +408,23 @@ document.addEventListener('DOMContentLoaded', () => {
     clearElement(ademeResults);
 
     try {
-      const url = buildAdemeUrl(data);
-      const response = await fetch(url);
-      const result = await response.json();
+      const result = await searchLocation(data);
 
       ademeLoading.style.display = 'none';
       searchBtn.textContent = 'Lancer la recherche';
       searchBtn.disabled = false;
 
       if (result.results && result.results.length > 0) {
-        // Calculate scores
-        const scoredResults = result.results.map((item) => ({
-          ...item,
-          score: calculateMatchScore(data, item),
-        }));
-
-        // Sort by score descending
-        const sortedResults = sortResultsByScore(scoredResults);
-
-        // Use safe DOM helpers instead of innerHTML
-        const resultsList = createAdemeResultsList(sortedResults, getGoogleMapsLink, getScoreColor);
+        const resultsList = createAdemeResultsList(
+          result.results,
+          getGoogleMapsLink,
+          getScoreColor
+        );
         ademeResults.appendChild(resultsList);
       } else {
         ademeResults.appendChild(
           createMessage('Aucun DPE correspondant trouvé avec ces critères stricts.')
         );
-      }
-
-      if (!data.zipcode || data.zipcode === 'Non trouvé') {
-        clearElement(ademeResults);
-        ademeResults.appendChild(
-          createMessage('Code postal non trouvé, impossible de chercher dans la base.', 'orange')
-        );
-        return;
-      }
-
-      // New condition: only proceed if diagnostic date is found
-      if (!data.date_diag || data.date_diag === 'Non trouvé') {
-        clearElement(ademeResults);
-        ademeResults.appendChild(
-          createMessage('Date du diagnostic non trouvée, recherche annulée.', 'orange')
-        );
-        return;
       }
     } catch (error) {
       console.error('API Error:', error);
@@ -462,11 +432,10 @@ document.addEventListener('DOMContentLoaded', () => {
       searchBtn.textContent = 'Lancer la recherche';
       searchBtn.disabled = false;
       clearElement(ademeResults);
-      // Use error code if available, otherwise generic message
       const errorMessage =
         error.code && ERROR_CODES[error.code]
           ? getErrorMessage(error.code)
-          : 'Erreur lors de la recherche.';
+          : error.message || 'Erreur lors de la recherche.';
       ademeResults.appendChild(createMessage(errorMessage, 'red'));
     }
   }

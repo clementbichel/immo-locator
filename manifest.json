@@ -19,6 +19,6 @@
     "128": "icons/icon-128.png"
   },
   "content_security_policy": {
-    "extension_pages": "script-src 'self'; object-src 'self'; connect-src https://data.ademe.fr https://www.google.com"
+    "extension_pages": "script-src 'self'; object-src 'self'; connect-src https://api.immo-locator.fr"
   }
 }

@@ -96,7 +96,7 @@ export function createAdemeResultItem(item, mapsLink, scoreColor) {
     },
   });
 
-  const address = item.adresse_ban || item.nom_commune_ban || 'Adresse inconnue';
+  const address = item.address || 'Adresse inconnue';
   const addressEl = createElement('strong', address);
 
   const scoreEl = createElement('span', `${item.score}%`, {
@@ -163,7 +163,7 @@ export function createAdemeResultsList(results, getMapsLink, getScoreColor) {
   });
 
   results.forEach((item) => {
-    const address = item.adresse_ban || item.nom_commune_ban || 'Adresse inconnue';
+    const address = item.address || 'Adresse inconnue';
     const mapsLink = getMapsLink(address);
     const scoreColor = getScoreColor(item.score);
     const li = createAdemeResultItem(item, mapsLink, scoreColor);

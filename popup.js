@@ -1,207 +1,62 @@
 (() => {
-  // src/utils/parsers.js
-  function parseSurface(surfaceStr) {
-    if (!surfaceStr || typeof surfaceStr !== 'string') {
-      return null;
-    }
-    const cleaned = surfaceStr.replace(/[^\d,.-]/g, '').replace(',', '.');
-    const value = parseFloat(cleaned);
-    return isNaN(value) ? null : value;
-  }
-  function parseFrenchDate(dateStr) {
-    if (!dateStr || typeof dateStr !== 'string') {
-      return null;
-    }
-    const match = dateStr.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
-    if (!match) {
-      return null;
-    }
-    const [, day, month, year] = match;
-    const date = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
-    if (isNaN(date.getTime())) {
-      return null;
-    }
-    return date;
-  }
-  function formatDateISO(date) {
-    if (!(date instanceof Date) || isNaN(date.getTime())) {
-      return null;
-    }
-    const y = date.getFullYear();
-    const m = String(date.getMonth() + 1).padStart(2, '0');
-    const d = String(date.getDate()).padStart(2, '0');
-    return `${y}-${m}-${d}`;
-  }
-  function parseEnergyValue(energyStr) {
-    if (!energyStr || typeof energyStr !== 'string') {
-      return null;
-    }
-    const cleaned = energyStr.replace(/[^\d,.-]/g, '').replace(',', '.');
-    const value = parseFloat(cleaned);
-    return isNaN(value) ? null : value;
-  }
-
   // src/utils/score-calculator.js
-  function calculateMatchScore(adData, ademeItem) {
-    let score = 100;
-    const surfAd = parseSurface(adData.surface);
-    const surfItem = ademeItem.surface_habitable_logement;
-    if (surfAd && surfItem) {
-      const diffPercent = (Math.abs(surfAd - surfItem) / surfAd) * 100;
-      score -= diffPercent * 2;
-    }
-    const dateAd = parseFrenchDate(adData.date_diag);
-    const dateItem = ademeItem.date_etablissement_dpe
-      ? new Date(ademeItem.date_etablissement_dpe)
-      : null;
-    if (dateAd && dateItem && !isNaN(dateItem.getTime())) {
-      const diffTime = Math.abs(dateAd.getTime() - dateItem.getTime());
-      const diffDays = Math.ceil(diffTime / (1e3 * 60 * 60 * 24));
-      score -= diffDays * 2;
-    }
-    if (
-      adData.conso_prim &&
-      adData.conso_prim !== 'Non trouv\xE9' &&
-      ademeItem.conso_5_usages_par_m2_ep
-    ) {
-      const primAd = parseEnergyValue(adData.conso_prim);
-      const primItem = ademeItem.conso_5_usages_par_m2_ep;
-      if (primAd && primItem) {
-        const diffPercent = (Math.abs(primAd - primItem) / primAd) * 100;
-        score -= diffPercent;
-      }
-    }
-    return Math.max(0, Math.round(score));
-  }
-  function sortResultsByScore(results) {
-    if (!Array.isArray(results)) {
-      return [];
-    }
-    return [...results].sort((a, b) => b.score - a.score);
-  }
   function getScoreColor(score) {
-    if (typeof score !== 'number' || isNaN(score)) {
-      return 'gray';
-    }
+    if (typeof score !== 'number' || isNaN(score)) return 'gray';
     if (score >= 80) return 'green';
     if (score >= 50) return 'orange';
     return 'red';
   }
 
-  // src/utils/error-messages.js
-  var ERROR_CODES = {
-    // Network errors
-    NETWORK_TIMEOUT: 'NETWORK_TIMEOUT',
-    NETWORK_ERROR: 'NETWORK_ERROR',
-    API_ERROR: 'API_ERROR',
-    // Data extraction errors
-    INVALID_PAGE: 'INVALID_PAGE',
-    DATA_NOT_FOUND: 'DATA_NOT_FOUND',
-    MISSING_FIELDS: 'MISSING_FIELDS',
-    // Extension errors
-    TAB_ACCESS_ERROR: 'TAB_ACCESS_ERROR',
-    SCRIPT_INJECTION_ERROR: 'SCRIPT_INJECTION_ERROR',
-    // Validation errors
-    INVALID_ZIPCODE: 'INVALID_ZIPCODE',
-    INVALID_DPE: 'INVALID_DPE',
-    INVALID_GES: 'INVALID_GES',
-    INVALID_SURFACE: 'INVALID_SURFACE',
-    INVALID_DATE: 'INVALID_DATE',
-  };
-  var ERROR_MESSAGES = {
-    // Network errors
-    [ERROR_CODES.NETWORK_TIMEOUT]:
-      'La connexion a expir\xE9. V\xE9rifiez votre connexion internet et r\xE9essayez.',
-    [ERROR_CODES.NETWORK_ERROR]: 'Erreur de connexion. V\xE9rifiez votre connexion internet.',
-    [ERROR_CODES.API_ERROR]: "Erreur lors de la communication avec l'API ADEME.",
-    // Data extraction errors
-    [ERROR_CODES.INVALID_PAGE]:
-      'Cette extension ne fonctionne que pour les ventes immobili\xE8res et les locations.',
-    [ERROR_CODES.DATA_NOT_FOUND]: 'Donn\xE9es non trouv\xE9es sur cette page.',
-    [ERROR_CODES.MISSING_FIELDS]: 'Informations manquantes pour effectuer la recherche.',
-    // Extension errors
-    [ERROR_CODES.TAB_ACCESS_ERROR]: "Impossible d'acc\xE9der \xE0 l'onglet actif.",
-    [ERROR_CODES.SCRIPT_INJECTION_ERROR]: "Erreur lors de l'injection du script.",
-    // Validation errors
-    [ERROR_CODES.INVALID_ZIPCODE]: 'Code postal invalide.',
-    [ERROR_CODES.INVALID_DPE]: 'Classe DPE invalide (doit \xEAtre entre A et G).',
-    [ERROR_CODES.INVALID_GES]: 'Classe GES invalide (doit \xEAtre entre A et G).',
-    [ERROR_CODES.INVALID_SURFACE]: 'Surface invalide.',
-    [ERROR_CODES.INVALID_DATE]: 'Date de diagnostic invalide.',
-  };
-  function getErrorMessage(code, fallback = 'Une erreur inattendue est survenue.') {
-    return ERROR_MESSAGES[code] || fallback;
-  }
-
   // src/api/ademe-client.js
-  var ADEME_API_BASE_URL = 'https://data.ademe.fr/data-fair/api/v1/datasets/dpe03existant/lines';
-  function validateAdemeSearchData(data) {
+  var API_BASE_URL = 'https://api.immo-locator.fr';
+  function validateSearchData(data) {
     const missing = [];
     const hasLocation =
       (data.zipcode && data.zipcode !== 'Non trouv\xE9') ||
       (data.city && data.city !== 'Non trouv\xE9');
-    const hasDate = data.date_diag && data.date_diag !== 'Non trouv\xE9';
-    const hasDpe = data.dpe && data.dpe !== 'Non trouv\xE9';
-    const hasGes = data.ges && data.ges !== 'Non trouv\xE9';
-    const hasSurface = data.surface && data.surface !== 'Non trouv\xE9';
     if (!hasLocation) missing.push('Localisation');
-    if (!hasDate) missing.push('Date');
-    if (!hasDpe) missing.push('DPE');
-    if (!hasGes) missing.push('GES');
-    if (!hasSurface) missing.push('Surface');
+    if (!data.date_diag || data.date_diag === 'Non trouv\xE9') missing.push('Date');
+    if (!data.dpe || data.dpe === 'Non trouv\xE9') missing.push('DPE');
+    if (!data.ges || data.ges === 'Non trouv\xE9') missing.push('GES');
+    if (!data.surface || data.surface === 'Non trouv\xE9') missing.push('Surface');
+    return { isValid: missing.length === 0, missing };
+  }
+  function parseNumeric(value) {
+    if (!value || value === 'Non trouv\xE9') return null;
+    if (typeof value === 'number') return value;
+    const cleaned = String(value)
+      .replace(/[^\d,.-]/g, '')
+      .replace(',', '.');
+    const num = parseFloat(cleaned);
+    return isNaN(num) ? null : num;
+  }
+  function buildSearchPayload(data) {
     return {
-      isValid: missing.length === 0,
-      missing,
+      zipcode: data.zipcode !== 'Non trouv\xE9' ? data.zipcode : null,
+      city: data.city !== 'Non trouv\xE9' ? data.city : null,
+      dpe: data.dpe !== 'Non trouv\xE9' ? data.dpe : null,
+      ges: data.ges !== 'Non trouv\xE9' ? data.ges : null,
+      surface: parseNumeric(data.surface),
+      date_diag: data.date_diag !== 'Non trouv\xE9' ? data.date_diag : null,
+      conso_prim: parseNumeric(data.conso_prim),
+      conso_fin: parseNumeric(data.conso_fin),
     };
   }
-  function buildAdemeParams(data) {
-    const params = new URLSearchParams();
-    if (data.zipcode && data.zipcode !== 'Non trouv\xE9') {
-      params.append('code_postal_ban_eq', data.zipcode);
-    } else if (data.city && data.city !== 'Non trouv\xE9') {
-      params.append('nom_commune_ban_eq', data.city);
+  async function searchLocation(data) {
+    const payload = buildSearchPayload(data);
+    const response = await fetch(`${API_BASE_URL}/api/location/search`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    if (!response.ok) {
+      const errorBody = await response.json().catch(() => ({}));
+      const err = new Error(errorBody.message || 'Erreur lors de la recherche.');
+      err.code = errorBody.error;
+      err.missing = errorBody.missing;
+      throw err;
     }
-    if (data.dpe && data.dpe !== 'Non trouv\xE9') {
-      params.append('etiquette_dpe_eq', data.dpe);
-    }
-    if (data.ges && data.ges !== 'Non trouv\xE9') {
-      params.append('etiquette_ges_eq', data.ges);
-    }
-    const surfaceVal = parseSurface(data.surface);
-    if (surfaceVal !== null) {
-      const minSurface = Math.floor(surfaceVal * 0.9);
-      const maxSurface = Math.ceil(surfaceVal * 1.1);
-      params.append('surface_habitable_logement_gte', minSurface);
-      params.append('surface_habitable_logement_lte', maxSurface);
-    }
-    const diagDate = parseFrenchDate(data.date_diag);
-    if (diagDate) {
-      const minDate = new Date(diagDate);
-      minDate.setDate(diagDate.getDate() - 7);
-      const maxDate = new Date(diagDate);
-      maxDate.setDate(diagDate.getDate() + 7);
-      params.append('date_etablissement_dpe_gte', formatDateISO(minDate));
-      params.append('date_etablissement_dpe_lte', formatDateISO(maxDate));
-    }
-    if (data.conso_prim && data.conso_prim !== 'Non trouv\xE9') {
-      const primVal = parseEnergyValue(data.conso_prim);
-      if (primVal !== null) {
-        const minPrim = Math.floor(primVal * 0.9);
-        const maxPrim = Math.ceil(primVal * 1.1);
-        params.append('conso_5_usages_par_m2_ep_gte', minPrim);
-        params.append('conso_5_usages_par_m2_ep_lte', maxPrim);
-      }
-    }
-    params.append('size', '5');
-    params.append(
-      'select',
-      'adresse_ban,etiquette_dpe,etiquette_ges,date_etablissement_dpe,surface_habitable_logement,nom_commune_ban,conso_5_usages_par_m2_ep'
-    );
-    return params;
-  }
-  function buildAdemeUrl(data) {
-    const params = buildAdemeParams(data);
-    return `${ADEME_API_BASE_URL}?${params.toString()}`;
+    return response.json();
   }
   function getGoogleMapsLink(address) {
     return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
@@ -254,7 +109,7 @@
         alignItems: 'center',
       },
     });
-    const address = item.adresse_ban || item.nom_commune_ban || 'Adresse inconnue';
+    const address = item.address || 'Adresse inconnue';
     const addressEl = createElement('strong', address);
     const scoreEl = createElement('span', `${item.score}%`, {
       style: {
@@ -301,7 +156,7 @@
       },
     });
     results.forEach((item) => {
-      const address = item.adresse_ban || item.nom_commune_ban || 'Adresse inconnue';
+      const address = item.address || 'Adresse inconnue';
       const mapsLink = getMapsLink(address);
       const scoreColor = getScoreColor2(item.score);
       const li = createAdemeResultItem(item, mapsLink, scoreColor);
@@ -309,6 +164,51 @@
     });
     container.appendChild(ul);
     return container;
+  }
+
+  // src/utils/error-messages.js
+  var ERROR_CODES = {
+    // Network errors
+    NETWORK_TIMEOUT: 'NETWORK_TIMEOUT',
+    NETWORK_ERROR: 'NETWORK_ERROR',
+    API_ERROR: 'API_ERROR',
+    // Data extraction errors
+    INVALID_PAGE: 'INVALID_PAGE',
+    DATA_NOT_FOUND: 'DATA_NOT_FOUND',
+    MISSING_FIELDS: 'MISSING_FIELDS',
+    // Extension errors
+    TAB_ACCESS_ERROR: 'TAB_ACCESS_ERROR',
+    SCRIPT_INJECTION_ERROR: 'SCRIPT_INJECTION_ERROR',
+    // Validation errors
+    INVALID_ZIPCODE: 'INVALID_ZIPCODE',
+    INVALID_DPE: 'INVALID_DPE',
+    INVALID_GES: 'INVALID_GES',
+    INVALID_SURFACE: 'INVALID_SURFACE',
+    INVALID_DATE: 'INVALID_DATE',
+  };
+  var ERROR_MESSAGES = {
+    // Network errors
+    [ERROR_CODES.NETWORK_TIMEOUT]:
+      'La connexion a expir\xE9. V\xE9rifiez votre connexion internet et r\xE9essayez.',
+    [ERROR_CODES.NETWORK_ERROR]: 'Erreur de connexion. V\xE9rifiez votre connexion internet.',
+    [ERROR_CODES.API_ERROR]: "Erreur lors de la communication avec l'API ADEME.",
+    // Data extraction errors
+    [ERROR_CODES.INVALID_PAGE]:
+      'Cette extension ne fonctionne que pour les ventes immobili\xE8res et les locations.',
+    [ERROR_CODES.DATA_NOT_FOUND]: 'Donn\xE9es non trouv\xE9es sur cette page.',
+    [ERROR_CODES.MISSING_FIELDS]: 'Informations manquantes pour effectuer la recherche.',
+    // Extension errors
+    [ERROR_CODES.TAB_ACCESS_ERROR]: "Impossible d'acc\xE9der \xE0 l'onglet actif.",
+    [ERROR_CODES.SCRIPT_INJECTION_ERROR]: "Erreur lors de l'injection du script.",
+    // Validation errors
+    [ERROR_CODES.INVALID_ZIPCODE]: 'Code postal invalide.',
+    [ERROR_CODES.INVALID_DPE]: 'Classe DPE invalide (doit \xEAtre entre A et G).',
+    [ERROR_CODES.INVALID_GES]: 'Classe GES invalide (doit \xEAtre entre A et G).',
+    [ERROR_CODES.INVALID_SURFACE]: 'Surface invalide.',
+    [ERROR_CODES.INVALID_DATE]: 'Date de diagnostic invalide.',
+  };
+  function getErrorMessage(code, fallback = 'Une erreur inattendue est survenue.') {
+    return ERROR_MESSAGES[code] || fallback;
   }
 
   // src/popup.js
@@ -595,7 +495,7 @@
       const ademeResults = document.getElementById('ademe-results');
       clearElement(ademeResults);
       searchBtn.style.display = 'none';
-      const validation = validateAdemeSearchData(data);
+      const validation = validateSearchData(data);
       if (!validation.isValid) {
         const msg = createMessage(
           `Recherche non disponible : ${validation.missing.join(', ')} manquant(s).`,
@@ -617,20 +517,13 @@
       ademeLoading.style.display = 'block';
       clearElement(ademeResults);
       try {
-        const url = buildAdemeUrl(data);
-        const response = await fetch(url);
-        const result = await response.json();
+        const result = await searchLocation(data);
         ademeLoading.style.display = 'none';
         searchBtn.textContent = 'Lancer la recherche';
         searchBtn.disabled = false;
         if (result.results && result.results.length > 0) {
-          const scoredResults = result.results.map((item) => ({
-            ...item,
-            score: calculateMatchScore(data, item),
-          }));
-          const sortedResults = sortResultsByScore(scoredResults);
           const resultsList = createAdemeResultsList(
-            sortedResults,
+            result.results,
             getGoogleMapsLink,
             getScoreColor
           );
@@ -639,23 +532,6 @@
           ademeResults.appendChild(
             createMessage('Aucun DPE correspondant trouv\xE9 avec ces crit\xE8res stricts.')
           );
-        }
-        if (!data.zipcode || data.zipcode === 'Non trouv\xE9') {
-          clearElement(ademeResults);
-          ademeResults.appendChild(
-            createMessage(
-              'Code postal non trouv\xE9, impossible de chercher dans la base.',
-              'orange'
-            )
-          );
-          return;
-        }
-        if (!data.date_diag || data.date_diag === 'Non trouv\xE9') {
-          clearElement(ademeResults);
-          ademeResults.appendChild(
-            createMessage('Date du diagnostic non trouv\xE9e, recherche annul\xE9e.', 'orange')
-          );
-          return;
         }
       } catch (error) {
         console.error('API Error:', error);
@@ -666,7 +542,7 @@
         const errorMessage =
           error.code && ERROR_CODES[error.code]
             ? getErrorMessage(error.code)
-            : 'Erreur lors de la recherche.';
+            : error.message || 'Erreur lors de la recherche.';
         ademeResults.appendChild(createMessage(errorMessage, 'red'));
       }
     }
