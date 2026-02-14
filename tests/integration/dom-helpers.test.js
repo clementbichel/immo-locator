@@ -122,7 +122,7 @@ describe('dom-helpers', () => {
   describe('createAdemeResultItem', () => {
     it('should create a list item with address and score', () => {
       const item = {
-        adresse_ban: '15 Rue Test, 75001 Paris',
+        address: '15 Rue Test, 75001 Paris',
         score: 85,
       };
       const mapsLink = 'https://maps.google.com/?q=test';
@@ -136,9 +136,9 @@ describe('dom-helpers', () => {
       expect(li.querySelector('a').href).toBe('https://maps.google.com/?q=test');
     });
 
-    it('should fallback to nom_commune_ban when adresse_ban is missing', () => {
+    it('should use address field from backend response', () => {
       const item = {
-        nom_commune_ban: 'Paris',
+        address: 'Paris',
         score: 70,
       };
 
@@ -156,8 +156,8 @@ describe('dom-helpers', () => {
   describe('createAdemeResultsList', () => {
     it('should create a results list', () => {
       const results = [
-        { adresse_ban: 'Address 1', score: 90 },
-        { adresse_ban: 'Address 2', score: 75 },
+        { address: 'Address 1', score: 90 },
+        { address: 'Address 2', score: 75 },
       ];
       const getMapsLink = (addr) => `https://maps.google.com/?q=${encodeURIComponent(addr)}`;
       const getScoreColor = (score) => (score >= 80 ? 'green' : 'orange');

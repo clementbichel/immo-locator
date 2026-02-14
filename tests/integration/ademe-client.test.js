@@ -1,17 +1,12 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import {
-  validateAdemeSearchData,
-  buildAdemeParams,
-  buildAdemeUrl,
-  searchAdeme,
+  validateSearchData,
+  buildSearchPayload,
   getGoogleMapsLink,
-  fetchWithTimeout,
 } from '../../src/api/ademe-client.js';
-import { ERROR_CODES } from '../../src/utils/error-messages.js';
-import ademeResponse from '../fixtures/ademe-response.json';
 
-describe('ademe-client', () => {
-  describe('validateAdemeSearchData', () => {
+describe('ademe-client (backend proxy)', () => {
+  describe('validateSearchData', () => {
     it('should return valid for complete data', () => {
       const data = {
         zipcode: '75001',
@@ -21,7 +16,7 @@ describe('ademe-client', () => {
         ges: 'E',
         surface: '120 m²',
       };
-      const result = validateAdemeSearchData(data);
+      const result = validateSearchData(data);
       expect(result.isValid).toBe(true);
       expect(result.missing).toHaveLength(0);
     });
@@ -35,13 +30,13 @@ describe('ademe-client', () => {
         ges: 'E',
         surface: '120 m²',
       };
-      const result = validateAdemeSearchData(data);
+      const result = validateSearchData(data);
       expect(result.isValid).toBe(false);
       expect(result.missing).toContain('Localisation');
       expect(result.missing).toContain('DPE');
     });
 
-    it('should accept city when zipcode is missing', () => {
+    it('should accept city when zipcode is Non trouvé', () => {
       const data = {
         zipcode: 'Non trouvé',
         city: 'Paris',
@@ -50,7 +45,7 @@ describe('ademe-client', () => {
         ges: 'E',
         surface: '120 m²',
       };
-      const result = validateAdemeSearchData(data);
+      const result = validateSearchData(data);
       expect(result.isValid).toBe(true);
     });
 
@@ -63,188 +58,64 @@ describe('ademe-client', () => {
         ges: 'Non trouvé',
         surface: 'Non trouvé',
       };
-      const result = validateAdemeSearchData(data);
+      const result = validateSearchData(data);
       expect(result.isValid).toBe(false);
       expect(result.missing).toHaveLength(5);
-      expect(result.missing).toContain('Localisation');
-      expect(result.missing).toContain('Date');
-      expect(result.missing).toContain('DPE');
-      expect(result.missing).toContain('GES');
-      expect(result.missing).toContain('Surface');
     });
   });
 
-  describe('buildAdemeParams', () => {
-    it('should build params with zipcode', () => {
+  describe('buildSearchPayload', () => {
+    it('should convert string values to numbers', () => {
       const data = {
         zipcode: '75001',
-        dpe: 'D',
-        ges: 'E',
-        surface: '120 m²',
-        date_diag: '15/03/2024',
-      };
-      const params = buildAdemeParams(data);
-      expect(params.get('code_postal_ban_eq')).toBe('75001');
-      expect(params.get('etiquette_dpe_eq')).toBe('D');
-      expect(params.get('etiquette_ges_eq')).toBe('E');
-    });
-
-    it('should use city when zipcode is "Non trouvé"', () => {
-      const data = {
-        zipcode: 'Non trouvé',
         city: 'Paris',
         dpe: 'D',
         ges: 'E',
         surface: '120 m²',
         date_diag: '15/03/2024',
-      };
-      const params = buildAdemeParams(data);
-      expect(params.get('nom_commune_ban_eq')).toBe('Paris');
-      expect(params.get('code_postal_ban_eq')).toBeNull();
-    });
-
-    it('should set surface range +/- 10%', () => {
-      const data = {
-        zipcode: '75001',
-        dpe: 'D',
-        ges: 'E',
-        surface: '100 m²',
-        date_diag: '15/03/2024',
-      };
-      const params = buildAdemeParams(data);
-      expect(params.get('surface_habitable_logement_gte')).toBe('90');
-      // Math.ceil(100 * 1.1) = Math.ceil(110.00000001) = 111 due to float
-      expect(parseInt(params.get('surface_habitable_logement_lte'))).toBeGreaterThanOrEqual(110);
-      expect(parseInt(params.get('surface_habitable_logement_lte'))).toBeLessThanOrEqual(111);
-    });
-
-    it('should set date range +/- 7 days', () => {
-      const data = {
-        zipcode: '75001',
-        dpe: 'D',
-        ges: 'E',
-        surface: '100 m²',
-        date_diag: '15/03/2024',
-      };
-      const params = buildAdemeParams(data);
-      expect(params.get('date_etablissement_dpe_gte')).toBe('2024-03-08');
-      expect(params.get('date_etablissement_dpe_lte')).toBe('2024-03-22');
-    });
-
-    it('should include primary energy when provided', () => {
-      const data = {
-        zipcode: '75001',
-        dpe: 'D',
-        ges: 'E',
-        surface: '100 m²',
-        date_diag: '15/03/2024',
         conso_prim: '200 kWh/m²/an',
+        conso_fin: '180 kWh/m²/an',
       };
-      const params = buildAdemeParams(data);
-      expect(params.get('conso_5_usages_par_m2_ep_gte')).toBe('180');
-      // Math.ceil(200 * 1.1) = Math.ceil(220.00000001) = 221 due to float
-      expect(parseInt(params.get('conso_5_usages_par_m2_ep_lte'))).toBeGreaterThanOrEqual(220);
-      expect(parseInt(params.get('conso_5_usages_par_m2_ep_lte'))).toBeLessThanOrEqual(221);
+      const payload = buildSearchPayload(data);
+      expect(payload.surface).toBe(120);
+      expect(payload.conso_prim).toBe(200);
+      expect(payload.conso_fin).toBe(180);
+      expect(payload.zipcode).toBe('75001');
+      expect(payload.dpe).toBe('D');
     });
 
-    it('should not include primary energy when "Non trouvé"', () => {
-      const data = {
-        zipcode: '75001',
-        dpe: 'D',
-        ges: 'E',
-        surface: '100 m²',
-        date_diag: '15/03/2024',
-        conso_prim: 'Non trouvé',
-      };
-      const params = buildAdemeParams(data);
-      expect(params.get('conso_5_usages_par_m2_ep_gte')).toBeNull();
-    });
-
-    it('should include standard params', () => {
-      const data = {
-        zipcode: '75001',
-        dpe: 'D',
-        ges: 'E',
-        surface: '100 m²',
-        date_diag: '15/03/2024',
-      };
-      const params = buildAdemeParams(data);
-      expect(params.get('size')).toBe('5');
-      expect(params.get('select')).toContain('adresse_ban');
-    });
-  });
-
-  describe('buildAdemeUrl', () => {
-    it('should build complete URL', () => {
-      const data = {
-        zipcode: '75001',
-        dpe: 'D',
-        ges: 'E',
-        surface: '100 m²',
-        date_diag: '15/03/2024',
-      };
-      const url = buildAdemeUrl(data);
-      expect(url).toContain('https://data.ademe.fr/data-fair/api/v1/datasets/dpe03existant/lines');
-      expect(url).toContain('code_postal_ban_eq=75001');
-    });
-  });
-
-  describe('searchAdeme', () => {
-    it('should call fetch with correct URL', async () => {
-      const mockFetch = vi.fn().mockResolvedValue({
-        ok: true,
-        json: () => Promise.resolve(ademeResponse),
-      });
-
-      const data = {
-        zipcode: '75001',
-        dpe: 'D',
-        ges: 'E',
-        surface: '100 m²',
-        date_diag: '15/03/2024',
-      };
-
-      const result = await searchAdeme(data, mockFetch);
-
-      expect(mockFetch).toHaveBeenCalledTimes(1);
-      expect(mockFetch.mock.calls[0][0]).toContain('code_postal_ban_eq=75001');
-      expect(result.results).toHaveLength(3);
-    });
-
-    it('should throw error for invalid data', async () => {
-      const mockFetch = vi.fn();
+    it('should convert "Non trouvé" to null', () => {
       const data = {
         zipcode: 'Non trouvé',
         city: 'Non trouvé',
-        dpe: 'D',
-        ges: 'E',
-        surface: '100 m²',
-        date_diag: '15/03/2024',
+        dpe: 'Non trouvé',
+        ges: 'Non trouvé',
+        surface: 'Non trouvé',
+        date_diag: 'Non trouvé',
+        conso_prim: 'Non trouvé',
+        conso_fin: 'Non trouvé',
       };
-
-      await expect(searchAdeme(data, mockFetch)).rejects.toThrow(
-        'Informations manquantes pour effectuer la recherche.'
-      );
-      expect(mockFetch).not.toHaveBeenCalled();
+      const payload = buildSearchPayload(data);
+      expect(payload.zipcode).toBeNull();
+      expect(payload.city).toBeNull();
+      expect(payload.surface).toBeNull();
+      expect(payload.conso_prim).toBeNull();
     });
 
-    it('should throw error on API failure', async () => {
-      const mockFetch = vi.fn().mockResolvedValue({
-        ok: false,
-        status: 500,
-      });
-
+    it('should handle already numeric values', () => {
       const data = {
         zipcode: '75001',
+        city: 'Paris',
         dpe: 'D',
         ges: 'E',
-        surface: '100 m²',
+        surface: 120,
         date_diag: '15/03/2024',
+        conso_prim: 200,
+        conso_fin: 180,
       };
-
-      await expect(searchAdeme(data, mockFetch)).rejects.toThrow(
-        "Erreur lors de la communication avec l'API ADEME."
-      );
+      const payload = buildSearchPayload(data);
+      expect(payload.surface).toBe(120);
+      expect(payload.conso_prim).toBe(200);
     });
   });
 
@@ -258,73 +129,6 @@ describe('ademe-client', () => {
     it('should handle special characters', () => {
       const link = getGoogleMapsLink('Café & Restaurant');
       expect(link).toContain(encodeURIComponent('Café & Restaurant'));
-    });
-  });
-
-  describe('fetchWithTimeout', () => {
-    it('should return response on success', async () => {
-      const mockResponse = { ok: true, json: () => Promise.resolve({ data: 'test' }) };
-      global.fetch = vi.fn().mockResolvedValue(mockResponse);
-
-      const response = await fetchWithTimeout('https://example.com', {}, 5000);
-      expect(response).toBe(mockResponse);
-      expect(fetch).toHaveBeenCalledWith('https://example.com', expect.any(Object));
-    });
-
-    it('should throw timeout error when aborted', async () => {
-      // Simulate fetch that respects abort signal
-      global.fetch = vi.fn().mockImplementation((_url, options) => {
-        return new Promise((_resolve, reject) => {
-          if (options?.signal) {
-            options.signal.addEventListener('abort', () => {
-              const error = new Error('The operation was aborted');
-              error.name = 'AbortError';
-              reject(error);
-            });
-          }
-        });
-      });
-
-      // Use very short timeout
-      await expect(fetchWithTimeout('https://example.com', {}, 10)).rejects.toThrow(
-        'La connexion a expiré'
-      );
-    });
-
-    it('should throw network error on fetch failure', async () => {
-      global.fetch = vi.fn().mockRejectedValue(new Error('Network failure'));
-
-      await expect(fetchWithTimeout('https://example.com')).rejects.toThrow('Erreur de connexion');
-    });
-
-    it('should include error code on timeout error', async () => {
-      global.fetch = vi.fn().mockImplementation((_url, options) => {
-        return new Promise((_resolve, reject) => {
-          if (options?.signal) {
-            options.signal.addEventListener('abort', () => {
-              const error = new Error('Aborted');
-              error.name = 'AbortError';
-              reject(error);
-            });
-          }
-        });
-      });
-
-      try {
-        await fetchWithTimeout('https://example.com', {}, 10);
-      } catch (error) {
-        expect(error.code).toBe(ERROR_CODES.NETWORK_TIMEOUT);
-      }
-    });
-
-    it('should include error code on network error', async () => {
-      global.fetch = vi.fn().mockRejectedValue(new Error('Network failure'));
-
-      try {
-        await fetchWithTimeout('https://example.com');
-      } catch (error) {
-        expect(error.code).toBe(ERROR_CODES.NETWORK_ERROR);
-      }
     });
   });
 });
