@@ -19,6 +19,6 @@
     "128": "icons/icon-128.png"
   },
   "content_security_policy": {
-    "extension_pages": "script-src 'self'; object-src 'self'; connect-src https://api.immo-locator.fr"
+    "extension_pages": "script-src 'self'; object-src 'self'; connect-src https://vps-9f0f5451.vps.ovh.net"
   }
 }

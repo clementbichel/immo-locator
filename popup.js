@@ -8,7 +8,7 @@
   }
 
   // src/api/ademe-client.js
-  var API_BASE_URL = 'https://api.immo-locator.fr';
+  var API_BASE_URL = 'https://vps-9f0f5451.vps.ovh.net';
   function validateSearchData(data) {
     const missing = [];
     const hasLocation =

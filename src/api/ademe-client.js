@@ -1,4 +1,4 @@
-const API_BASE_URL = 'https://api.immo-locator.fr'; // TODO: replace with actual VPS domain
+const API_BASE_URL = 'https://vps-9f0f5451.vps.ovh.net';
 
 /**
  * Validate data required for search
