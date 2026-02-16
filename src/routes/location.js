@@ -10,8 +10,8 @@ router.post('/search', async (req, res) => {
   if (!parsed.success) {
     const missing = parsed.error.issues.map(i => i.path.join('.'));
     return res.status(400).json({
-      error: 'VALIDATION_ERROR',
-      message: `Données invalides : ${parsed.error.issues.map(i => i.message).join(', ')}`,
+      error: 'MISSING_FIELDS',
+      message: `Champs manquants ou invalides : ${missing.join(', ')}`,
       missing,
     });
   }

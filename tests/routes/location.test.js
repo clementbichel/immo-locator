@@ -53,7 +53,7 @@ describe('POST /api/location/search', () => {
     });
     expect(res.status).toBe(400);
     const body = await res.json();
-    expect(body.error).toBe('VALIDATION_ERROR');
+    expect(body.error).toBe('MISSING_FIELDS');
   });
 
   it('returns 400 for invalid DPE value', async () => {
@@ -64,7 +64,7 @@ describe('POST /api/location/search', () => {
     });
     expect(res.status).toBe(400);
     const body = await res.json();
-    expect(body.error).toBe('VALIDATION_ERROR');
+    expect(body.error).toBe('MISSING_FIELDS');
   });
 
   it('returns scored results on success', async () => {
