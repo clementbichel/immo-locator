@@ -5,6 +5,14 @@ import cors from 'cors';
 import rateLimit from 'express-rate-limit';
 import locationRouter from './routes/location.js';
 
+export function validateEnv() {
+  const required = ['ADEME_API_URL'];
+  const missing = required.filter(key => !process.env[key]);
+  if (missing.length > 0) {
+    throw new Error(`Missing required environment variables: ${missing.join(', ')}`);
+  }
+}
+
 export function createApp() {
   const app = express();
 
@@ -28,11 +36,21 @@ export function createApp() {
   app.use('/api/location', locationRouter);
   app.get('/health', (_req, res) => res.json({ status: 'ok' }));
 
+  // Global error handler — must have 4 params for Express to recognize it
+  app.use((err, req, res, next) => {
+    console.error('Unhandled error:', err);
+    res.status(500).json({
+      error: 'INTERNAL_ERROR',
+      message: 'Erreur interne du serveur.',
+    });
+  });
+
   return app;
 }
 
 // Start server (unless imported by tests via NODE_ENV=test)
 if (process.env.NODE_ENV !== 'test') {
+  validateEnv();
   const port = process.env.PORT || 3000;
   createApp().listen(port, () => {
     console.log(`Server running on port ${port}`);

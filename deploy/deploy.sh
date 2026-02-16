@@ -3,7 +3,7 @@
 # Run from local machine: ./deploy/deploy.sh
 set -euo pipefail
 
-VPS_HOST="debian@vps-9f0f5451.vps.ovh.net"
+VPS_HOST="debian@api.immolocator.fr"
 VPS_PORT="65422"
 SSH_KEY="~/.ssh/id_ed25519_vps"
 APP_DIR="/opt/immo-locator-api"

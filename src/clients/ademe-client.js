@@ -47,7 +47,9 @@ export function buildAdemeUrl(data) {
 
 export async function fetchAdeme(data) {
   const url = buildAdemeUrl(data);
-  const response = await fetch(url);
+  const response = await fetch(url, {
+    signal: AbortSignal.timeout(10_000),
+  });
   if (!response.ok) {
     const err = new Error(`ADEME API error: ${response.status}`);
     err.status = response.status;
