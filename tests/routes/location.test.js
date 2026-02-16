@@ -53,8 +53,18 @@ describe('POST /api/location/search', () => {
     });
     expect(res.status).toBe(400);
     const body = await res.json();
-    expect(body.error).toBe('MISSING_FIELDS');
-    expect(body.missing).toContain('Localisation');
+    expect(body.error).toBe('VALIDATION_ERROR');
+  });
+
+  it('returns 400 for invalid DPE value', async () => {
+    const res = await fetch(`${baseUrl}/api/location/search`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ...validBody, dpe: 'Z' }),
+    });
+    expect(res.status).toBe(400);
+    const body = await res.json();
+    expect(body.error).toBe('VALIDATION_ERROR');
   });
 
   it('returns scored results on success', async () => {

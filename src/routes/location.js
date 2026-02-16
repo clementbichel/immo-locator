@@ -1,20 +1,22 @@
 import { Router } from 'express';
-import { validateSearchData, processResults } from '../services/dpe-service.js';
+import { processResults } from '../services/dpe-service.js';
 import { fetchAdeme } from '../clients/ademe-client.js';
+import { searchSchema } from '../schemas/search.js';
 
 const router = Router();
 
 router.post('/search', async (req, res) => {
-  const data = req.body;
-
-  const validation = validateSearchData(data);
-  if (!validation.isValid) {
+  const parsed = searchSchema.safeParse(req.body);
+  if (!parsed.success) {
+    const missing = parsed.error.issues.map(i => i.path.join('.'));
     return res.status(400).json({
-      error: 'MISSING_FIELDS',
-      message: `Champs manquants : ${validation.missing.join(', ')}`,
-      missing: validation.missing,
+      error: 'VALIDATION_ERROR',
+      message: `Données invalides : ${parsed.error.issues.map(i => i.message).join(', ')}`,
+      missing,
     });
   }
+
+  const data = parsed.data;
 
   try {
     const ademeResponse = await fetchAdeme(data);
