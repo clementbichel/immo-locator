@@ -3,6 +3,8 @@ import express from 'express';
 import helmet from 'helmet';
 import cors from 'cors';
 import rateLimit from 'express-rate-limit';
+import pinoHttp from 'pino-http';
+import { logger } from './logger.js';
 import locationRouter from './routes/location.js';
 
 export function validateEnv() {
@@ -32,13 +34,14 @@ export function createApp() {
     max: 30,
   }));
 
+  app.use(pinoHttp({ logger }));
   app.use(express.json());
   app.use('/api/location', locationRouter);
   app.get('/health', (_req, res) => res.json({ status: 'ok' }));
 
   // Global error handler — must have 4 params for Express to recognize it
   app.use((err, req, res, next) => {
-    console.error('Unhandled error:', err);
+    logger.error({ err }, 'Unhandled error');
     res.status(500).json({
       error: 'INTERNAL_ERROR',
       message: 'Erreur interne du serveur.',
@@ -53,6 +56,6 @@ if (process.env.NODE_ENV !== 'test') {
   validateEnv();
   const port = process.env.PORT || 3000;
   createApp().listen(port, () => {
-    console.log(`Server running on port ${port}`);
+    logger.info({ port: Number(port) }, 'Server running');
   });
 }

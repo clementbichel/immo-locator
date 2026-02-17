@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { processResults } from '../services/dpe-service.js';
 import { fetchAdeme } from '../clients/ademe-client.js';
 import { searchSchema } from '../schemas/search.js';
+import { logger } from '../logger.js';
 
 const router = Router();
 
@@ -27,7 +28,7 @@ router.post('/search', async (req, res) => {
       count: results.length,
     });
   } catch (err) {
-    console.error('ADEME search error:', err.message);
+    logger.error({ err }, 'ADEME search error');
     return res.status(502).json({
       error: 'UPSTREAM_ERROR',
       message: 'Erreur lors de la communication avec le service de données.',
