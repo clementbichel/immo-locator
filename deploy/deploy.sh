@@ -12,7 +12,15 @@ SSH_OPTS="-p ${VPS_PORT} -i ${SSH_KEY}"
 echo "=== Deploying immo-locator-api ==="
 
 echo "1. Syncing files to VPS..."
-rsync -avz -e "ssh ${SSH_OPTS}" --exclude 'node_modules' --exclude '.env' --exclude '.git' \
+rsync -avz -e "ssh ${SSH_OPTS}" \
+  --exclude 'node_modules' \
+  --exclude '.env' \
+  --exclude '.git' \
+  --exclude '.claude' \
+  --exclude 'logs' \
+  --exclude 'tests' \
+  --exclude 'deploy' \
+  --exclude 'PLAN.md' \
   ~/immo-locator-api/ "${VPS_HOST}:${APP_DIR}/"
 
 echo "2. Installing dependencies on VPS..."
