@@ -1,4 +1,5 @@
 import { parseFrenchDate, formatDateISO } from '../utils/parsers.js';
+import { logger } from '../logger.js';
 
 const ADEME_API_URL = process.env.ADEME_API_URL || 'https://data.ademe.fr/data-fair/api/v1/datasets/dpe03existant/lines';
 
@@ -47,13 +48,17 @@ export function buildAdemeUrl(data) {
 
 export async function fetchAdeme(data) {
   const url = buildAdemeUrl(data);
+  const start = Date.now();
   const response = await fetch(url, {
     signal: AbortSignal.timeout(10_000),
   });
+  const duration = Date.now() - start;
   if (!response.ok) {
+    logger.error({ status: response.status, duration }, 'ADEME API request failed');
     const err = new Error(`ADEME API error: ${response.status}`);
     err.status = response.status;
     throw err;
   }
+  logger.info({ status: response.status, duration }, 'ADEME API request completed');
   return response.json();
 }

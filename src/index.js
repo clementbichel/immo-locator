@@ -34,7 +34,17 @@ export function createApp() {
     max: 30,
   }));
 
-  app.use(pinoHttp({ logger }));
+  app.use(pinoHttp({
+    logger,
+    serializers: {
+      req(req) {
+        return { method: req.method, url: req.url, remoteAddress: req.remoteAddress };
+      },
+      res(res) {
+        return { statusCode: res.statusCode };
+      },
+    },
+  }));
   app.use(express.json());
   app.use('/api/location', locationRouter);
   app.get('/health', (_req, res) => res.json({ status: 'ok' }));
