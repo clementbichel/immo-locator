@@ -374,7 +374,7 @@ Remplacer toutes les occurrences de `vps-9f0f5451.vps.ovh.net` par `api.immoloca
 | 4 | Task 4 — Validation Zod | 30 min | Sécurité des entrées | ✅ Done |
 | 5 | Task 5 — CORS vrais origins | 5 min | Restreindre l'accès | ⏳ Manuel |
 | 6 | Task 6 — Logging Pino | 30 min | Debugging en prod | ✅ Done |
-| 7 | Task 7 — UptimeRobot | 10 min | Alertes si down | ⏳ Manuel |
+| 7 | Task 7 — UptimeRobot | 10 min | Alertes si down | ✅ Done |
 | 8b | Task 8b — Analytics SQLite | 30 min | Données de recherche | ✅ Done |
 | 8 | Task 8 — Cache LRU | 20 min | Performance | ⏳ TODO |
 | 9 | Task 9 — Deploy script | 5 min | Cleanup | ✅ Done |
@@ -393,5 +393,5 @@ Après toutes les tasks, vérifier :
 - [x] Une requête quand l'API ADEME est down renvoie une 502 en < 11s
 - [x] Les logs sont en JSON structuré (pas de `console.log`) — Task 6
 - [ ] CORS bloque les requêtes depuis un origin non autorisé — Task 5
-- [ ] UptimeRobot envoie une alerte test — Task 7
+- [x] UptimeRobot envoie une alerte test — Task 7
 - [ ] L'extension Chrome fonctionne toujours de bout en bout
