@@ -18,6 +18,7 @@ rsync -avz -e "ssh ${SSH_OPTS}" \
   --exclude '.git' \
   --exclude '.claude' \
   --exclude 'logs' \
+  --exclude 'data' \
   --exclude 'tests' \
   --exclude 'deploy' \
   --exclude 'PLAN.md' \

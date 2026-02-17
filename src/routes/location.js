@@ -3,6 +3,7 @@ import { processResults } from '../services/dpe-service.js';
 import { fetchAdeme } from '../clients/ademe-client.js';
 import { searchSchema } from '../schemas/search.js';
 import { logger } from '../logger.js';
+import { recordSearch } from '../db.js';
 
 const router = Router();
 
@@ -20,17 +21,22 @@ router.post('/search', async (req, res) => {
 
   const data = parsed.data;
   const searchParams = { ...data };
+  const start = Date.now();
 
   try {
     const ademeResponse = await fetchAdeme(data);
     const results = ademeResponse.results ? processResults(data, ademeResponse.results) : [];
+    const duration_ms = Date.now() - start;
 
+    recordSearch({ ...data, results_count: results.length, duration_ms, status: 'ok' });
     logger.info({ searchParams, count: results.length }, 'Search completed');
     return res.json({
       results,
       count: results.length,
     });
   } catch (err) {
+    const duration_ms = Date.now() - start;
+    recordSearch({ ...data, results_count: 0, duration_ms, status: 'error' });
     logger.error({ err, searchParams }, 'ADEME search error');
     return res.status(502).json({
       error: 'UPSTREAM_ERROR',
