@@ -288,6 +288,21 @@ npm install -D pino-pretty
 
 ---
 
+## Task 8b : Analytics — enregistrement des recherches en SQLite ✅ DONE
+
+**Fichiers :** `src/db.js` (nouveau), `src/routes/location.js`, `deploy/deploy.sh`
+
+Chaque appel à `/api/location/search` est enregistré dans `data/searches.db` avec : `ts`, `zipcode`, `city`, `dpe`, `ges`, `surface`, `date_diag`, `conso_prim`, `results_count`, `duration_ms`, `status`.
+
+Permet d'analyser les recherches les plus fréquentes avant d'implémenter le cache LRU.
+
+```bash
+sqlite3 -column -header /opt/immo-locator-api/data/searches.db \
+  'SELECT zipcode, dpe, COUNT(*) as hits FROM searches GROUP BY zipcode, dpe ORDER BY hits DESC;'
+```
+
+---
+
 ## Task 8 (nice to have) : Cache LRU des réponses ADEME
 
 **Fichier :** `src/clients/ademe-client.js`
@@ -358,8 +373,9 @@ Remplacer toutes les occurrences de `vps-9f0f5451.vps.ovh.net` par `api.immoloca
 | 3 | Task 3 — Timeout ADEME | 5 min | Pas de requêtes bloquées | ✅ Done |
 | 4 | Task 4 — Validation Zod | 30 min | Sécurité des entrées | ✅ Done |
 | 5 | Task 5 — CORS vrais origins | 5 min | Restreindre l'accès | ⏳ Manuel |
-| 6 | Task 6 — Logging Pino | 30 min | Debugging en prod | ⏳ TODO |
+| 6 | Task 6 — Logging Pino | 30 min | Debugging en prod | ✅ Done |
 | 7 | Task 7 — UptimeRobot | 10 min | Alertes si down | ⏳ Manuel |
+| 8b | Task 8b — Analytics SQLite | 30 min | Données de recherche | ✅ Done |
 | 8 | Task 8 — Cache LRU | 20 min | Performance | ⏳ TODO |
 | 9 | Task 9 — Deploy script | 5 min | Cleanup | ✅ Done |
 
@@ -375,7 +391,7 @@ Après toutes les tasks, vérifier :
 - [x] Le serveur refuse de démarrer sans `ADEME_API_URL`
 - [x] Une requête avec un body invalide renvoie une 400 JSON propre (code `MISSING_FIELDS` compatible extension)
 - [x] Une requête quand l'API ADEME est down renvoie une 502 en < 11s
-- [ ] Les logs sont en JSON structuré (pas de `console.log`) — Task 6
+- [x] Les logs sont en JSON structuré (pas de `console.log`) — Task 6
 - [ ] CORS bloque les requêtes depuis un origin non autorisé — Task 5
 - [ ] UptimeRobot envoie une alerte test — Task 7
 - [ ] L'extension Chrome fonctionne toujours de bout en bout
