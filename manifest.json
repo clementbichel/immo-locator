@@ -4,6 +4,7 @@
   "version": "1.0.0",
   "description": "Extrait les données immobilières des annonces Leboncoin et recherche le DPE officiel.",
   "permissions": ["activeTab", "scripting"],
+  "host_permissions": ["https://api.immolocator.fr/*"],
   "action": {
     "default_popup": "popup.html",
     "default_icon": {
