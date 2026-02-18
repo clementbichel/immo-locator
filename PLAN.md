@@ -303,7 +303,7 @@ sqlite3 -column -header /opt/immo-locator-api/data/searches.db \
 
 ---
 
-## Task 8 (nice to have) : Cache LRU des réponses ADEME
+## Task 8 (nice to have) : Cache LRU des réponses ADEME ✅ DONE
 
 **Fichier :** `src/clients/ademe-client.js`
 
@@ -376,7 +376,7 @@ Remplacer toutes les occurrences de `vps-9f0f5451.vps.ovh.net` par `api.immoloca
 | 6 | Task 6 — Logging Pino | 30 min | Debugging en prod | ✅ Done |
 | 7 | Task 7 — UptimeRobot | 10 min | Alertes si down | ✅ Done |
 | 8b | Task 8b — Analytics SQLite | 30 min | Données de recherche | ✅ Done |
-| 8 | Task 8 — Cache LRU | 20 min | Performance | ⏳ TODO |
+| 8 | Task 8 — Cache LRU | 20 min | Performance | ✅ Done |
 | 9 | Task 9 — Deploy script | 5 min | Cleanup | ✅ Done |
 
 **Total estimé : ~2h**
