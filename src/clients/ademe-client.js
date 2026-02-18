@@ -1,5 +1,11 @@
+import { LRUCache } from 'lru-cache';
 import { parseFrenchDate, formatDateISO } from '../utils/parsers.js';
 import { logger } from '../logger.js';
+
+const cache = new LRUCache({
+  max: 500,
+  ttl: 60 * 60 * 1000, // 1 heure
+});
 
 const ADEME_API_URL = process.env.ADEME_API_URL || 'https://data.ademe.fr/data-fair/api/v1/datasets/dpe03existant/lines';
 
@@ -48,6 +54,13 @@ export function buildAdemeUrl(data) {
 
 export async function fetchAdeme(data) {
   const url = buildAdemeUrl(data);
+
+  const cached = cache.get(url);
+  if (cached) {
+    logger.info({ url }, 'ADEME cache hit');
+    return cached;
+  }
+
   const start = Date.now();
   const response = await fetch(url, {
     signal: AbortSignal.timeout(10_000),
@@ -60,5 +73,7 @@ export async function fetchAdeme(data) {
     throw err;
   }
   logger.info({ status: response.status, duration }, 'ADEME API request completed');
-  return response.json();
+  const result = await response.json();
+  cache.set(url, result);
+  return result;
 }
