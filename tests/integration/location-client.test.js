@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi, afterEach, beforeEach } from 'vitest';
 import {
   validateSearchData,
   buildSearchPayload,
@@ -129,6 +129,38 @@ describe('location-client (backend proxy)', () => {
     it('should handle special characters', () => {
       const link = getGoogleMapsLink('Café & Restaurant');
       expect(link).toContain(encodeURIComponent('Café & Restaurant'));
+    });
+  });
+
+  describe('sendReport', () => {
+    beforeEach(() => vi.resetModules());
+    afterEach(() => vi.restoreAllMocks());
+
+    it('should POST to /api/reports with url and extracted data', async () => {
+      const mockFetch = vi
+        .fn()
+        .mockResolvedValue({ ok: true, json: async () => ({ success: true }) });
+      vi.stubGlobal('fetch', mockFetch);
+
+      const { sendReport } = await import('../../src/api/location-client.js');
+      await sendReport('https://leboncoin.fr/ad/123', { dpe: 'D', surface: '45' });
+
+      expect(mockFetch).toHaveBeenCalledOnce();
+      const [url, options] = mockFetch.mock.calls[0];
+      expect(url).toBe('https://api.immolocator.fr/api/reports');
+      expect(options.method).toBe('POST');
+      const body = JSON.parse(options.body);
+      expect(body.url).toBe('https://leboncoin.fr/ad/123');
+      expect(body.extracted).toEqual({ dpe: 'D', surface: '45' });
+      expect(body.timestamp).toMatch(/^\d{4}-\d{2}-\d{2}T/);
+    });
+
+    it('should throw on non-200 response', async () => {
+      const mockFetch = vi.fn().mockResolvedValue({ ok: false });
+      vi.stubGlobal('fetch', mockFetch);
+
+      const { sendReport } = await import('../../src/api/location-client.js');
+      await expect(sendReport('https://leboncoin.fr/ad/123', {})).rejects.toThrow();
     });
   });
 });

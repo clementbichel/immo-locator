@@ -73,3 +73,24 @@ export async function searchLocation(data) {
 export function getGoogleMapsLink(address) {
   return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
 }
+
+/**
+ * Send an error report to the backend
+ * @param {string} tabUrl - URL of the current Leboncoin tab
+ * @param {object} extracted - Raw extracted data object
+ */
+export async function sendReport(tabUrl, extracted) {
+  const payload = {
+    url: tabUrl,
+    timestamp: new Date().toISOString(),
+    extracted,
+  };
+  const response = await fetch(`${API_BASE_URL}/api/reports`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+  if (!response.ok) {
+    throw new Error("Erreur lors de l'envoi du rapport.");
+  }
+}
