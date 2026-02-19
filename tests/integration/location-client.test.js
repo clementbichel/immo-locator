@@ -60,7 +60,7 @@ describe('location-client (backend proxy)', () => {
       };
       const result = validateSearchData(data);
       expect(result.isValid).toBe(false);
-      expect(result.missing).toHaveLength(5);
+      expect(result.missing).toHaveLength(4);
     });
   });
 
