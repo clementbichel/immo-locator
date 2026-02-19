@@ -62,6 +62,21 @@
   function getGoogleMapsLink(address) {
     return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
   }
+  async function sendReport(tabUrl, extracted) {
+    const payload = {
+      url: tabUrl,
+      timestamp: /* @__PURE__ */ new Date().toISOString(),
+      extracted,
+    };
+    const response = await fetch(`${API_BASE_URL}/api/reports`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    if (!response.ok) {
+      throw new Error("Erreur lors de l'envoi du rapport.");
+    }
+  }
 
   // src/utils/dom-helpers.js
   function createElement(tag, text = '', attrs = {}) {
@@ -218,6 +233,7 @@
     const errorMsg = document.getElementById('error-msg');
     const errorPage = document.getElementById('error-page');
     const errorCta = document.getElementById('error-cta');
+    const reportBtn = document.getElementById('report-btn');
     function showErrorPage(message) {
       document.body.classList.add('show-error-page');
       const detailEl = document.getElementById('error-page-detail');
@@ -648,6 +664,28 @@
               }
               dataStatusEl.style.display = 'inline-block';
             }
+            reportBtn.style.display = 'block';
+            reportBtn.onclick = async () => {
+              reportBtn.disabled = true;
+              reportBtn.textContent = 'Envoi...';
+              try {
+                const { debugLog: _debug, ...extractedData } = res;
+                await sendReport(tabUrl, extractedData);
+                reportBtn.textContent = '\u2713 Rapport envoy\xE9';
+                setTimeout(() => {
+                  reportBtn.textContent = 'Signaler une erreur';
+                  reportBtn.disabled = false;
+                }, 2e3);
+              } catch {
+                reportBtn.textContent = 'Signaler une erreur';
+                reportBtn.disabled = false;
+                errorMsg.textContent = "Impossible d'envoyer le rapport.";
+                errorMsg.style.display = 'block';
+                setTimeout(() => {
+                  errorMsg.style.display = 'none';
+                }, 3e3);
+              }
+            };
             prepareLocationSearch(res);
           } else {
             showErrorPage(
