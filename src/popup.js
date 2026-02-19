@@ -392,6 +392,16 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
+    // Show warning if optional fields are missing
+    if (validation.warnings.length > 0) {
+      const msg = createMessage(
+        `⚠️ ${validation.warnings.join(', ')} manquant(e) — les résultats seront moins précis.`,
+        '#b45309'
+      );
+      msg.style.fontSize = '12px';
+      locationResults.appendChild(msg);
+    }
+
     // Show Button
     searchBtn.style.display = 'block';
     searchBtn.onclick = () => executeLocationSearch(data);
@@ -423,7 +433,7 @@ document.addEventListener('DOMContentLoaded', () => {
         locationResults.appendChild(resultsList);
       } else {
         locationResults.appendChild(
-          createMessage('Aucun DPE correspondant trouvé avec ces critères stricts.')
+          createMessage('Aucune adresse trouvée avec ces critères stricts.')
         );
       }
     } catch (error) {

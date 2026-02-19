@@ -11,15 +11,16 @@
   var API_BASE_URL = 'https://api.immolocator.fr';
   function validateSearchData(data) {
     const missing = [];
+    const warnings = [];
     const hasLocation =
       (data.zipcode && data.zipcode !== 'Non trouv\xE9') ||
       (data.city && data.city !== 'Non trouv\xE9');
     if (!hasLocation) missing.push('Localisation');
-    if (!data.date_diag || data.date_diag === 'Non trouv\xE9') missing.push('Date');
     if (!data.dpe || data.dpe === 'Non trouv\xE9') missing.push('DPE');
     if (!data.ges || data.ges === 'Non trouv\xE9') missing.push('GES');
     if (!data.surface || data.surface === 'Non trouv\xE9') missing.push('Surface');
-    return { isValid: missing.length === 0, missing };
+    if (!data.date_diag || data.date_diag === 'Non trouv\xE9') warnings.push('Date de diagnostic');
+    return { isValid: missing.length === 0, missing, warnings };
   }
   function parseNumeric(value) {
     if (!value || value === 'Non trouv\xE9') return null;
@@ -39,7 +40,7 @@
       surface: parseNumeric(data.surface),
       date_diag: data.date_diag !== 'Non trouv\xE9' ? data.date_diag : null,
       conso_prim: parseNumeric(data.conso_prim),
-      conso_fin: parseNumeric(data.conso_fin),
+      conso_fin: parseNumeric(data.conso_fin) || null,
     };
   }
   async function searchLocation(data) {
@@ -146,7 +147,7 @@
   function createLocationResultsList(results, getMapsLink, getScoreColor2) {
     const container = document.createDocumentFragment();
     const title = createElement('p');
-    const strong = createElement('strong', 'Correspondances trouv\xE9es :');
+    const strong = createElement('strong', 'Adresses trouv\xE9es :');
     title.appendChild(strong);
     container.appendChild(title);
     const ul = createElement('ul', '', {
@@ -505,6 +506,14 @@
         locationResults.appendChild(msg);
         return;
       }
+      if (validation.warnings.length > 0) {
+        const msg = createMessage(
+          `\u26A0\uFE0F ${validation.warnings.join(', ')} manquant(e) \u2014 les r\xE9sultats seront moins pr\xE9cis.`,
+          '#b45309'
+        );
+        msg.style.fontSize = '12px';
+        locationResults.appendChild(msg);
+      }
       searchBtn.style.display = 'block';
       searchBtn.onclick = () => executeLocationSearch(data);
     }
@@ -530,7 +539,7 @@
           locationResults.appendChild(resultsList);
         } else {
           locationResults.appendChild(
-            createMessage('Aucun DPE correspondant trouv\xE9 avec ces crit\xE8res stricts.')
+            createMessage('Aucune adresse trouv\xE9e avec ces crit\xE8res stricts.')
           );
         }
       } catch (error) {

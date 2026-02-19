@@ -151,7 +151,7 @@ export function createLocationResultsList(results, getMapsLink, getScoreColor) {
   const container = document.createDocumentFragment();
 
   const title = createElement('p');
-  const strong = createElement('strong', 'Correspondances trouvées :');
+  const strong = createElement('strong', 'Adresses trouvées :');
   title.appendChild(strong);
   container.appendChild(title);
 

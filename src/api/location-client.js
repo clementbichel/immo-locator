@@ -5,14 +5,15 @@ const API_BASE_URL = 'https://api.immolocator.fr';
  */
 export function validateSearchData(data) {
   const missing = [];
+  const warnings = [];
   const hasLocation =
     (data.zipcode && data.zipcode !== 'Non trouvé') || (data.city && data.city !== 'Non trouvé');
   if (!hasLocation) missing.push('Localisation');
-  if (!data.date_diag || data.date_diag === 'Non trouvé') missing.push('Date');
   if (!data.dpe || data.dpe === 'Non trouvé') missing.push('DPE');
   if (!data.ges || data.ges === 'Non trouvé') missing.push('GES');
   if (!data.surface || data.surface === 'Non trouvé') missing.push('Surface');
-  return { isValid: missing.length === 0, missing };
+  if (!data.date_diag || data.date_diag === 'Non trouvé') warnings.push('Date de diagnostic');
+  return { isValid: missing.length === 0, missing, warnings };
 }
 
 /**
@@ -40,7 +41,7 @@ export function buildSearchPayload(data) {
     surface: parseNumeric(data.surface),
     date_diag: data.date_diag !== 'Non trouvé' ? data.date_diag : null,
     conso_prim: parseNumeric(data.conso_prim),
-    conso_fin: parseNumeric(data.conso_fin),
+    conso_fin: parseNumeric(data.conso_fin) || null,
   };
 }
 
