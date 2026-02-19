@@ -49,6 +49,17 @@ describe('searchSchema', () => {
     expect(result.success).toBe(false);
   });
 
+  it('accepts payload without date_diag', () => {
+    const { date_diag, ...rest } = validPayload;
+    const result = searchSchema.safeParse(rest);
+    expect(result.success).toBe(true);
+  });
+
+  it('accepts payload with null date_diag', () => {
+    const result = searchSchema.safeParse({ ...validPayload, date_diag: null });
+    expect(result.success).toBe(true);
+  });
+
   it('rejects surface over 10000', () => {
     const result = searchSchema.safeParse({ ...validPayload, surface: 50000 });
     expect(result.success).toBe(false);
