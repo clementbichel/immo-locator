@@ -16,19 +16,18 @@ import path from 'node:path';
 
 const TEST_REPORTS_FILE = path.join(process.cwd(), 'data', 'reports.test.jsonl');
 
-// Override the reports file path via env for tests
-process.env.REPORTS_FILE = TEST_REPORTS_FILE;
-
 describe('POST /api/reports', () => {
   let app;
 
   beforeEach(async () => {
+    process.env.REPORTS_FILE = TEST_REPORTS_FILE;
     app = createApp();
     // Clean up test file before each test
     await fs.rm(TEST_REPORTS_FILE, { force: true });
   });
 
   afterEach(async () => {
+    delete process.env.REPORTS_FILE;
     await fs.rm(TEST_REPORTS_FILE, { force: true });
   });
 
@@ -78,5 +77,22 @@ describe('POST /api/reports', () => {
     const lines = content.trim().split('\n');
     expect(lines).toHaveLength(2);
     expect(JSON.parse(lines[1]).url).toBe('https://leboncoin.fr/ad/456');
+  });
+
+  it('returns 500 when file write fails', async () => {
+    // Point REPORTS_FILE to an existing directory — appendFile will fail with EISDIR
+    process.env.REPORTS_FILE = path.join(process.cwd(), 'data');
+    app = createApp();
+
+    const res = await request(app)
+      .post('/api/reports')
+      .send({ url: 'https://leboncoin.fr/ad/123', extracted: { dpe: 'D' } });
+
+    expect(res.status).toBe(500);
+    expect(res.body.error).toBe('WRITE_ERROR');
+
+    // Restore for afterEach cleanup
+    process.env.REPORTS_FILE = TEST_REPORTS_FILE;
+    app = createApp();
   });
 });
