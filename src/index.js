@@ -14,12 +14,6 @@ export function validateEnv() {
   if (missing.length > 0) {
     throw new Error(`Missing required environment variables: ${missing.join(', ')}`);
   }
-
-  const corsOrigins = [process.env.CORS_CHROME_ORIGIN, process.env.CORS_FIREFOX_ORIGIN]
-    .filter(Boolean).filter(o => o !== '*');
-  if (corsOrigins.length === 0) {
-    throw new Error('Missing CORS origins: set CORS_CHROME_ORIGIN and/or CORS_FIREFOX_ORIGIN');
-  }
 }
 
 export function createApp() {
@@ -33,11 +27,11 @@ export function createApp() {
   ].filter(Boolean).filter(o => o !== '*');
 
   if (allowedOrigins.length === 0) {
-    logger.warn('No CORS origins configured — all cross-origin requests will be blocked');
+    logger.warn('No CORS origins configured — falling back to wildcard (*)');
   }
 
   app.use(cors({
-    origin: allowedOrigins.length > 0 ? allowedOrigins : false,
+    origin: allowedOrigins.length > 0 ? allowedOrigins : '*',
   }));
 
   app.use(rateLimit({
