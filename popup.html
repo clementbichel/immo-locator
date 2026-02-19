@@ -76,6 +76,29 @@
         letter-spacing: -0.3px;
       }
 
+      .btn-report {
+        background: none;
+        border: none;
+        font-size: 11px;
+        color: var(--text-tertiary);
+        cursor: pointer;
+        font-family: inherit;
+        padding: 4px 0;
+        text-decoration: underline;
+        text-underline-offset: 2px;
+        transition: color 0.15s;
+        white-space: nowrap;
+      }
+
+      .btn-report:hover {
+        color: var(--text-secondary);
+      }
+
+      .btn-report:disabled {
+        cursor: default;
+        text-decoration: none;
+      }
+
       /* ===== CARDS ===== */
       .card {
         background: var(--card-bg);
@@ -603,6 +626,9 @@
           <div class="header-icon">🏠</div>
           <h1>Immo Locator</h1>
         </div>
+        <button class="btn-report" id="report-btn" style="display: none">
+          Signaler une erreur
+        </button>
       </header>
 
       <!-- Property Card -->
