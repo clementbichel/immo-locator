@@ -14,6 +14,19 @@ export function validateEnv() {
   if (missing.length > 0) {
     throw new Error(`Missing required environment variables: ${missing.join(', ')}`);
   }
+
+  try {
+    new URL(process.env.ADEME_API_URL);
+  } catch {
+    throw new Error('ADEME_API_URL must be a valid URL');
+  }
+
+  if (process.env.PORT) {
+    const port = Number(process.env.PORT);
+    if (!Number.isInteger(port) || port < 1 || port > 65535) {
+      throw new Error('PORT must be an integer between 1 and 65535');
+    }
+  }
 }
 
 export function createApp() {
@@ -57,7 +70,7 @@ export function createApp() {
 
   // Global error handler — must have 4 params for Express to recognize it
   app.use((err, req, res, next) => {
-    logger.error({ err }, 'Unhandled error');
+    logger.error({ err, method: req.method, path: req.path }, 'Unhandled error');
     res.status(500).json({
       error: 'INTERNAL_ERROR',
       message: 'Erreur interne du serveur.',
