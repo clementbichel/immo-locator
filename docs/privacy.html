@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Politique de confidentialité — Immo Locator</title>
+    <style>
+      :root {
+        --bg: #fafafa;
+        --card-bg: #ffffff;
+        --text-primary: #1a1a1a;
+        --text-secondary: #6b7280;
+        --text-tertiary: #9ca3af;
+        --border: #e5e7eb;
+        --border-light: #f3f4f6;
+        --accent: #64748b;
+        --accent-light: #f1f5f9;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        background: var(--bg);
+        color: var(--text-primary);
+        font-size: 15px;
+        line-height: 1.7;
+      }
+
+      .page {
+        max-width: 680px;
+        margin: 0 auto;
+        padding: 48px 24px 80px;
+      }
+
+      /* Header */
+      .site-header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 48px;
+      }
+
+      .site-icon {
+        width: 36px;
+        height: 36px;
+        background: var(--accent-light);
+        border-radius: 9px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+      }
+
+      .site-name {
+        font-size: 15px;
+        font-weight: 600;
+        color: var(--text-primary);
+        text-decoration: none;
+      }
+
+      /* Hero */
+      .hero {
+        margin-bottom: 40px;
+        padding-bottom: 32px;
+        border-bottom: 1px solid var(--border-light);
+      }
+
+      .hero h1 {
+        font-size: 26px;
+        font-weight: 700;
+        letter-spacing: -0.5px;
+        margin-bottom: 8px;
+      }
+
+      .hero .meta {
+        font-size: 13px;
+        color: var(--text-tertiary);
+      }
+
+      /* Sections */
+      .section {
+        margin-bottom: 36px;
+      }
+
+      .section h2 {
+        font-size: 12px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        color: var(--text-tertiary);
+        margin-bottom: 12px;
+      }
+
+      .section p {
+        color: var(--text-secondary);
+        margin-bottom: 12px;
+      }
+
+      .section p:last-child {
+        margin-bottom: 0;
+      }
+
+      /* List */
+      .data-list {
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        overflow: hidden;
+        margin: 12px 0;
+      }
+
+      .data-list li {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 16px;
+        font-size: 14px;
+        color: var(--text-secondary);
+        border-bottom: 1px solid var(--border-light);
+        list-style: none;
+      }
+
+      .data-list li:last-child {
+        border-bottom: none;
+      }
+
+      .data-list li::before {
+        content: '';
+        width: 6px;
+        height: 6px;
+        background: var(--accent);
+        border-radius: 50%;
+        flex-shrink: 0;
+        opacity: 0.4;
+      }
+
+      /* Highlight box */
+      .highlight {
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 16px 20px;
+        font-size: 14px;
+        color: var(--text-secondary);
+        margin: 12px 0;
+      }
+
+      /* Contact */
+      .contact-link {
+        color: var(--text-primary);
+        font-weight: 500;
+        text-decoration: none;
+        border-bottom: 1px solid var(--border);
+        padding-bottom: 1px;
+        transition: border-color 0.15s;
+      }
+
+      .contact-link:hover {
+        border-color: var(--text-primary);
+      }
+
+      /* Footer */
+      .footer {
+        margin-top: 56px;
+        padding-top: 24px;
+        border-top: 1px solid var(--border-light);
+        font-size: 13px;
+        color: var(--text-tertiary);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <header class="site-header">
+        <div class="site-icon">🏠</div>
+        <a href="/" class="site-name">Immo Locator</a>
+      </header>
+
+      <div class="hero">
+        <h1>Politique de confidentialité</h1>
+        <p class="meta">Dernière mise à jour : février 2026</p>
+      </div>
+
+      <div class="section">
+        <h2>1. Qui sommes-nous</h2>
+        <p>Immo Locator est une extension Chrome développée et maintenue à titre personnel.</p>
+        <p>
+          Contact :
+          <a href="mailto:admin@immolocator.fr" class="contact-link">admin@immolocator.fr</a>
+        </p>
+      </div>
+
+      <div class="section">
+        <h2>2. Données accédées</h2>
+        <p>
+          L'extension lit le contenu de la page active uniquement lorsque vous vous trouvez sur une
+          annonce immobilière Leboncoin et que vous cliquez sur l'icône.
+        </p>
+        <p>Les données extraites de la page sont :</p>
+        <ul class="data-list">
+          <li>Surface habitable</li>
+          <li>Étiquette énergie et GES (lettre A à G)</li>
+          <li>Consommations énergétiques (kWh/m²/an)</li>
+          <li>Ville et code postal</li>
+          <li>Date du diagnostic</li>
+        </ul>
+        <p>
+          Ces données sont issues de l'annonce que vous consultez. Elles ne contiennent aucune
+          information permettant de vous identifier personnellement.
+        </p>
+      </div>
+
+      <div class="section">
+        <h2>3. Données transmises</h2>
+        <p>
+          Les données extraites sont envoyées à notre serveur (<strong>api.immolocator.fr</strong>)
+          afin de rechercher les biens correspondants dans la base de données publique.
+        </p>
+        <div class="highlight">
+          Aucune donnée personnelle (nom, email, adresse IP identifiante, identifiant utilisateur)
+          n'est associée à ces requêtes.
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>4. Données stockées</h2>
+        <p>
+          L'extension ne stocke aucune donnée sur votre appareil — pas de cookies, pas de
+          localStorage, pas de base de données locale.
+        </p>
+        <p>
+          Notre serveur conserve les paramètres de recherche (surface, ville, étiquettes énergie) à
+          des fins statistiques anonymes pour améliorer le service. Ces données ne sont pas
+          associées à un utilisateur ou à un appareil.
+        </p>
+      </div>
+
+      <div class="section">
+        <h2>5. Partage des données</h2>
+        <p>
+          Aucune donnée n'est vendue, louée ou partagée avec des tiers à des fins commerciales ou
+          publicitaires.
+        </p>
+      </div>
+
+      <div class="section">
+        <h2>6. Périmètre d'activation</h2>
+        <p>
+          L'extension ne s'active que sur les pages d'annonces individuelles du site leboncoin.fr.
+          Elle ne lit pas d'autres sites et ne fonctionne pas en arrière-plan.
+        </p>
+      </div>
+
+      <div class="section">
+        <h2>7. Contact</h2>
+        <p>
+          Pour toute question relative à cette politique de confidentialité :
+          <a href="mailto:admin@immolocator.fr" class="contact-link">admin@immolocator.fr</a>
+        </p>
+      </div>
+
+      <footer class="footer">
+        <span>© 2026 Immo Locator</span>
+        <span>Extension Chrome — Manifest V3</span>
+      </footer>
+    </div>
+  </body>
+</html>
