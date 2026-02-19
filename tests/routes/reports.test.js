@@ -80,19 +80,30 @@ describe('POST /api/reports', () => {
   });
 
   it('returns 500 when file write fails', async () => {
-    // Point REPORTS_FILE to an existing directory — appendFile will fail with EISDIR
-    process.env.REPORTS_FILE = path.join(process.cwd(), 'data');
+    // Create a directory at the reports path inside data/ — appendFile will fail with EISDIR
+    const badPath = path.join(process.cwd(), 'data', 'reports-write-fail.dir');
+    await fs.mkdir(badPath, { recursive: true });
+    process.env.REPORTS_FILE = badPath;
     app = createApp();
 
+    try {
+      const res = await request(app)
+        .post('/api/reports')
+        .send({ url: 'https://leboncoin.fr/ad/123', extracted: { dpe: 'D' } });
+
+      expect(res.status).toBe(500);
+      expect(res.body.error).toBe('WRITE_ERROR');
+    } finally {
+      await fs.rm(badPath, { recursive: true, force: true });
+      process.env.REPORTS_FILE = TEST_REPORTS_FILE;
+    }
+  });
+
+  it('returns 400 when url is not http(s)', async () => {
     const res = await request(app)
       .post('/api/reports')
-      .send({ url: 'https://leboncoin.fr/ad/123', extracted: { dpe: 'D' } });
-
-    expect(res.status).toBe(500);
-    expect(res.body.error).toBe('WRITE_ERROR');
-
-    // Restore for afterEach cleanup
-    process.env.REPORTS_FILE = TEST_REPORTS_FILE;
-    app = createApp();
+      .send({ url: 'javascript:alert(1)', extracted: { dpe: 'D' } });
+    expect(res.status).toBe(400);
+    expect(res.body.error).toBe('INVALID_URL');
   });
 });

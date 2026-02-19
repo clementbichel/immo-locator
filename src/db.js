@@ -3,7 +3,17 @@ import path from 'node:path';
 import fs from 'node:fs';
 import { logger } from './logger.js';
 
-const dbPath = process.env.DB_PATH || path.join(process.cwd(), 'data', 'searches.db');
+const BASE_DATA_DIR = path.resolve(process.cwd(), 'data');
+
+function resolveDbPath(rawPath) {
+  const resolved = path.resolve(rawPath);
+  if (!resolved.startsWith(BASE_DATA_DIR + path.sep)) {
+    throw new Error(`DB_PATH path traversal detected: ${rawPath}`);
+  }
+  return resolved;
+}
+
+const dbPath = resolveDbPath(process.env.DB_PATH ?? path.join(process.cwd(), 'data', 'searches.db'));
 
 fs.mkdirSync(path.dirname(dbPath), { recursive: true });
 

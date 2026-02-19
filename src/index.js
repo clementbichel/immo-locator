@@ -14,6 +14,12 @@ export function validateEnv() {
   if (missing.length > 0) {
     throw new Error(`Missing required environment variables: ${missing.join(', ')}`);
   }
+
+  const corsOrigins = [process.env.CORS_CHROME_ORIGIN, process.env.CORS_FIREFOX_ORIGIN]
+    .filter(Boolean).filter(o => o !== '*');
+  if (corsOrigins.length === 0) {
+    throw new Error('Missing CORS origins: set CORS_CHROME_ORIGIN and/or CORS_FIREFOX_ORIGIN');
+  }
 }
 
 export function createApp() {
@@ -26,8 +32,12 @@ export function createApp() {
     process.env.CORS_FIREFOX_ORIGIN,
   ].filter(Boolean).filter(o => o !== '*');
 
+  if (allowedOrigins.length === 0) {
+    logger.warn('No CORS origins configured — all cross-origin requests will be blocked');
+  }
+
   app.use(cors({
-    origin: allowedOrigins.length > 0 ? allowedOrigins : '*',
+    origin: allowedOrigins.length > 0 ? allowedOrigins : false,
   }));
 
   app.use(rateLimit({
@@ -46,7 +56,7 @@ export function createApp() {
       },
     },
   }));
-  app.use(express.json());
+  app.use(express.json({ limit: '10kb' }));
   app.use('/api/location', locationRouter);
   app.use('/api/reports', reportsRouter);
   app.get('/health', (_req, res) => res.json({ status: 'ok' }));

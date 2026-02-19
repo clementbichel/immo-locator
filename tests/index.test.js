@@ -17,8 +17,16 @@ describe('validateEnv', () => {
     expect(() => validateEnv()).toThrow('Missing required environment variables');
   });
 
-  it('does not throw when ADEME_API_URL is set', () => {
+  it('does not throw when required env vars are set', () => {
     process.env.ADEME_API_URL = 'https://example.com';
+    process.env.CORS_CHROME_ORIGIN = 'chrome-extension://abc123';
     expect(() => validateEnv()).not.toThrow();
+  });
+
+  it('throws if no CORS origins are configured', () => {
+    process.env.ADEME_API_URL = 'https://example.com';
+    delete process.env.CORS_CHROME_ORIGIN;
+    delete process.env.CORS_FIREFOX_ORIGIN;
+    expect(() => validateEnv()).toThrow('Missing CORS origins');
   });
 });

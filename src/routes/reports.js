@@ -7,9 +7,18 @@ import { logger } from '../logger.js';
 const router = Router();
 
 const DEFAULT_REPORTS_FILE = path.join(process.cwd(), 'data', 'reports.jsonl');
+const BASE_DATA_DIR = path.resolve(process.cwd(), 'data');
+
+function resolveReportsFile(rawPath) {
+  const resolved = path.resolve(rawPath);
+  if (!resolved.startsWith(BASE_DATA_DIR + path.sep)) {
+    throw new Error(`REPORTS_FILE path traversal detected: ${rawPath}`);
+  }
+  return resolved;
+}
 
 function getReportsFile() {
-  return process.env.REPORTS_FILE ?? DEFAULT_REPORTS_FILE;
+  return resolveReportsFile(process.env.REPORTS_FILE ?? DEFAULT_REPORTS_FILE);
 }
 
 let dirEnsured = false;
@@ -21,7 +30,22 @@ router.post('/', async (req, res) => {
     return res.status(400).json({ error: 'MISSING_FIELDS', message: 'url et extracted sont requis.' });
   }
 
-  const reportsFile = getReportsFile();
+  try {
+    const parsed = new URL(url);
+    if (!['http:', 'https:'].includes(parsed.protocol)) {
+      return res.status(400).json({ error: 'INVALID_URL', message: 'url doit être une URL http ou https valide.' });
+    }
+  } catch {
+    return res.status(400).json({ error: 'INVALID_URL', message: 'url doit être une URL http ou https valide.' });
+  }
+
+  let reportsFile;
+  try {
+    reportsFile = getReportsFile();
+  } catch (err) {
+    logger.error({ err }, 'Invalid REPORTS_FILE path');
+    return res.status(400).json({ error: 'INVALID_PATH', message: 'Chemin de fichier invalide.' });
+  }
 
   if (!dirEnsured) {
     mkdirSync(path.dirname(reportsFile), { recursive: true });
@@ -30,7 +54,7 @@ router.post('/', async (req, res) => {
 
   const entry = JSON.stringify({
     url,
-    timestamp: req.body.timestamp ?? new Date().toISOString(),
+    timestamp: new Date().toISOString(),
     extracted,
   });
 
