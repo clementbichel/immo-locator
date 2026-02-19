@@ -2,7 +2,20 @@ import { Router } from 'express';
 import fs from 'node:fs/promises';
 import { mkdirSync } from 'node:fs';
 import path from 'node:path';
+import { z } from 'zod';
 import { logger } from '../logger.js';
+
+const extractedSchema = z.object({
+  surface: z.string(),
+  terrain: z.string(),
+  dpe: z.string(),
+  ges: z.string(),
+  date_diag: z.string(),
+  conso_prim: z.string(),
+  conso_fin: z.string(),
+  city: z.string(),
+  zipcode: z.string(),
+}).partial().strict();
 
 const router = Router();
 
@@ -28,6 +41,11 @@ router.post('/', async (req, res) => {
 
   if (!url || typeof url !== 'string' || !extracted) {
     return res.status(400).json({ error: 'MISSING_FIELDS', message: 'url et extracted sont requis.' });
+  }
+
+  const extractedResult = extractedSchema.safeParse(extracted);
+  if (!extractedResult.success) {
+    return res.status(400).json({ error: 'INVALID_EXTRACTED', message: 'Données extraites invalides.' });
   }
 
   try {
