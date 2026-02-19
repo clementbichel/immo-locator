@@ -2,7 +2,12 @@
 globalThis.browser ??= globalThis.chrome;
 
 import { getScoreColor } from './utils/score-calculator.js';
-import { validateSearchData, searchLocation, getGoogleMapsLink } from './api/location-client.js';
+import {
+  validateSearchData,
+  searchLocation,
+  getGoogleMapsLink,
+  sendReport,
+} from './api/location-client.js';
 import { clearElement, createMessage, createLocationResultsList } from './utils/dom-helpers.js';
 import { getErrorMessage, ERROR_CODES } from './utils/error-messages.js';
 
@@ -10,6 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const errorMsg = document.getElementById('error-msg');
   const errorPage = document.getElementById('error-page');
   const errorCta = document.getElementById('error-cta');
+  const reportBtn = document.getElementById('report-btn');
 
   // Show full error page for invalid page errors
   function showErrorPage(message) {
@@ -560,6 +566,31 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             dataStatusEl.style.display = 'inline-block';
           }
+
+          // Show and wire the report button
+          reportBtn.style.display = 'block';
+          reportBtn.onclick = async () => {
+            reportBtn.disabled = true;
+            reportBtn.textContent = 'Envoi...';
+            try {
+              // Exclude internal debug log from the report
+              const { debugLog: _debug, ...extractedData } = res;
+              await sendReport(tabUrl, extractedData);
+              reportBtn.textContent = '✓ Rapport envoyé';
+              setTimeout(() => {
+                reportBtn.textContent = 'Signaler une erreur';
+                reportBtn.disabled = false;
+              }, 2000);
+            } catch {
+              reportBtn.textContent = 'Signaler une erreur';
+              reportBtn.disabled = false;
+              errorMsg.textContent = "Impossible d'envoyer le rapport.";
+              errorMsg.style.display = 'block';
+              setTimeout(() => {
+                errorMsg.style.display = 'none';
+              }, 3000);
+            }
+          };
 
           // Prepare Location Search (Manual)
           prepareLocationSearch(res);
