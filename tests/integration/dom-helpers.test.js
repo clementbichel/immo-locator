@@ -168,7 +168,7 @@ describe('dom-helpers', () => {
       const container = document.createElement('div');
       container.appendChild(fragment);
 
-      expect(container.querySelector('strong').textContent).toBe('Correspondances trouvées :');
+      expect(container.querySelector('strong').textContent).toBe('Adresses trouvées :');
       expect(container.querySelectorAll('li').length).toBe(2);
     });
 

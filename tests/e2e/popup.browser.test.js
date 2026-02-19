@@ -120,7 +120,7 @@ describe('Popup UI E2E Tests', () => {
     it('should have button with correct text', () => {
       const button = document.getElementById('search-location-btn');
       expect(button).not.toBeNull();
-      expect(button.textContent).toContain('Rechercher le DPE officiel');
+      expect(button.textContent).toContain('Rechercher les adresses correspondantes');
     });
 
     it('should have loading indicator with spinner', () => {
