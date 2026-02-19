@@ -134,7 +134,10 @@ describe('location-client (backend proxy)', () => {
 
   describe('sendReport', () => {
     beforeEach(() => vi.resetModules());
-    afterEach(() => vi.restoreAllMocks());
+    afterEach(() => {
+      vi.restoreAllMocks();
+      vi.unstubAllGlobals();
+    });
 
     it('should POST to /api/reports with url and extracted data', async () => {
       const mockFetch = vi
