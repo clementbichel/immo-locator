@@ -6,6 +6,7 @@ import rateLimit from 'express-rate-limit';
 import pinoHttp from 'pino-http';
 import { logger } from './logger.js';
 import locationRouter from './routes/location.js';
+import reportsRouter from './routes/reports.js';
 
 export function validateEnv() {
   const required = ['ADEME_API_URL'];
@@ -47,6 +48,7 @@ export function createApp() {
   }));
   app.use(express.json());
   app.use('/api/location', locationRouter);
+  app.use('/api/reports', reportsRouter);
   app.get('/health', (_req, res) => res.json({ status: 'ok' }));
 
   // Global error handler — must have 4 params for Express to recognize it
