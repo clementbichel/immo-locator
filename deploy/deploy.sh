@@ -22,7 +22,7 @@ rsync -avz -e "ssh ${SSH_OPTS}" \
   --exclude 'tests' \
   --exclude 'deploy' \
   --exclude 'PLAN.md' \
-  ~/immo-locator-api/ "${VPS_HOST}:${APP_DIR}/"
+  ~/src/immo-locator/immo-locator-api/ "${VPS_HOST}:${APP_DIR}/"
 
 echo "2. Installing dependencies on VPS..."
 ssh ${SSH_OPTS} "${VPS_HOST}" "cd ${APP_DIR} && npm install --production"
