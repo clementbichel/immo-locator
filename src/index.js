@@ -68,6 +68,11 @@ export function createApp() {
   app.use('/api/reports', reportsRouter);
   app.get('/health', (_req, res) => res.json({ status: 'ok' }));
 
+  app.use((req, res) => {
+    logger.warn({ method: req.method, path: req.path, ip: req.ip }, 'Unknown route');
+    res.status(404).json({ error: 'NOT_FOUND' });
+  });
+
   // Global error handler — must have 4 params for Express to recognize it
   app.use((err, req, res, next) => {
     logger.error({ err, method: req.method, path: req.path }, 'Unhandled error');
