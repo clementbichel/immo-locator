@@ -58,7 +58,7 @@ export function createApp() {
     logger,
     serializers: {
       req(req) {
-        const ip = req.headers['x-forwarded-for']?.split(',')[0].trim() ?? req.socket.remoteAddress;
+        const ip = req.headers['x-forwarded-for']?.split(',')[0].trim() ?? req.socket?.remoteAddress;
         return { method: req.method, url: req.url, remoteAddress: ip };
       },
       res(res) {
