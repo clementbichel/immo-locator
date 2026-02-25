@@ -191,23 +191,20 @@ it('accepts valid payload', () => { ... });
 
 **Étapes :**
 
-1. Récupérer l'ID de l'extension Chrome :
-   - Aller sur `chrome://extensions/`
-   - Copier l'ID (ex: `abcdefghijklmnopqrstuvwxyz123456`)
-
-2. Mettre à jour le `.env` sur le VPS :
+1. Dès que les extensions sont validées, mettre à jour le `.env` sur le VPS :
    ```
-   CORS_CHROME_ORIGIN=chrome-extension://abcdefghijklmnopqrstuvwxyz123456
+   CORS_CHROME_ORIGIN=chrome-extension://okglkdgbdbnikojffmjpodmakgjmlpda
+   CORS_FIREFOX_ORIGIN=<id-firefox-après-validation-AMO>
    ```
 
-3. Redémarrer avec PM2 :
+2. Redémarrer avec PM2 :
    ```bash
    pm2 restart immo-locator-api
    ```
 
-4. Tester : ouvrir l'extension → la recherche doit toujours fonctionner. Ouvrir un autre site → un `fetch` vers l'API doit être bloqué par CORS.
+3. Tester : ouvrir l'extension → la recherche doit toujours fonctionner. Ouvrir un autre site → un `fetch` vers l'API doit être bloqué par CORS.
 
-**Note :** L'ID change si tu republies l'extension non packagée. L'ID sera fixe une fois publiée sur le Chrome Web Store.
+**Note :** L'ID Chrome est fixe : `okglkdgbdbnikojffmjpodmakgjmlpda`. L'ID Firefox sera disponible dans le dashboard AMO après validation.
 
 ---
 
@@ -364,6 +361,132 @@ Remplacer toutes les occurrences de `vps-9f0f5451.vps.ovh.net` par `api.immoloca
 
 ---
 
+---
+
+## Task 10 : Supprimer le `.env` du dépôt 🔴 CRITIQUE
+
+**Fichier :** `.env` à la racine de `immo-locator-api`
+
+**Pourquoi :** Le fichier `.env` est commité dans le repo. Même si les valeurs actuelles sont des placeholders, le pattern est dangereux — un vrai secret (clé API, mot de passe DB) pourrait être commité accidentellement.
+
+**Étapes :**
+
+1. Ajouter `.env` au `.gitignore` si ce n'est pas déjà fait :
+   ```
+   .env
+   ```
+2. Supprimer le fichier du tracking git sans le supprimer disque :
+   ```bash
+   git rm --cached .env
+   git commit -m "chore: remove .env from version control"
+   ```
+3. Vérifier que `.env.example` est à jour avec toutes les variables requises (sans valeurs réelles).
+4. Vérifier l'historique git pour s'assurer qu'aucun vrai secret n'a jamais été commité (`git log --all -p -- .env`).
+
+---
+
+## Task 11 : CORS fail-fast — supprimer le fallback wildcard 🔴 CRITIQUE
+
+**Fichier :** `src/index.js`
+
+**Pourquoi :** Si `CORS_CHROME_ORIGIN` et `CORS_FIREFOX_ORIGIN` ne sont pas définis, l'API accepte `*` (toutes origines). N'importe quel site web peut appeler l'API.
+
+**Dépendance :** À coordonner avec Task 5 (configuration des vrais origins sur le VPS).
+
+**Implémentation :**
+
+Modifier la configuration CORS pour échouer au démarrage si aucun origin n'est configuré, plutôt que de tomber sur `*` :
+
+```js
+const allowedOrigins = [
+  process.env.CORS_CHROME_ORIGIN,
+  process.env.CORS_FIREFOX_ORIGIN,
+].filter(Boolean).filter(o => o !== '*');
+
+if (allowedOrigins.length === 0) {
+  // Fail-fast : ne pas démarrer sans CORS configuré
+  throw new Error('CORS_CHROME_ORIGIN ou CORS_FIREFOX_ORIGIN requis');
+}
+
+app.use(cors({ origin: allowedOrigins }));
+```
+
+Ajouter également `CORS_CHROME_ORIGIN` à la liste des variables requises dans `validateEnv()`.
+
+**Test :**
+```js
+it('throws at startup if no CORS origin is configured', () => {
+  delete process.env.CORS_CHROME_ORIGIN;
+  delete process.env.CORS_FIREFOX_ORIGIN;
+  expect(() => createApp()).toThrow('CORS_CHROME_ORIGIN');
+});
+```
+
+---
+
+## Task 12 : Renforcer la validation du schéma reports 🟠 HAUTE
+
+**Fichier :** `src/routes/reports.js`
+
+**Pourquoi :** Le schéma actuel utilise `.partial()`, ce qui rend tous les champs optionnels. Pas de limite de longueur, pas de validation de format pour DPE/GES, dates, surfaces. Une extension malveillante pourrait envoyer des strings arbitrairement longues.
+
+**Implémentation :**
+
+```js
+const extractedSchema = z.object({
+  surface:    z.string().regex(/^\d+(\.\d+)?$/).max(10).nullish(),
+  terrain:    z.string().regex(/^\d+(\.\d+)?$/).max(10).nullish(),
+  dpe:        z.enum(['A', 'B', 'C', 'D', 'E', 'F', 'G']).nullish(),
+  ges:        z.enum(['A', 'B', 'C', 'D', 'E', 'F', 'G']).nullish(),
+  date_diag:  z.string().regex(/^\d{2}\/\d{2}\/\d{4}$/).nullish(),
+  conso_prim: z.string().regex(/^\d+(\.\d+)?$/).max(10).nullish(),
+  conso_fin:  z.string().regex(/^\d+(\.\d+)?$/).max(10).nullish(),
+  city:       z.string().max(100).nullish(),
+  zipcode:    z.string().regex(/^\d{5}$/).nullish(),
+}).strict();
+```
+
+Supprimer `.partial()`, remplacer par `.nullish()` champ par champ.
+
+**Test :**
+```js
+it('rejects DPE value outside A-G', () => { ... });
+it('rejects surface with more than 10 chars', () => { ... });
+it('rejects unknown fields (strict mode)', () => { ... });
+```
+
+---
+
+## Task 13 : Rate limiting par endpoint 🟠 HAUTE
+
+**Fichier :** `src/index.js`
+
+**Pourquoi :** La limite globale de 30 req/min s'applique à tous les endpoints. L'endpoint `/api/location/search` effectue un appel ADEME externe coûteux — il devrait avoir une limite plus stricte pour éviter l'abus et l'énumération de codes postaux.
+
+**Implémentation :**
+
+```js
+import rateLimit from 'express-rate-limit';
+
+// Limite globale (inchangée)
+app.use(rateLimit({ windowMs: 60_000, max: 30 }));
+
+// Limite stricte sur la recherche
+const searchLimiter = rateLimit({
+  windowMs: 60_000,
+  max: 10,
+  message: { error: 'RATE_LIMIT', message: 'Trop de recherches, réessayez dans une minute.' },
+});
+app.use('/api/location/search', searchLimiter);
+```
+
+**Test :**
+```js
+it('returns 429 after 10 search requests within a minute', async () => { ... });
+```
+
+---
+
 ## Ordre d'exécution recommandé
 
 | Ordre | Task | Effort | Impact | Status |
@@ -372,14 +495,20 @@ Remplacer toutes les occurrences de `vps-9f0f5451.vps.ovh.net` par `api.immoloca
 | 2 | Task 2 — Error handler global | 10 min | Pas de 500 HTML | ✅ Done |
 | 3 | Task 3 — Timeout ADEME | 5 min | Pas de requêtes bloquées | ✅ Done |
 | 4 | Task 4 — Validation Zod | 30 min | Sécurité des entrées | ✅ Done |
-| 5 | Task 5 — CORS vrais origins | 5 min | Restreindre l'accès | ⏳ Manuel |
+| 5 | Task 5 — CORS vrais origins | 5 min | Restreindre l'accès | ⏳ En attente validation stores |
 | 6 | Task 6 — Logging Pino | 30 min | Debugging en prod | ✅ Done |
 | 7 | Task 7 — UptimeRobot | 10 min | Alertes si down | ✅ Done |
 | 8b | Task 8b — Analytics SQLite | 30 min | Données de recherche | ✅ Done |
 | 8 | Task 8 — Cache LRU | 20 min | Performance | ✅ Done |
 | 9 | Task 9 — Deploy script | 5 min | Cleanup | ✅ Done |
+| — | **Audit sécurité (ajouts)** | | | |
+| 10 | Task 10 — Supprimer `.env` du repo | 5 min | 🔴 Critique — secrets | ⏳ À faire |
+| 11 | Task 11 — CORS fail-fast (no wildcard) | 15 min | 🔴 Critique — accès API | ⏳ Après Task 5 |
+| 12 | Task 12 — Schéma reports renforcé | 20 min | 🟠 Haute — validation données | ⏳ À faire |
+| 13 | Task 13 — Rate limit par endpoint | 15 min | 🟠 Haute — anti-abus | ⏳ À faire |
 
-**Total estimé : ~2h**
+**Total initial estimé : ~2h**
+**Total avec audit sécurité : +~55 min**
 
 ---
 
@@ -392,6 +521,11 @@ Après toutes les tasks, vérifier :
 - [x] Une requête avec un body invalide renvoie une 400 JSON propre (code `MISSING_FIELDS` compatible extension)
 - [x] Une requête quand l'API ADEME est down renvoie une 502 en < 11s
 - [x] Les logs sont en JSON structuré (pas de `console.log`) — Task 6
-- [ ] CORS bloque les requêtes depuis un origin non autorisé — Task 5
+- [ ] CORS bloque les requêtes depuis un origin non autorisé — Task 5 (en attente IDs stores)
 - [x] UptimeRobot envoie une alerte test — Task 7
-- [ ] L'extension Chrome fonctionne toujours de bout en bout
+- [ ] L'extension Chrome fonctionne de bout en bout après validation
+- [ ] L'extension Firefox fonctionne de bout en bout après validation
+- [ ] `.env` absent du repo git — Task 10 🔴
+- [ ] Démarrage échoue si CORS non configuré (pas de fallback `*`) — Task 11 🔴
+- [ ] Schéma reports valide DPE/GES/dates/longueurs — Task 12 🟠
+- [ ] `/api/location/search` limité à 10 req/min — Task 13 🟠
