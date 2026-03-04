@@ -363,7 +363,7 @@ Remplacer toutes les occurrences de `vps-9f0f5451.vps.ovh.net` par `api.immoloca
 
 ---
 
-## Task 10 : Supprimer le `.env` du dépôt 🔴 CRITIQUE
+## Task 10 : Supprimer le `.env` du dépôt ✅ DONE
 
 **Fichier :** `.env` à la racine de `immo-locator-api`
 
@@ -544,7 +544,7 @@ fail2ban-client status nginx-404   # vérifier que la jail est active
 | 8 | Task 8 — Cache LRU | 20 min | Performance | ✅ Done |
 | 9 | Task 9 — Deploy script | 5 min | Cleanup | ✅ Done |
 | — | **Audit sécurité (ajouts)** | | | |
-| 10 | Task 10 — Supprimer `.env` du repo | 5 min | 🔴 Critique — secrets | ⏳ À faire |
+| 10 | Task 10 — Supprimer `.env` du repo | 5 min | 🔴 Critique — secrets | ✅ Done |
 | 11 | Task 11 — CORS fail-fast (no wildcard) | 15 min | 🔴 Critique — accès API | ✅ Done |
 | 12 | Task 12 — Schéma reports renforcé | 20 min | 🟠 Haute — validation données | ✅ Done |
 | 13 | Task 13 — Rate limit par endpoint | 15 min | 🟠 Haute — anti-abus | ✅ Done |
@@ -568,7 +568,7 @@ Après toutes les tasks, vérifier :
 - [x] UptimeRobot envoie une alerte test — Task 7
 - [ ] L'extension Chrome fonctionne de bout en bout après validation
 - [ ] L'extension Firefox fonctionne de bout en bout après validation
-- [ ] `.env` absent du repo git — Task 10 🔴
+- [x] `.env` absent du repo git — Task 10 ✅
 - [x] Démarrage échoue si CORS non configuré (pas de fallback `*`) — Task 11
 - [x] Schéma reports valide DPE/GES/dates/longueurs — Task 12
 - [x] `/api/location/search` limité à 20 req/min — Task 13
