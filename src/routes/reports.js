@@ -1,9 +1,7 @@
 import { Router } from 'express';
-import fs from 'node:fs/promises';
-import { mkdirSync } from 'node:fs';
-import path from 'node:path';
 import { z } from 'zod';
 import { logger } from '../logger.js';
+import { recordReport } from '../db.js';
 
 const extractedSchema = z.object({
   surface:    z.string().regex(/^\d+(\.\d+)?$/).max(10).nullish(),
@@ -17,33 +15,38 @@ const extractedSchema = z.object({
   zipcode:    z.string().regex(/^\d{5}$/).nullish(),
 }).strict();
 
+const NUMERIC_FIELDS = ['surface', 'terrain', 'conso_prim', 'conso_fin'];
+
+/**
+ * Compat: old extension sends raw values with units ("76 m²", "230 kWh/m²/an")
+ * and "Non trouvé" instead of null. Clean before validation.
+ */
+function cleanExtracted(raw) {
+  const result = {};
+  for (const [key, value] of Object.entries(raw)) {
+    if (value == null || value === 'Non trouvé') continue;
+    if (NUMERIC_FIELDS.includes(key)) {
+      const match = String(value).match(/(\d+(?:[.,]\d+)?)/);
+      result[key] = match ? match[1].replace(',', '.') : value;
+    } else {
+      result[key] = value;
+    }
+  }
+  return result;
+}
+
 const router = Router();
 
-const DEFAULT_REPORTS_FILE = path.join(process.cwd(), 'data', 'reports.jsonl');
-const BASE_DATA_DIR = path.resolve(process.cwd(), 'data');
-
-function resolveReportsFile(rawPath) {
-  const resolved = path.resolve(rawPath);
-  if (!resolved.startsWith(BASE_DATA_DIR + path.sep)) {
-    throw new Error(`REPORTS_FILE path traversal detected: ${rawPath}`);
-  }
-  return resolved;
-}
-
-function getReportsFile() {
-  return resolveReportsFile(process.env.REPORTS_FILE ?? DEFAULT_REPORTS_FILE);
-}
-
-let dirEnsured = false;
-
-router.post('/', async (req, res) => {
+router.post('/', (req, res) => {
   const { url, extracted } = req.body;
 
   if (!url || typeof url !== 'string' || !extracted) {
     return res.status(400).json({ error: 'MISSING_FIELDS', message: 'url et extracted sont requis.' });
   }
 
-  const extractedResult = extractedSchema.safeParse(extracted);
+  const cleaned = cleanExtracted(extracted);
+
+  const extractedResult = extractedSchema.safeParse(cleaned);
   if (!extractedResult.success) {
     return res.status(400).json({ error: 'INVALID_EXTRACTED', message: 'Données extraites invalides.' });
   }
@@ -57,27 +60,8 @@ router.post('/', async (req, res) => {
     return res.status(400).json({ error: 'INVALID_URL', message: 'url doit être une URL http ou https valide.' });
   }
 
-  let reportsFile;
   try {
-    reportsFile = getReportsFile();
-  } catch (err) {
-    logger.error({ err }, 'Invalid REPORTS_FILE path');
-    return res.status(400).json({ error: 'INVALID_PATH', message: 'Chemin de fichier invalide.' });
-  }
-
-  if (!dirEnsured) {
-    mkdirSync(path.dirname(reportsFile), { recursive: true });
-    dirEnsured = true;
-  }
-
-  const entry = JSON.stringify({
-    url,
-    timestamp: new Date().toISOString(),
-    extracted,
-  });
-
-  try {
-    await fs.appendFile(reportsFile, entry + '\n', 'utf8');
+    recordReport({ url, ...extractedResult.data });
     res.json({ success: true });
   } catch (err) {
     logger.error({ err }, 'Failed to write report');

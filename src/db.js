@@ -36,12 +36,57 @@ db.exec(`
   )
 `);
 
+db.exec(`
+  CREATE TABLE IF NOT EXISTS reports (
+    id         INTEGER PRIMARY KEY AUTOINCREMENT,
+    ts         INTEGER NOT NULL,
+    url        TEXT NOT NULL,
+    surface    TEXT,
+    terrain    TEXT,
+    dpe        TEXT,
+    ges        TEXT,
+    date_diag  TEXT,
+    conso_prim TEXT,
+    conso_fin  TEXT,
+    city       TEXT,
+    zipcode    TEXT
+  )
+`);
+
+const RETENTION_DAYS = 90;
+const retentionMs = RETENTION_DAYS * 24 * 60 * 60 * 1000;
+const deleted = db.prepare('DELETE FROM reports WHERE ts < ?').run(Date.now() - retentionMs);
+if (deleted.changes > 0) {
+  logger.info({ deleted: deleted.changes, retentionDays: RETENTION_DAYS }, 'Purged old reports');
+}
+
 logger.info({ dbPath }, 'SQLite database ready');
 
 const insertSearch = db.prepare(`
   INSERT INTO searches (ts, zipcode, city, dpe, ges, surface, date_diag, conso_prim, results_count, duration_ms, status)
   VALUES (@ts, @zipcode, @city, @dpe, @ges, @surface, @date_diag, @conso_prim, @results_count, @duration_ms, @status)
 `);
+
+const insertReport = db.prepare(`
+  INSERT INTO reports (ts, url, surface, terrain, dpe, ges, date_diag, conso_prim, conso_fin, city, zipcode)
+  VALUES (@ts, @url, @surface, @terrain, @dpe, @ges, @date_diag, @conso_prim, @conso_fin, @city, @zipcode)
+`);
+
+export function recordReport({ url, surface, terrain, dpe, ges, date_diag, conso_prim, conso_fin, city, zipcode }) {
+  insertReport.run({
+    ts: Date.now(),
+    url,
+    surface: surface ?? null,
+    terrain: terrain ?? null,
+    dpe: dpe ?? null,
+    ges: ges ?? null,
+    date_diag: date_diag ?? null,
+    conso_prim: conso_prim ?? null,
+    conso_fin: conso_fin ?? null,
+    city: city ?? null,
+    zipcode: zipcode ?? null,
+  });
+}
 
 export function recordSearch({ zipcode, city, dpe, ges, surface, date_diag, conso_prim, results_count, duration_ms, status }) {
   try {

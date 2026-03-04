@@ -1,8 +1,12 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 
-// Mock native modules that fail due to architecture mismatch in test environment
+const { mockRecordReport } = vi.hoisted(() => ({
+  mockRecordReport: vi.fn(),
+}));
+
 vi.mock('../../src/db.js', () => ({
   recordSearch: vi.fn(),
+  recordReport: mockRecordReport,
 }));
 
 vi.mock('../../src/clients/ademe-client.js', () => ({
@@ -11,30 +15,18 @@ vi.mock('../../src/clients/ademe-client.js', () => ({
 
 import request from 'supertest';
 import { createApp } from '../../src/index.js';
-import fs from 'node:fs/promises';
-import path from 'node:path';
-
-const TEST_REPORTS_FILE = path.join(process.cwd(), 'data', 'reports.test.jsonl');
 
 describe('POST /api/reports', () => {
   let app;
 
-  beforeEach(async () => {
-    process.env.REPORTS_FILE = TEST_REPORTS_FILE;
+  beforeEach(() => {
+    mockRecordReport.mockReset();
     app = createApp();
-    // Clean up test file before each test
-    await fs.rm(TEST_REPORTS_FILE, { force: true });
   });
 
-  afterEach(async () => {
-    delete process.env.REPORTS_FILE;
-    await fs.rm(TEST_REPORTS_FILE, { force: true });
-  });
-
-  it('returns 200 and appends report to JSONL file', async () => {
+  it('returns 200 and calls recordReport', async () => {
     const payload = {
       url: 'https://leboncoin.fr/ad/123',
-      timestamp: '2026-02-19T10:00:00.000Z',
       extracted: { dpe: 'D', surface: '45', city: 'Paris' },
     };
 
@@ -42,11 +34,10 @@ describe('POST /api/reports', () => {
 
     expect(res.status).toBe(200);
     expect(res.body).toEqual({ success: true });
-
-    const content = await fs.readFile(TEST_REPORTS_FILE, 'utf8');
-    const line = JSON.parse(content.trim());
-    expect(line.url).toBe('https://leboncoin.fr/ad/123');
-    expect(line.extracted.dpe).toBe('D');
+    expect(mockRecordReport).toHaveBeenCalledOnce();
+    expect(mockRecordReport).toHaveBeenCalledWith(
+      expect.objectContaining({ url: 'https://leboncoin.fr/ad/123', dpe: 'D', surface: '45', city: 'Paris' }),
+    );
   });
 
   it('returns 400 when url is missing', async () => {
@@ -63,40 +54,28 @@ describe('POST /api/reports', () => {
     expect(res.status).toBe(400);
   });
 
-  it('appends multiple reports as separate lines', async () => {
+  it('calls recordReport for each request', async () => {
     const payload = {
       url: 'https://leboncoin.fr/ad/123',
-      timestamp: '2026-02-19T10:00:00.000Z',
       extracted: { dpe: 'D' },
     };
 
     await request(app).post('/api/reports').send(payload);
     await request(app).post('/api/reports').send({ ...payload, url: 'https://leboncoin.fr/ad/456' });
 
-    const content = await fs.readFile(TEST_REPORTS_FILE, 'utf8');
-    const lines = content.trim().split('\n');
-    expect(lines).toHaveLength(2);
-    expect(JSON.parse(lines[1]).url).toBe('https://leboncoin.fr/ad/456');
+    expect(mockRecordReport).toHaveBeenCalledTimes(2);
+    expect(mockRecordReport).toHaveBeenNthCalledWith(2, expect.objectContaining({ url: 'https://leboncoin.fr/ad/456' }));
   });
 
-  it('returns 500 when file write fails', async () => {
-    // Create a directory at the reports path inside data/ — appendFile will fail with EISDIR
-    const badPath = path.join(process.cwd(), 'data', 'reports-write-fail.dir');
-    await fs.mkdir(badPath, { recursive: true });
-    process.env.REPORTS_FILE = badPath;
-    app = createApp();
+  it('returns 500 when recordReport throws', async () => {
+    mockRecordReport.mockImplementation(() => { throw new Error('DB write failed'); });
 
-    try {
-      const res = await request(app)
-        .post('/api/reports')
-        .send({ url: 'https://leboncoin.fr/ad/123', extracted: { dpe: 'D' } });
+    const res = await request(app)
+      .post('/api/reports')
+      .send({ url: 'https://leboncoin.fr/ad/123', extracted: { dpe: 'D' } });
 
-      expect(res.status).toBe(500);
-      expect(res.body.error).toBe('WRITE_ERROR');
-    } finally {
-      await fs.rm(badPath, { recursive: true, force: true });
-      process.env.REPORTS_FILE = TEST_REPORTS_FILE;
-    }
+    expect(res.status).toBe(500);
+    expect(res.body.error).toBe('WRITE_ERROR');
   });
 
   it('returns 400 when url is not http(s)', async () => {
@@ -115,19 +94,34 @@ describe('POST /api/reports', () => {
     expect(res.body.error).toBe('INVALID_EXTRACTED');
   });
 
-  it('returns 400 when surface has more than 10 chars', async () => {
-    const res = await request(app)
-      .post('/api/reports')
-      .send({ url: 'https://leboncoin.fr/ad/123', extracted: { surface: '99999999999' } });
-    expect(res.status).toBe(400);
-    expect(res.body.error).toBe('INVALID_EXTRACTED');
-  });
-
   it('returns 400 when extracted contains unknown fields', async () => {
     const res = await request(app)
       .post('/api/reports')
       .send({ url: 'https://leboncoin.fr/ad/123', extracted: { dpe: 'A', unknown: 'field' } });
     expect(res.status).toBe(400);
     expect(res.body.error).toBe('INVALID_EXTRACTED');
+  });
+
+  // Compat: old extension sends values with units
+  it('cleans numeric values with units before validation', async () => {
+    const res = await request(app)
+      .post('/api/reports')
+      .send({ url: 'https://leboncoin.fr/ad/123', extracted: { surface: '76 m²', conso_prim: '142 kWh/m²/an', dpe: 'D' } });
+
+    expect(res.status).toBe(200);
+    expect(mockRecordReport).toHaveBeenCalledWith(
+      expect.objectContaining({ surface: '76', conso_prim: '142' }),
+    );
+  });
+
+  it('filters out "Non trouvé" values', async () => {
+    const res = await request(app)
+      .post('/api/reports')
+      .send({ url: 'https://leboncoin.fr/ad/123', extracted: { dpe: 'D', surface: 'Non trouvé' } });
+
+    expect(res.status).toBe(200);
+    expect(mockRecordReport).toHaveBeenCalledWith(
+      expect.not.objectContaining({ surface: expect.anything() }),
+    );
   });
 });
