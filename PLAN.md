@@ -548,7 +548,7 @@ fail2ban-client status nginx-404   # vérifier que la jail est active
 | 11 | Task 11 — CORS fail-fast (no wildcard) | 15 min | 🔴 Critique — accès API | ✅ Done |
 | 12 | Task 12 — Schéma reports renforcé | 20 min | 🟠 Haute — validation données | ✅ Done |
 | 13 | Task 13 — Rate limit par endpoint | 15 min | 🟠 Haute — anti-abus | ✅ Done |
-| 14 | Task 14 — fail2ban Nginx | 10 min | 🟠 Haute — blocage réseau scans | ⏳ À faire (VPS) |
+| 14 | Task 14 — fail2ban Nginx | 10 min | 🟠 Haute — blocage réseau scans | ✅ Done |
 
 **Total initial estimé : ~2h**
 **Total avec audit sécurité : +~55 min**
@@ -572,4 +572,4 @@ Après toutes les tasks, vérifier :
 - [x] Démarrage échoue si CORS non configuré (pas de fallback `*`) — Task 11
 - [x] Schéma reports valide DPE/GES/dates/longueurs — Task 12
 - [x] `/api/location/search` limité à 20 req/min — Task 13
-- [ ] fail2ban actif sur Nginx (`fail2ban-client status nginx-404`) — Task 14 🟠
+- [x] fail2ban actif sur Nginx (`fail2ban-client status nginx-404`) — Task 14
