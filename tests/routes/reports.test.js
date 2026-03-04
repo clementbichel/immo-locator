@@ -106,4 +106,28 @@ describe('POST /api/reports', () => {
     expect(res.status).toBe(400);
     expect(res.body.error).toBe('INVALID_URL');
   });
+
+  it('returns 400 when DPE value is outside A-G', async () => {
+    const res = await request(app)
+      .post('/api/reports')
+      .send({ url: 'https://leboncoin.fr/ad/123', extracted: { dpe: 'Z' } });
+    expect(res.status).toBe(400);
+    expect(res.body.error).toBe('INVALID_EXTRACTED');
+  });
+
+  it('returns 400 when surface has more than 10 chars', async () => {
+    const res = await request(app)
+      .post('/api/reports')
+      .send({ url: 'https://leboncoin.fr/ad/123', extracted: { surface: '99999999999' } });
+    expect(res.status).toBe(400);
+    expect(res.body.error).toBe('INVALID_EXTRACTED');
+  });
+
+  it('returns 400 when extracted contains unknown fields', async () => {
+    const res = await request(app)
+      .post('/api/reports')
+      .send({ url: 'https://leboncoin.fr/ad/123', extracted: { dpe: 'A', unknown: 'field' } });
+    expect(res.status).toBe(400);
+    expect(res.body.error).toBe('INVALID_EXTRACTED');
+  });
 });

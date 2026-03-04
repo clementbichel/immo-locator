@@ -546,7 +546,7 @@ fail2ban-client status nginx-404   # vérifier que la jail est active
 | — | **Audit sécurité (ajouts)** | | | |
 | 10 | Task 10 — Supprimer `.env` du repo | 5 min | 🔴 Critique — secrets | ⏳ À faire |
 | 11 | Task 11 — CORS fail-fast (no wildcard) | 15 min | 🔴 Critique — accès API | ✅ Done |
-| 12 | Task 12 — Schéma reports renforcé | 20 min | 🟠 Haute — validation données | ⏳ À faire |
+| 12 | Task 12 — Schéma reports renforcé | 20 min | 🟠 Haute — validation données | ✅ Done |
 | 13 | Task 13 — Rate limit par endpoint | 15 min | 🟠 Haute — anti-abus | ⏳ À faire |
 | 14 | Task 14 — fail2ban Nginx | 10 min | 🟠 Haute — blocage réseau scans | ⏳ À faire (VPS) |
 
@@ -570,6 +570,6 @@ Après toutes les tasks, vérifier :
 - [ ] L'extension Firefox fonctionne de bout en bout après validation
 - [ ] `.env` absent du repo git — Task 10 🔴
 - [x] Démarrage échoue si CORS non configuré (pas de fallback `*`) — Task 11
-- [ ] Schéma reports valide DPE/GES/dates/longueurs — Task 12 🟠
+- [x] Schéma reports valide DPE/GES/dates/longueurs — Task 12
 - [ ] `/api/location/search` limité à 10 req/min — Task 13 🟠
 - [ ] fail2ban actif sur Nginx (`fail2ban-client status nginx-404`) — Task 14 🟠

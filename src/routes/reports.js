@@ -6,16 +6,16 @@ import { z } from 'zod';
 import { logger } from '../logger.js';
 
 const extractedSchema = z.object({
-  surface: z.string(),
-  terrain: z.string(),
-  dpe: z.string(),
-  ges: z.string(),
-  date_diag: z.string(),
-  conso_prim: z.string(),
-  conso_fin: z.string(),
-  city: z.string(),
-  zipcode: z.string(),
-}).partial().strict();
+  surface:    z.string().regex(/^\d+(\.\d+)?$/).max(10).nullish(),
+  terrain:    z.string().regex(/^\d+(\.\d+)?$/).max(10).nullish(),
+  dpe:        z.enum(['A', 'B', 'C', 'D', 'E', 'F', 'G']).nullish(),
+  ges:        z.enum(['A', 'B', 'C', 'D', 'E', 'F', 'G']).nullish(),
+  date_diag:  z.string().regex(/^\d{2}\/\d{2}\/\d{4}$/).nullish(),
+  conso_prim: z.string().regex(/^\d+(\.\d+)?$/).max(10).nullish(),
+  conso_fin:  z.string().regex(/^\d+(\.\d+)?$/).max(10).nullish(),
+  city:       z.string().max(100).nullish(),
+  zipcode:    z.string().regex(/^\d{5}$/).nullish(),
+}).strict();
 
 const router = Router();
 
