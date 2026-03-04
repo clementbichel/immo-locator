@@ -80,10 +80,12 @@ export function getGoogleMapsLink(address) {
  * @param {object} extracted - Raw extracted data object
  */
 export async function sendReport(tabUrl, extracted) {
+  const cleaned = Object.fromEntries(
+    Object.entries(extracted).filter(([, v]) => v !== null && v !== undefined && v !== 'Non trouvé')
+  );
   const payload = {
     url: tabUrl,
-    timestamp: new Date().toISOString(),
-    extracted,
+    extracted: cleaned,
   };
   const response = await fetch(`${API_BASE_URL}/api/reports`, {
     method: 'POST',

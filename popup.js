@@ -63,10 +63,14 @@
     return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
   }
   async function sendReport(tabUrl, extracted) {
+    const cleaned = Object.fromEntries(
+      Object.entries(extracted).filter(
+        ([, v]) => v !== null && v !== void 0 && v !== 'Non trouv\xE9'
+      )
+    );
     const payload = {
       url: tabUrl,
-      timestamp: /* @__PURE__ */ new Date().toISOString(),
-      extracted,
+      extracted: cleaned,
     };
     const response = await fetch(`${API_BASE_URL}/api/reports`, {
       method: 'POST',

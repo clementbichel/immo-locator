@@ -155,7 +155,6 @@ describe('location-client (backend proxy)', () => {
       const body = JSON.parse(options.body);
       expect(body.url).toBe('https://leboncoin.fr/ad/123');
       expect(body.extracted).toEqual({ dpe: 'D', surface: '45' });
-      expect(body.timestamp).toMatch(/^\d{4}-\d{2}-\d{2}T/);
     });
 
     it('should throw on non-200 response', async () => {
