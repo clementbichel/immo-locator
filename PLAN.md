@@ -487,6 +487,48 @@ it('returns 429 after 10 search requests within a minute', async () => { ... });
 
 ---
 
+## Task 14 : fail2ban sur Nginx contre les scans 🟠 HAUTE
+
+**Côté VPS uniquement — aucun code applicatif**
+
+**Pourquoi :** Les bots et scanners sondent le VPS (`.env`, `/wp-admin`, `/phpinfo.php`…). Le handler 404 les logue déjà, mais ils consomment des ressources. fail2ban les bannit au niveau réseau après détection de patterns dans les logs Nginx.
+
+**Prérequis :** `fail2ban` installé sur le VPS (`apt install fail2ban`).
+
+**Étape 1 — Créer le filtre** `/etc/fail2ban/filter.d/nginx-404.conf` :
+
+```ini
+[Definition]
+failregex = ^<HOST> .* "(GET|POST|HEAD) .* HTTP.*" 404
+ignoreregex =
+```
+
+**Étape 2 — Créer la jail** `/etc/fail2ban/jail.d/nginx-404.conf` :
+
+```ini
+[nginx-404]
+enabled  = true
+filter   = nginx-404
+logpath  = /var/log/nginx/access.log
+maxretry = 20
+findtime = 60
+bantime  = 3600
+action   = iptables-allports[name=nginx-404]
+```
+
+> Bannit pendant 1h toute IP qui génère plus de 20 réponses 404 en 60 secondes.
+
+**Étape 3 — Recharger fail2ban :**
+
+```bash
+systemctl reload fail2ban
+fail2ban-client status nginx-404   # vérifier que la jail est active
+```
+
+**Note :** `trust proxy` est déjà activé dans Express (`app.set('trust proxy', 1)`) — les logs Express affichent désormais les vraies IPs client pour les `Unknown route`. Les logs Nginx restent la source principale pour fail2ban.
+
+---
+
 ## Ordre d'exécution recommandé
 
 | Ordre | Task | Effort | Impact | Status |
@@ -495,7 +537,7 @@ it('returns 429 after 10 search requests within a minute', async () => { ... });
 | 2 | Task 2 — Error handler global | 10 min | Pas de 500 HTML | ✅ Done |
 | 3 | Task 3 — Timeout ADEME | 5 min | Pas de requêtes bloquées | ✅ Done |
 | 4 | Task 4 — Validation Zod | 30 min | Sécurité des entrées | ✅ Done |
-| 5 | Task 5 — CORS vrais origins | 5 min | Restreindre l'accès | ⏳ En attente validation stores |
+| 5 | Task 5 — CORS vrais origins | 5 min | Restreindre l'accès | ✅ Done |
 | 6 | Task 6 — Logging Pino | 30 min | Debugging en prod | ✅ Done |
 | 7 | Task 7 — UptimeRobot | 10 min | Alertes si down | ✅ Done |
 | 8b | Task 8b — Analytics SQLite | 30 min | Données de recherche | ✅ Done |
@@ -506,6 +548,7 @@ it('returns 429 after 10 search requests within a minute', async () => { ... });
 | 11 | Task 11 — CORS fail-fast (no wildcard) | 15 min | 🔴 Critique — accès API | ⏳ Après Task 5 |
 | 12 | Task 12 — Schéma reports renforcé | 20 min | 🟠 Haute — validation données | ⏳ À faire |
 | 13 | Task 13 — Rate limit par endpoint | 15 min | 🟠 Haute — anti-abus | ⏳ À faire |
+| 14 | Task 14 — fail2ban Nginx | 10 min | 🟠 Haute — blocage réseau scans | ⏳ À faire (VPS) |
 
 **Total initial estimé : ~2h**
 **Total avec audit sécurité : +~55 min**
@@ -521,7 +564,7 @@ Après toutes les tasks, vérifier :
 - [x] Une requête avec un body invalide renvoie une 400 JSON propre (code `MISSING_FIELDS` compatible extension)
 - [x] Une requête quand l'API ADEME est down renvoie une 502 en < 11s
 - [x] Les logs sont en JSON structuré (pas de `console.log`) — Task 6
-- [ ] CORS bloque les requêtes depuis un origin non autorisé — Task 5 (en attente IDs stores)
+- [x] CORS bloque les requêtes depuis un origin non autorisé — Task 5
 - [x] UptimeRobot envoie une alerte test — Task 7
 - [ ] L'extension Chrome fonctionne de bout en bout après validation
 - [ ] L'extension Firefox fonctionne de bout en bout après validation
@@ -529,3 +572,4 @@ Après toutes les tasks, vérifier :
 - [ ] Démarrage échoue si CORS non configuré (pas de fallback `*`) — Task 11 🔴
 - [ ] Schéma reports valide DPE/GES/dates/longueurs — Task 12 🟠
 - [ ] `/api/location/search` limité à 10 req/min — Task 13 🟠
+- [ ] fail2ban actif sur Nginx (`fail2ban-client status nginx-404`) — Task 14 🟠
