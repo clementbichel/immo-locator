@@ -53,6 +53,12 @@ export function createApp() {
     max: 30,
   }));
 
+  app.use('/api/location/search', rateLimit({
+    windowMs: 60 * 1000,
+    max: 20,
+    message: { error: 'RATE_LIMIT', message: 'Trop de recherches, réessayez dans une minute.' },
+  }));
+
   app.use(pinoHttp({
     logger,
     serializers: {

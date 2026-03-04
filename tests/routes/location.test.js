@@ -123,4 +123,19 @@ describe('POST /api/location/search', () => {
     const body = await res.json();
     expect(body.status).toBe('ok');
   });
+
+  it('returns 429 after 20 search requests within a minute', async () => {
+    fetchAdeme.mockResolvedValue({ results: [] });
+
+    const requests = Array.from({ length: 21 }, () =>
+      fetch(`${baseUrl}/api/location/search`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(validBody),
+      })
+    );
+    const responses = await Promise.all(requests);
+    const statuses = responses.map(r => r.status);
+    expect(statuses).toContain(429);
+  });
 });
