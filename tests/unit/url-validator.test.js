@@ -40,6 +40,24 @@ describe('url-validator', () => {
       );
       expect(isValidLeboncoinRealEstateUrl('https://www.leboncoin.fr/emploi/456.htm')).toBe(false);
     });
+
+    it('should return false for non-leboncoin domain', () => {
+      expect(isValidLeboncoinRealEstateUrl('https://evil.com/ventes_immobilieres/123.htm')).toBe(
+        false
+      );
+    });
+
+    it('should return false for spoofed domain containing leboncoin.fr', () => {
+      expect(
+        isValidLeboncoinRealEstateUrl('https://evil-leboncoin.fr/ventes_immobilieres/123.htm')
+      ).toBe(false);
+    });
+
+    it('should accept leboncoin.fr without www', () => {
+      expect(
+        isValidLeboncoinRealEstateUrl('https://leboncoin.fr/ventes_immobilieres/123.htm')
+      ).toBe(true);
+    });
   });
 
   describe('getRealEstateType', () => {
