@@ -1,8 +1,13 @@
 import pino from 'pino';
 import { createStream as rfsCreateStream } from 'rotating-file-stream';
 import { mkdirSync } from 'fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-mkdirSync('logs', { recursive: true });
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const logsDir = path.resolve(__dirname, '..', 'logs');
+
+mkdirSync(logsDir, { recursive: true });
 
 const fileStream = rfsCreateStream(
   (time, index) => {
@@ -12,7 +17,7 @@ const fileStream = rfsCreateStream(
   },
   {
     interval: '1d',
-    path: 'logs',
+    path: logsDir,
     maxFiles: 5,
   }
 );

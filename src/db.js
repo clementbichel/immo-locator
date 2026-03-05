@@ -1,9 +1,11 @@
 import Database from 'better-sqlite3';
 import path from 'node:path';
 import fs from 'node:fs';
+import { fileURLToPath } from 'node:url';
 import { logger } from './logger.js';
 
-const BASE_DATA_DIR = path.resolve(process.cwd(), 'data');
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const BASE_DATA_DIR = path.resolve(__dirname, '..', 'data');
 
 function resolveDbPath(rawPath) {
   const resolved = path.resolve(rawPath);
