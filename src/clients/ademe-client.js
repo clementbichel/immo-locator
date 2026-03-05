@@ -9,6 +9,14 @@ const cache = new LRUCache({
 
 const ADEME_API_URL = process.env.ADEME_API_URL || 'https://data.ademe.fr/data-fair/api/v1/datasets/dpe03existant/lines';
 
+// Circuit breaker state
+const breaker = {
+  failures: 0,
+  openedAt: 0,
+  threshold: 3,       // open after 3 consecutive failures
+  cooldownMs: 30_000, // retry after 30s
+};
+
 export function buildAdemeParams(data) {
   const params = new URLSearchParams();
 
@@ -61,19 +69,53 @@ export async function fetchAdeme(data) {
     return cached;
   }
 
+  // Circuit breaker: fail fast if ADEME is down
+  if (breaker.failures >= breaker.threshold) {
+    if (Date.now() - breaker.openedAt < breaker.cooldownMs) {
+      logger.warn({ failures: breaker.failures }, 'ADEME circuit breaker OPEN — skipping request');
+      const err = new Error('ADEME API unavailable (circuit breaker open)');
+      err.status = 503;
+      throw err;
+    }
+    logger.info('ADEME circuit breaker HALF-OPEN — allowing test request');
+  }
+
   const start = Date.now();
-  const response = await fetch(url, {
-    signal: AbortSignal.timeout(10_000),
-  });
+  let response;
+  try {
+    response = await fetch(url, {
+      signal: AbortSignal.timeout(10_000),
+    });
+  } catch (e) {
+    breaker.failures++;
+    breaker.openedAt = Date.now();
+    logger.error({ failures: breaker.failures, error: e.message }, 'ADEME fetch error — circuit breaker incremented');
+    throw e;
+  }
   const duration = Date.now() - start;
   if (!response.ok) {
-    logger.error({ status: response.status, duration }, 'ADEME API request failed');
+    breaker.failures++;
+    breaker.openedAt = Date.now();
+    logger.error({ status: response.status, duration, failures: breaker.failures }, 'ADEME API request failed — circuit breaker incremented');
     const err = new Error(`ADEME API error: ${response.status}`);
     err.status = response.status;
     throw err;
   }
+
+  // Success: reset circuit breaker
+  if (breaker.failures > 0) {
+    logger.info({ previousFailures: breaker.failures }, 'ADEME circuit breaker CLOSED — reset after success');
+  }
+  breaker.failures = 0;
+
   logger.info({ status: response.status, duration }, 'ADEME API request completed');
   const result = await response.json();
   cache.set(url, result);
   return result;
+}
+
+/** @internal — exposed for testing only */
+export function _resetBreaker() {
+  breaker.failures = 0;
+  breaker.openedAt = 0;
 }
