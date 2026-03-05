@@ -43,12 +43,20 @@
       conso_fin: parseNumeric(data.conso_fin) || null,
     };
   }
+  function validateSearchResponse(data) {
+    if (!data || typeof data !== 'object') return false;
+    if (!Array.isArray(data.results)) return false;
+    return data.results.every(
+      (item) => typeof item.address === 'string' && typeof item.score === 'number'
+    );
+  }
   async function searchLocation(data) {
     const payload = buildSearchPayload(data);
     const response = await fetch(`${API_BASE_URL}/api/location/search`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
+      signal: AbortSignal.timeout(1e4),
     });
     if (!response.ok) {
       const errorBody = await response.json().catch(() => ({}));
@@ -57,7 +65,11 @@
       err.missing = errorBody.missing;
       throw err;
     }
-    return response.json();
+    const result = await response.json();
+    if (!validateSearchResponse(result)) {
+      throw new Error('R\xE9ponse inattendue du serveur.');
+    }
+    return result;
   }
   function getGoogleMapsLink(address) {
     return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
@@ -76,6 +88,7 @@
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
+      signal: AbortSignal.timeout(1e4),
     });
     if (!response.ok) {
       throw new Error("Erreur lors de l'envoi du rapport.");

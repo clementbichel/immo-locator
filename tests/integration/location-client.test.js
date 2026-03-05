@@ -132,6 +132,65 @@ describe('location-client (backend proxy)', () => {
     });
   });
 
+  describe('searchLocation', () => {
+    beforeEach(() => vi.resetModules());
+    afterEach(() => {
+      vi.restoreAllMocks();
+      vi.unstubAllGlobals();
+    });
+
+    const validData = {
+      zipcode: '75001',
+      city: 'Paris',
+      dpe: 'D',
+      ges: 'E',
+      surface: '45 m²',
+      date_diag: '15/03/2024',
+    };
+
+    it('returns result when response is valid', async () => {
+      const mockResult = { results: [{ address: '12 rue de la Paix', score: 80 }] };
+      vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: true, json: async () => mockResult }));
+
+      const { searchLocation } = await import('../../src/api/location-client.js');
+      const result = await searchLocation(validData);
+      expect(result).toEqual(mockResult);
+    });
+
+    it('throws when response has invalid shape', async () => {
+      vi.stubGlobal(
+        'fetch',
+        vi.fn().mockResolvedValue({ ok: true, json: async () => ({ unexpected: true }) })
+      );
+
+      const { searchLocation } = await import('../../src/api/location-client.js');
+      await expect(searchLocation(validData)).rejects.toThrow('Réponse inattendue');
+    });
+
+    it('throws when results contains items without address', async () => {
+      vi.stubGlobal(
+        'fetch',
+        vi.fn().mockResolvedValue({ ok: true, json: async () => ({ results: [{ score: 80 }] }) })
+      );
+
+      const { searchLocation } = await import('../../src/api/location-client.js');
+      await expect(searchLocation(validData)).rejects.toThrow('Réponse inattendue');
+    });
+
+    it('sends request with timeout signal', async () => {
+      const mockFetch = vi
+        .fn()
+        .mockResolvedValue({ ok: true, json: async () => ({ results: [] }) });
+      vi.stubGlobal('fetch', mockFetch);
+
+      const { searchLocation } = await import('../../src/api/location-client.js');
+      await searchLocation(validData);
+
+      const [, options] = mockFetch.mock.calls[0];
+      expect(options.signal).toBeDefined();
+    });
+  });
+
   describe('sendReport', () => {
     beforeEach(() => vi.resetModules());
     afterEach(() => {

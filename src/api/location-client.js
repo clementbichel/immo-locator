@@ -46,6 +46,17 @@ export function buildSearchPayload(data) {
 }
 
 /**
+ * Validate the search response from the backend
+ */
+function validateSearchResponse(data) {
+  if (!data || typeof data !== 'object') return false;
+  if (!Array.isArray(data.results)) return false;
+  return data.results.every(
+    (item) => typeof item.address === 'string' && typeof item.score === 'number'
+  );
+}
+
+/**
  * Search the backend API
  */
 export async function searchLocation(data) {
@@ -54,6 +65,7 @@ export async function searchLocation(data) {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),
+    signal: AbortSignal.timeout(10_000),
   });
 
   if (!response.ok) {
@@ -64,7 +76,11 @@ export async function searchLocation(data) {
     throw err;
   }
 
-  return response.json();
+  const result = await response.json();
+  if (!validateSearchResponse(result)) {
+    throw new Error('Réponse inattendue du serveur.');
+  }
+  return result;
 }
 
 /**
@@ -91,6 +107,7 @@ export async function sendReport(tabUrl, extracted) {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),
+    signal: AbortSignal.timeout(10_000),
   });
   if (!response.ok) {
     throw new Error("Erreur lors de l'envoi du rapport.");
