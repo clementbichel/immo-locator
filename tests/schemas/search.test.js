@@ -79,4 +79,9 @@ describe('searchSchema', () => {
     const result = searchSchema.safeParse({ ...validPayload, date_diag: '01/01/1999' });
     expect(result.success).toBe(false);
   });
+
+  it('rejects unknown fields', () => {
+    const result = searchSchema.safeParse({ ...validPayload, evil_field: 'x' });
+    expect(result.success).toBe(false);
+  });
 });

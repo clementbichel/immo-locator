@@ -16,7 +16,7 @@ export const searchSchema = z.object({
   }, { message: 'Date invalide ou hors plage (2000 — aujourd\'hui)' }).nullish(),
   conso_prim: z.number().finite().positive().max(1000).nullish(),
   conso_fin: z.number().finite().positive().max(1000).nullish(),
-}).refine(
+}).strict().refine(
   data => data.zipcode || data.city,
   { message: 'zipcode ou city requis', path: ['zipcode'] }
 );
