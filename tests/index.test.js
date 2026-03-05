@@ -17,18 +17,16 @@ describe('validateEnv', () => {
     expect(() => validateEnv()).toThrow('Missing required environment variables');
   });
 
-  it('throws if no CORS origin is configured', () => {
+  it('throws if CORS_CHROME_ORIGIN is not configured', () => {
     process.env.ADEME_API_URL = 'https://example.com';
     delete process.env.CORS_CHROME_ORIGIN;
-    delete process.env.CORS_FIREFOX_ORIGIN;
-    expect(() => validateEnv()).toThrow('CORS_CHROME_ORIGIN ou CORS_FIREFOX_ORIGIN requis');
+    expect(() => validateEnv()).toThrow('CORS_CHROME_ORIGIN requis');
   });
 
-  it('throws if CORS origins are only wildcards', () => {
+  it('throws if CORS_CHROME_ORIGIN is a wildcard', () => {
     process.env.ADEME_API_URL = 'https://example.com';
     process.env.CORS_CHROME_ORIGIN = '*';
-    process.env.CORS_FIREFOX_ORIGIN = '*';
-    expect(() => validateEnv()).toThrow('CORS_CHROME_ORIGIN ou CORS_FIREFOX_ORIGIN requis');
+    expect(() => validateEnv()).toThrow('CORS_CHROME_ORIGIN requis');
   });
 
   it('does not throw when ADEME_API_URL and at least one CORS origin are set', () => {

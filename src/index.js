@@ -21,9 +21,8 @@ export function validateEnv() {
     throw new Error('ADEME_API_URL must be a valid URL');
   }
 
-  const corsOrigins = [process.env.CORS_CHROME_ORIGIN, process.env.CORS_FIREFOX_ORIGIN].filter(Boolean).filter(o => o !== '*');
-  if (corsOrigins.length === 0) {
-    throw new Error('CORS_CHROME_ORIGIN ou CORS_FIREFOX_ORIGIN requis');
+  if (!process.env.CORS_CHROME_ORIGIN || process.env.CORS_CHROME_ORIGIN === '*') {
+    throw new Error('CORS_CHROME_ORIGIN requis');
   }
 
   if (process.env.PORT) {
@@ -43,10 +42,16 @@ export function createApp() {
 
   const allowedOrigins = [
     process.env.CORS_CHROME_ORIGIN,
-    process.env.CORS_FIREFOX_ORIGIN,
   ].filter(Boolean).filter(o => o !== '*');
 
-  app.use(cors({ origin: allowedOrigins }));
+  app.use(cors({
+    origin(origin, callback) {
+      if (!origin) return callback(null, false);
+      if (origin.startsWith('moz-extension://')) return callback(null, true);
+      if (allowedOrigins.includes(origin)) return callback(null, true);
+      callback(null, false);
+    },
+  }));
 
   app.use(rateLimit({
     windowMs: 60 * 1000,
