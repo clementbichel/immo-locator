@@ -27,7 +27,8 @@ function cleanExtracted(raw) {
     if (value == null || value === 'Non trouvé') continue;
     if (NUMERIC_FIELDS.includes(key)) {
       const match = String(value).match(/(\d+(?:[.,]\d+)?)/);
-      result[key] = match ? match[1].replace(',', '.') : value;
+      if (!match) continue;
+      result[key] = match[1].replace(',', '.');
     } else {
       result[key] = value;
     }
@@ -41,6 +42,7 @@ router.post('/', (req, res) => {
   const { url, extracted } = req.body;
 
   if (!url || typeof url !== 'string' || !extracted) {
+    logger.warn({ url: typeof url, hasExtracted: !!extracted }, 'Report rejected: missing fields');
     return res.status(400).json({ error: 'MISSING_FIELDS', message: 'url et extracted sont requis.' });
   }
 
@@ -48,6 +50,7 @@ router.post('/', (req, res) => {
 
   const extractedResult = extractedSchema.safeParse(cleaned);
   if (!extractedResult.success) {
+    logger.warn({ issues: extractedResult.error.issues, cleaned }, 'Report rejected: invalid extracted');
     return res.status(400).json({ error: 'INVALID_EXTRACTED', message: 'Données extraites invalides.' });
   }
 

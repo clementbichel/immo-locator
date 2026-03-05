@@ -55,9 +55,11 @@ db.exec(`
 
 const RETENTION_DAYS = 90;
 const retentionMs = RETENTION_DAYS * 24 * 60 * 60 * 1000;
-const deleted = db.prepare('DELETE FROM reports WHERE ts < ?').run(Date.now() - retentionMs);
-if (deleted.changes > 0) {
-  logger.info({ deleted: deleted.changes, retentionDays: RETENTION_DAYS }, 'Purged old reports');
+for (const table of ['reports', 'searches']) {
+  const deleted = db.prepare(`DELETE FROM ${table} WHERE ts < ?`).run(Date.now() - retentionMs);
+  if (deleted.changes > 0) {
+    logger.info({ table, deleted: deleted.changes, retentionDays: RETENTION_DAYS }, 'Purged old rows');
+  }
 }
 
 logger.info({ dbPath }, 'SQLite database ready');
