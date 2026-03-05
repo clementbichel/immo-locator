@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Immo Locator",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Extrait les données d'une annonce Leboncoin immo et retrouve l'adresse exacte du bien.",
   "permissions": ["activeTab", "scripting"],
   "host_permissions": ["https://api.immolocator.fr/*"],
