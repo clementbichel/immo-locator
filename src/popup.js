@@ -192,16 +192,64 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Fallback for location
     if (data.zipcode === 'Non trouvé' || data.city === 'Non trouvé') {
-      const locationEl = document.querySelector('[data-qa-id="adview_location_container"]');
-      if (locationEl) {
-        const text = locationEl.innerText;
-        const zipMatch = text.match(/\b\d{5}\b/);
-        if (zipMatch) data.zipcode = zipMatch[0];
+      // Strategy 1b: Next.js router cache — contains current page props after client-side navigation,
+      // unlike __NEXT_DATA__ which only holds the initial SSR page's props
+      try {
+        const routerComponents = window.next?.router?.components;
+        if (routerComponents) {
+          for (const comp of Object.values(routerComponents)) {
+            const location = comp?.props?.pageProps?.ad?.location;
+            if (location) {
+              if (location.city && data.city === 'Non trouvé') data.city = location.city;
+              if (location.zipcode && data.zipcode === 'Non trouvé')
+                data.zipcode = location.zipcode;
+              debug.push('Location from Next.js router cache');
+              break;
+            }
+          }
+        }
+      } catch (e) {
+        debug.push('Router cache error: ' + e.message);
+      }
+    }
 
-        // City is usually before the zipcode
-        if (zipMatch) {
-          const parts = text.split(zipMatch[0]);
-          if (parts[0]) data.city = parts[0].trim();
+    if (data.zipcode === 'Non trouvé' || data.city === 'Non trouvé') {
+      // New Leboncoin DOM: data-test-id="location-map-title"
+      // Text format: "Neighborhood\n\nCity (Zipcode)"
+      const locationTitle = document.querySelector('[data-test-id="location-map-title"]');
+      if (locationTitle) {
+        const match = locationTitle.innerText.match(
+          /([A-ZÀ-Ÿa-zà-ÿ][A-ZÀ-Ÿa-zà-ÿ\s\-]+?)\s*\((\d{5})\)/
+        );
+        if (match) {
+          if (data.city === 'Non trouvé') data.city = match[1].trim();
+          if (data.zipcode === 'Non trouvé') data.zipcode = match[2];
+        }
+      }
+
+      // Map anchor aria-label: "City Zipcode, Neighborhood"
+      if (data.city === 'Non trouvé' || data.zipcode === 'Non trouvé') {
+        const mapLink = document.querySelector('a[href$="#map"][aria-label]');
+        if (mapLink) {
+          const match = mapLink.getAttribute('aria-label').match(/^(.+?)\s+(\d{5})/);
+          if (match) {
+            if (data.city === 'Non trouvé') data.city = match[1].trim();
+            if (data.zipcode === 'Non trouvé') data.zipcode = match[2];
+          }
+        }
+      }
+
+      // Legacy selector (kept for backward compat)
+      if (data.city === 'Non trouvé' || data.zipcode === 'Non trouvé') {
+        const locationEl = document.querySelector('[data-qa-id="adview_location_container"]');
+        if (locationEl) {
+          const text = locationEl.innerText;
+          const zipMatch = text.match(/\b\d{5}\b/);
+          if (zipMatch) {
+            if (data.zipcode === 'Non trouvé') data.zipcode = zipMatch[0];
+            const parts = text.split(zipMatch[0]);
+            if (parts[0] && data.city === 'Non trouvé') data.city = parts[0].trim();
+          }
         }
       }
     }

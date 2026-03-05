@@ -268,7 +268,7 @@
       });
     }
     async function extractRealEstateData() {
-      var _a;
+      var _a, _b, _c, _d, _e, _f;
       if (
         !window.location.href.includes('/ventes_immobilieres/') &&
         !window.location.href.includes('/locations/')
@@ -388,14 +388,64 @@
         if (terrainMatch) data.terrain = terrainMatch[1];
       }
       if (data.zipcode === 'Non trouv\xE9' || data.city === 'Non trouv\xE9') {
-        const locationEl = document.querySelector('[data-qa-id="adview_location_container"]');
-        if (locationEl) {
-          const text = locationEl.innerText;
-          const zipMatch = text.match(/\b\d{5}\b/);
-          if (zipMatch) data.zipcode = zipMatch[0];
-          if (zipMatch) {
-            const parts = text.split(zipMatch[0]);
-            if (parts[0]) data.city = parts[0].trim();
+        try {
+          const routerComponents =
+            (_c = (_b = window.next) == null ? void 0 : _b.router) == null ? void 0 : _c.components;
+          if (routerComponents) {
+            for (const comp of Object.values(routerComponents)) {
+              const location =
+                (_f =
+                  (_e =
+                    (_d = comp == null ? void 0 : comp.props) == null ? void 0 : _d.pageProps) ==
+                  null
+                    ? void 0
+                    : _e.ad) == null
+                  ? void 0
+                  : _f.location;
+              if (location) {
+                if (location.city && data.city === 'Non trouv\xE9') data.city = location.city;
+                if (location.zipcode && data.zipcode === 'Non trouv\xE9')
+                  data.zipcode = location.zipcode;
+                debug.push('Location from Next.js router cache');
+                break;
+              }
+            }
+          }
+        } catch (e) {
+          debug.push('Router cache error: ' + e.message);
+        }
+      }
+      if (data.zipcode === 'Non trouv\xE9' || data.city === 'Non trouv\xE9') {
+        const locationTitle = document.querySelector('[data-test-id="location-map-title"]');
+        if (locationTitle) {
+          const match = locationTitle.innerText.match(
+            /([A-ZÀ-Ÿa-zà-ÿ][A-ZÀ-Ÿa-zà-ÿ\s\-]+?)\s*\((\d{5})\)/
+          );
+          if (match) {
+            if (data.city === 'Non trouv\xE9') data.city = match[1].trim();
+            if (data.zipcode === 'Non trouv\xE9') data.zipcode = match[2];
+          }
+        }
+        if (data.city === 'Non trouv\xE9' || data.zipcode === 'Non trouv\xE9') {
+          const mapLink = document.querySelector('a[href$="#map"][aria-label]');
+          if (mapLink) {
+            const match = mapLink.getAttribute('aria-label').match(/^(.+?)\s+(\d{5})/);
+            if (match) {
+              if (data.city === 'Non trouv\xE9') data.city = match[1].trim();
+              if (data.zipcode === 'Non trouv\xE9') data.zipcode = match[2];
+            }
+          }
+        }
+        if (data.city === 'Non trouv\xE9' || data.zipcode === 'Non trouv\xE9') {
+          const locationEl = document.querySelector('[data-qa-id="adview_location_container"]');
+          if (locationEl) {
+            const text = locationEl.innerText;
+            const zipMatch = text.match(/\b\d{5}\b/);
+            if (zipMatch) {
+              if (data.zipcode === 'Non trouv\xE9') data.zipcode = zipMatch[0];
+              const parts = text.split(zipMatch[0]);
+              if (parts[0] && data.city === 'Non trouv\xE9') data.city = parts[0].trim();
+            }
           }
         }
       }
