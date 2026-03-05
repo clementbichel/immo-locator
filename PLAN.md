@@ -549,6 +549,7 @@ fail2ban-client status nginx-404   # vérifier que la jail est active
 | 12 | Task 12 — Schéma reports renforcé | 20 min | 🟠 Haute — validation données | ✅ Done |
 | 13 | Task 13 — Rate limit par endpoint | 15 min | 🟠 Haute — anti-abus | ✅ Done |
 | 14 | Task 14 — fail2ban Nginx | 10 min | 🟠 Haute — blocage réseau scans | ✅ Done |
+| — | **Audit sécurité complet** | | 13/13 points traités (2026-03-05) | ✅ Done |
 
 **Total initial estimé : ~2h**
 **Total avec audit sécurité : +~55 min**
@@ -573,3 +574,4 @@ Après toutes les tasks, vérifier :
 - [x] Schéma reports valide DPE/GES/dates/longueurs — Task 12
 - [x] `/api/location/search` limité à 20 req/min — Task 13
 - [x] fail2ban actif sur Nginx (`fail2ban-client status nginx-404`) — Task 14
+- [x] Audit sécurité complet (13/13 points) — circuit breaker, date validation, URL whitelist, rétention searches, headers Helmet vérifiés
