@@ -56,11 +56,11 @@ router.post('/', (req, res) => {
 
   try {
     const parsed = new URL(url);
-    if (!['http:', 'https:'].includes(parsed.protocol)) {
-      return res.status(400).json({ error: 'INVALID_URL', message: 'url doit être une URL http ou https valide.' });
+    if (!['http:', 'https:'].includes(parsed.protocol) || !parsed.hostname.endsWith('leboncoin.fr')) {
+      return res.status(400).json({ error: 'INVALID_URL', message: 'url doit être une URL leboncoin.fr valide.' });
     }
   } catch {
-    return res.status(400).json({ error: 'INVALID_URL', message: 'url doit être une URL http ou https valide.' });
+    return res.status(400).json({ error: 'INVALID_URL', message: 'url doit être une URL leboncoin.fr valide.' });
   }
 
   try {

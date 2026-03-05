@@ -86,6 +86,14 @@ describe('POST /api/reports', () => {
     expect(res.body.error).toBe('INVALID_URL');
   });
 
+  it('returns 400 when url is not leboncoin.fr', async () => {
+    const res = await request(app)
+      .post('/api/reports')
+      .send({ url: 'https://evil.com/phishing', extracted: { dpe: 'D' } });
+    expect(res.status).toBe(400);
+    expect(res.body.error).toBe('INVALID_URL');
+  });
+
   it('returns 400 when DPE value is outside A-G', async () => {
     const res = await request(app)
       .post('/api/reports')
