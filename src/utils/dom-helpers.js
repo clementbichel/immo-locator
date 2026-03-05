@@ -15,6 +15,7 @@ export function createElement(tag, text = '', attrs = {}) {
     el.textContent = text;
   }
   Object.entries(attrs).forEach(([key, value]) => {
+    if (key.startsWith('on')) return;
     if (key === 'style' && typeof value === 'object') {
       Object.assign(el.style, value);
     } else if (key.startsWith('data-')) {
@@ -34,7 +35,7 @@ export function createElement(tag, text = '', attrs = {}) {
  * @returns {HTMLAnchorElement}
  */
 export function createLink(href, text, attrs = {}) {
-  return createElement('a', text, { href, ...attrs });
+  return createElement('a', text, { href, rel: 'noopener noreferrer', ...attrs });
 }
 
 /**

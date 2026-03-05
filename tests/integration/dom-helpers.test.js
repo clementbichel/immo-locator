@@ -68,6 +68,19 @@ describe('dom-helpers', () => {
       const link = createLink('https://example.com', 'Click', { target: '_blank' });
       expect(link.getAttribute('target')).toBe('_blank');
     });
+
+    it('should always set rel=noopener noreferrer', () => {
+      const link = createLink('https://example.com', 'Click');
+      expect(link.getAttribute('rel')).toBe('noopener noreferrer');
+    });
+  });
+
+  describe('createElement security', () => {
+    it('should ignore on* event handler attributes', () => {
+      const el = createElement('div', '', { onclick: 'evil()', id: 'safe' });
+      expect(el.getAttribute('onclick')).toBeNull();
+      expect(el.getAttribute('id')).toBe('safe');
+    });
   });
 
   describe('createMessage', () => {
