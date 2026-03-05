@@ -64,4 +64,19 @@ describe('searchSchema', () => {
     const result = searchSchema.safeParse({ ...validPayload, surface: 50000 });
     expect(result.success).toBe(false);
   });
+
+  it('rejects impossible date like 31/02/2024', () => {
+    const result = searchSchema.safeParse({ ...validPayload, date_diag: '31/02/2024' });
+    expect(result.success).toBe(false);
+  });
+
+  it('rejects nonsense date like 99/99/9999', () => {
+    const result = searchSchema.safeParse({ ...validPayload, date_diag: '99/99/9999' });
+    expect(result.success).toBe(false);
+  });
+
+  it('rejects date before 2000', () => {
+    const result = searchSchema.safeParse({ ...validPayload, date_diag: '01/01/1999' });
+    expect(result.success).toBe(false);
+  });
 });
