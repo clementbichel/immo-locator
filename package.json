@@ -1,6 +1,7 @@
 {
   "name": "annonce-immo-locator",
   "version": "1.0.3",
+  "license": "AGPL-3.0-only",
   "description": "Chrome Extension for extracting real estate data from Leboncoin and cross-referencing location data",
   "type": "module",
   "scripts": {
