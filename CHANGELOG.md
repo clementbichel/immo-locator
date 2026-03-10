@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.4] - 2026-03-10
+
 ### Added
 
 - **Code Quality Tooling**
@@ -78,5 +80,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Cross-browser compatibility (Chrome and Firefox)
 - esbuild-based build system
 
-[Unreleased]: https://github.com/clementbichel/AnnonceImmoLocator/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/clementbichel/AnnonceImmoLocator/compare/v1.0.4...HEAD
+[1.0.4]: https://github.com/clementbichel/AnnonceImmoLocator/compare/v1.0.0...v1.0.4
 [1.0.0]: https://github.com/clementbichel/AnnonceImmoLocator/releases/tag/v1.0.0
