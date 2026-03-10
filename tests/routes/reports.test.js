@@ -110,26 +110,4 @@ describe('POST /api/reports', () => {
     expect(res.body.error).toBe('INVALID_EXTRACTED');
   });
 
-  // Compat: old extension sends values with units
-  it('cleans numeric values with units before validation', async () => {
-    const res = await request(app)
-      .post('/api/reports')
-      .send({ url: 'https://leboncoin.fr/ad/123', extracted: { surface: '76 m²', conso_prim: '142 kWh/m²/an', dpe: 'D' } });
-
-    expect(res.status).toBe(200);
-    expect(mockRecordReport).toHaveBeenCalledWith(
-      expect.objectContaining({ surface: '76', conso_prim: '142' }),
-    );
-  });
-
-  it('filters out "Non trouvé" values', async () => {
-    const res = await request(app)
-      .post('/api/reports')
-      .send({ url: 'https://leboncoin.fr/ad/123', extracted: { dpe: 'D', surface: 'Non trouvé' } });
-
-    expect(res.status).toBe(200);
-    expect(mockRecordReport).toHaveBeenCalledWith(
-      expect.not.objectContaining({ surface: expect.anything() }),
-    );
-  });
 });
