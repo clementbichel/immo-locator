@@ -96,8 +96,17 @@ export function getGoogleMapsLink(address) {
  * @param {object} extracted - Raw extracted data object
  */
 export async function sendReport(tabUrl, extracted) {
+  const NUMERIC_FIELDS = ['surface', 'terrain', 'conso_prim', 'conso_fin'];
   const cleaned = Object.fromEntries(
-    Object.entries(extracted).filter(([, v]) => v !== null && v !== undefined && v !== 'Non trouvé')
+    Object.entries(extracted)
+      .filter(([, v]) => v !== null && v !== undefined && v !== 'Non trouvé')
+      .map(([k, v]) => {
+        if (NUMERIC_FIELDS.includes(k)) {
+          const match = String(v).match(/(\d+(?:[.,]\d+)?)/);
+          return match ? [k, match[1].replace(',', '.')] : [k, v];
+        }
+        return [k, v];
+      })
   );
   const payload = {
     url: tabUrl,

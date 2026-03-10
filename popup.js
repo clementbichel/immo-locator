@@ -75,10 +75,17 @@
     return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
   }
   async function sendReport(tabUrl, extracted) {
+    const NUMERIC_FIELDS = ['surface', 'terrain', 'conso_prim', 'conso_fin'];
     const cleaned = Object.fromEntries(
-      Object.entries(extracted).filter(
-        ([, v]) => v !== null && v !== void 0 && v !== 'Non trouv\xE9'
-      )
+      Object.entries(extracted)
+        .filter(([, v]) => v !== null && v !== void 0 && v !== 'Non trouv\xE9')
+        .map(([k, v]) => {
+          if (NUMERIC_FIELDS.includes(k)) {
+            const match = String(v).match(/(\d+(?:[.,]\d+)?)/);
+            return match ? [k, match[1].replace(',', '.')] : [k, v];
+          }
+          return [k, v];
+        })
     );
     const payload = {
       url: tabUrl,
