@@ -1,10 +1,8 @@
 module.exports = {
   root: true,
   env: {
-    browser: true,
     es2022: true,
     node: true,
-    webextensions: true,
   },
   parserOptions: {
     ecmaVersion: 'latest',
@@ -12,25 +10,28 @@ module.exports = {
   },
   extends: ['eslint:recommended'],
   rules: {
-    // Error prevention
     'no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
     'no-undef': 'error',
     'no-console': ['warn', { allow: ['warn', 'error'] }],
-
-    // Code quality
     eqeqeq: ['error', 'always'],
     curly: ['error', 'multi-line'],
     'no-var': 'error',
     'prefer-const': 'error',
-
-    // Style (handled by Prettier, but some semantic rules)
     'no-multiple-empty-lines': ['error', { max: 2 }],
     'no-trailing-spaces': 'error',
   },
   overrides: [
     {
+      // Extension-specific: browser + webextensions env
+      files: ['packages/extension/src/**/*.js'],
+      env: {
+        browser: true,
+        webextensions: true,
+      },
+    },
+    {
       // Test files
-      files: ['tests/**/*.js', '**/*.test.js'],
+      files: ['**/tests/**/*.js', '**/*.test.js'],
       env: {
         node: true,
       },
@@ -40,13 +41,15 @@ module.exports = {
         expect: 'readonly',
         beforeEach: 'readonly',
         afterEach: 'readonly',
+        beforeAll: 'readonly',
+        afterAll: 'readonly',
         vi: 'readonly',
         test: 'readonly',
       },
     },
     {
       // Build scripts
-      files: ['scripts/**/*.js'],
+      files: ['**/scripts/**/*.js'],
       env: {
         node: true,
       },

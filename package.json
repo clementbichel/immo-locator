@@ -1,0 +1,39 @@
+{
+  "name": "immo-locator",
+  "version": "1.0.0",
+  "private": true,
+  "license": "AGPL-3.0-only",
+  "type": "module",
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "dev:api": "npm -w packages/api run dev",
+    "build:ext": "npm -w packages/extension run build",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:api": "npm -w packages/api run test",
+    "test:ext": "npm -w packages/extension run test",
+    "lint": "eslint packages/",
+    "lint:fix": "eslint packages/ --fix",
+    "format": "prettier --write 'packages/**/*.{js,json,md,html,css}'",
+    "format:check": "prettier --check 'packages/**/*.{js,json,md,html,css}'",
+    "prepare": "husky"
+  },
+  "devDependencies": {
+    "eslint": "^8.57.0",
+    "husky": "^9.1.0",
+    "lint-staged": "^15.2.0",
+    "prettier": "^3.3.0",
+    "vitest": "^4.0.18"
+  },
+  "lint-staged": {
+    "*.js": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,md,html,css}": [
+      "prettier --write"
+    ]
+  }
+}
