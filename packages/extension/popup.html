@@ -1,0 +1,713 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <style>
+      :root {
+        --bg: #fafafa;
+        --card-bg: #ffffff;
+        --text-primary: #1a1a1a;
+        --text-secondary: #6b7280;
+        --text-tertiary: #9ca3af;
+        --border: #e5e7eb;
+        --border-light: #f3f4f6;
+        --accent: #64748b;
+        --accent-light: #f1f5f9;
+        --success: #10b981;
+        --warning: #f59e0b;
+        --error: #ef4444;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      html {
+        width: 380px;
+      }
+
+      body {
+        width: 380px;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        background: var(--bg);
+        color: var(--text-primary);
+        font-size: 13px;
+        line-height: 1.5;
+        overflow-x: hidden;
+        overflow-y: auto;
+      }
+
+      .container {
+        padding: 16px;
+      }
+
+      /* ===== HEADER ===== */
+      .header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 16px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid var(--border-light);
+      }
+
+      .header-left {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .header-icon {
+        width: 32px;
+        height: 32px;
+        background: var(--accent-light);
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+      }
+
+      .header h1 {
+        font-size: 14px;
+        font-weight: 600;
+        letter-spacing: -0.3px;
+      }
+
+      .btn-report {
+        background: none;
+        border: none;
+        font-size: 11px;
+        color: var(--text-tertiary);
+        cursor: pointer;
+        font-family: inherit;
+        padding: 4px 0;
+        text-decoration: underline;
+        text-underline-offset: 2px;
+        transition: color 0.15s;
+        white-space: nowrap;
+      }
+
+      .btn-report:hover {
+        color: var(--text-secondary);
+      }
+
+      .btn-report:disabled {
+        cursor: default;
+        text-decoration: none;
+      }
+
+      /* ===== CARDS ===== */
+      .card {
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 14px 16px;
+        margin-bottom: 12px;
+        animation: fadeIn 0.3s ease-out both;
+      }
+
+      .card:nth-child(2) {
+        animation-delay: 0.05s;
+      }
+      .card:nth-child(3) {
+        animation-delay: 0.1s;
+      }
+      .card:nth-child(4) {
+        animation-delay: 0.15s;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .card-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 12px;
+      }
+
+      .card-title {
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--text-secondary);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .card-badge {
+        font-size: 10px;
+        padding: 2px 8px;
+        border-radius: 10px;
+        font-weight: 500;
+      }
+
+      .card-badge.success {
+        background: #ecfdf5;
+        color: #059669;
+      }
+
+      .card-badge.warning {
+        background: #fffbeb;
+        color: #d97706;
+      }
+
+      /* ===== DATA GRID ===== */
+      .data-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px 20px;
+      }
+
+      .data-item {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+      }
+
+      .data-label {
+        font-size: 11px;
+        color: var(--text-tertiary);
+        font-weight: 500;
+      }
+
+      .data-value {
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--text-primary);
+      }
+
+      .data-value.loading {
+        background: linear-gradient(
+          90deg,
+          var(--border-light) 25%,
+          var(--border) 50%,
+          var(--border-light) 75%
+        );
+        background-size: 200% 100%;
+        animation: shimmer 1.5s infinite;
+        border-radius: 4px;
+        height: 20px;
+        width: 80px;
+      }
+
+      @keyframes shimmer {
+        0% {
+          background-position: 200% 0;
+        }
+        100% {
+          background-position: -200% 0;
+        }
+      }
+
+      .data-value.not-found {
+        color: var(--text-tertiary);
+        font-weight: 400;
+        font-style: italic;
+      }
+
+      /* ===== ENERGY SECTION ===== */
+      .energy-grid {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        gap: 16px;
+        align-items: start;
+      }
+
+      .energy-badges {
+        display: flex;
+        gap: 8px;
+      }
+
+      .energy-badge {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+      }
+
+      .energy-badge-label {
+        font-size: 10px;
+        font-weight: 600;
+        color: var(--text-tertiary);
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+      }
+
+      .energy-badge-value {
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        font-weight: 700;
+        color: white;
+        position: relative;
+      }
+
+      .energy-badge-value.not-found {
+        background: var(--border);
+        color: var(--text-tertiary);
+        font-size: 14px;
+      }
+
+      /* Energy colors - flat, modern */
+      .energy-A {
+        background: #22c55e;
+      }
+      .energy-B {
+        background: #84cc16;
+      }
+      .energy-C {
+        background: #eab308;
+      }
+      .energy-D {
+        background: #f59e0b;
+      }
+      .energy-E {
+        background: #f97316;
+      }
+      .energy-F {
+        background: #ef4444;
+      }
+      .energy-G {
+        background: #dc2626;
+      }
+
+      .energy-details {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+
+      .energy-detail-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 4px 0;
+        border-bottom: 1px solid var(--border-light);
+      }
+
+      .energy-detail-row:last-child {
+        border-bottom: none;
+      }
+
+      /* ===== LOCATION SECTION ===== */
+      #location-section {
+        margin-top: 4px;
+      }
+
+      /* ===== BUTTONS ===== */
+      .btn {
+        width: 100%;
+        padding: 10px 16px;
+        border: none;
+        border-radius: 8px;
+        font-size: 13px;
+        font-weight: 600;
+        font-family: inherit;
+        cursor: pointer;
+        transition: all 0.15s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+      }
+
+      .btn-primary {
+        background: var(--text-primary);
+        color: white;
+      }
+
+      .btn-primary:hover {
+        background: #374151;
+        transform: translateY(-1px);
+      }
+
+      .btn-primary:active {
+        transform: translateY(0);
+      }
+
+      .btn-primary:disabled {
+        background: var(--border);
+        color: var(--text-tertiary);
+        cursor: not-allowed;
+        transform: none;
+      }
+
+      #search-location-btn {
+        display: none;
+        margin-bottom: 12px;
+      }
+
+      /* ===== LOADING ===== */
+      #location-loading {
+        display: none;
+        text-align: center;
+        padding: 16px;
+        color: var(--text-secondary);
+        font-size: 12px;
+      }
+
+      .loading-spinner {
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        border: 2px solid var(--border);
+        border-top-color: var(--accent);
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+        margin-right: 8px;
+        vertical-align: middle;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      /* ===== RESULTS ===== */
+      #location-results {
+        font-size: 12px;
+      }
+
+      #location-results p {
+        margin: 0;
+        padding: 12px;
+        background: var(--bg);
+        border-radius: 8px;
+        color: var(--text-secondary);
+        text-align: center;
+      }
+
+      #location-results ul {
+        list-style: none;
+      }
+
+      #location-results > ul > li {
+        background: var(--bg);
+        border-radius: 8px;
+        padding: 12px;
+        margin-bottom: 8px;
+        border: 1px solid var(--border-light);
+        transition: border-color 0.15s;
+      }
+
+      #location-results > ul > li:hover {
+        border-color: var(--border);
+      }
+
+      #location-results > ul > li:last-child {
+        margin-bottom: 0;
+      }
+
+      /* ===== EMPTY STATE ===== */
+      .empty-state {
+        text-align: center;
+        padding: 20px;
+        color: var(--text-tertiary);
+      }
+
+      .empty-state-icon {
+        font-size: 32px;
+        margin-bottom: 8px;
+        opacity: 0.5;
+      }
+
+      .empty-state-text {
+        font-size: 12px;
+      }
+
+      /* ===== ERROR (small) ===== */
+      .error {
+        background: #fef2f2;
+        color: #dc2626;
+        padding: 10px 12px;
+        border-radius: 8px;
+        font-size: 12px;
+        text-align: center;
+        display: none;
+        border: 1px solid #fecaca;
+      }
+
+      /* ===== ERROR PAGE STATE ===== */
+      .error-page {
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 40px 24px;
+        min-height: 400px;
+        animation: fadeIn 0.4s ease-out;
+      }
+
+      body.show-error-page .main-content {
+        display: none;
+      }
+
+      body.show-error-page .error-page {
+        display: flex;
+      }
+
+      .error-illustration {
+        position: relative;
+        width: 80px;
+        height: 80px;
+        margin-bottom: 24px;
+      }
+
+      .error-icon-circle {
+        width: 80px;
+        height: 80px;
+        background: var(--border-light);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 36px;
+      }
+
+      .error-badge {
+        position: absolute;
+        bottom: -4px;
+        right: -4px;
+        width: 28px;
+        height: 28px;
+        background: var(--error);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 14px;
+        font-weight: 700;
+        border: 3px solid var(--bg);
+        animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.2s both;
+      }
+
+      @keyframes popIn {
+        from {
+          transform: scale(0);
+          opacity: 0;
+        }
+        to {
+          transform: scale(1);
+          opacity: 1;
+        }
+      }
+
+      .error-title {
+        font-size: 18px;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-bottom: 8px;
+        letter-spacing: -0.3px;
+      }
+
+      .error-subtitle {
+        font-size: 13px;
+        color: var(--text-secondary);
+        margin-bottom: 24px;
+        max-width: 260px;
+        line-height: 1.6;
+      }
+
+      .accepted-pages {
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 12px 16px;
+        margin-bottom: 20px;
+      }
+
+      .accepted-pages-title {
+        font-size: 10px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: var(--text-tertiary);
+        margin-bottom: 8px;
+        font-weight: 600;
+      }
+
+      .accepted-pages-list {
+        display: flex;
+        gap: 8px;
+        justify-content: center;
+      }
+
+      .page-badge {
+        background: var(--accent-light);
+        color: var(--accent);
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+
+      .page-badge::before {
+        content: '✓';
+        font-size: 10px;
+      }
+
+      .error-cta {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: var(--text-primary);
+        color: white;
+        padding: 10px 20px;
+        border-radius: 8px;
+        font-size: 13px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.15s ease;
+      }
+
+      .error-cta:hover {
+        background: #374151;
+        transform: translateY(-1px);
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- Error Page -->
+    <div class="error-page" id="error-page">
+      <div class="error-illustration">
+        <div class="error-icon-circle">🏠</div>
+        <div class="error-badge">✕</div>
+      </div>
+
+      <h2 class="error-title">Page non compatible</h2>
+      <p class="error-subtitle" id="error-page-detail">
+        Cette extension fonctionne uniquement sur les annonces immobilières Leboncoin.
+      </p>
+
+      <div class="accepted-pages">
+        <div class="accepted-pages-title">Pages compatibles</div>
+        <div class="accepted-pages-list">
+          <span class="page-badge">Ventes</span>
+          <span class="page-badge">Locations</span>
+        </div>
+      </div>
+
+      <a
+        href="https://www.leboncoin.fr/recherche?category=9"
+        target="_blank"
+        class="error-cta"
+        id="error-cta"
+      >
+        Voir les annonces →
+      </a>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container main-content">
+      <!-- Header -->
+      <header class="header">
+        <div class="header-left">
+          <div class="header-icon">🏠</div>
+          <h1>Immo Locator</h1>
+        </div>
+        <button class="btn-report" id="report-btn" type="button" style="display: none">
+          Signaler une erreur
+        </button>
+      </header>
+
+      <!-- Property Card -->
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Bien immobilier</span>
+          <span class="card-badge success" id="data-status" style="display: none">Complet</span>
+        </div>
+        <div class="data-grid">
+          <div class="data-item">
+            <span class="data-label">Ville</span>
+            <span class="data-value loading" id="city"></span>
+          </div>
+          <div class="data-item">
+            <span class="data-label">Code postal</span>
+            <span class="data-value loading" id="zipcode"></span>
+          </div>
+          <div class="data-item">
+            <span class="data-label">Surface habitable</span>
+            <span class="data-value" id="surface">—</span>
+          </div>
+          <div class="data-item">
+            <span class="data-label">Terrain</span>
+            <span class="data-value" id="terrain">—</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Energy Card -->
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Performance énergétique</span>
+        </div>
+        <div class="energy-grid">
+          <div class="energy-badges">
+            <div class="energy-badge">
+              <span class="energy-badge-label">DPE</span>
+              <div class="energy-badge-value not-found" id="dpe">—</div>
+            </div>
+            <div class="energy-badge">
+              <span class="energy-badge-label">GES</span>
+              <div class="energy-badge-value not-found" id="ges">—</div>
+            </div>
+          </div>
+          <div class="energy-details">
+            <div class="energy-detail-row">
+              <span class="data-label">Date diagnostic</span>
+              <span class="data-value" id="date_diag">—</span>
+            </div>
+            <div class="energy-detail-row">
+              <span class="data-label">Conso. primaire</span>
+              <span class="data-value" id="conso_prim">—</span>
+            </div>
+            <div class="energy-detail-row">
+              <span class="data-label">Conso. finale</span>
+              <span class="data-value" id="conso_fin">—</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- LOCATION Search -->
+      <div id="location-section">
+        <button class="btn btn-primary" id="search-location-btn">
+          Rechercher les adresses correspondantes
+        </button>
+
+        <div id="location-loading">
+          <span class="loading-spinner"></span>
+          Recherche en cours...
+        </div>
+
+        <div id="location-results"></div>
+      </div>
+
+      <!-- Error (small) -->
+      <div id="error-msg" class="error"></div>
+    </div>
+
+    <script src="popup.js"></script>
+  </body>
+</html>

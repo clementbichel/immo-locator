@@ -1,0 +1,653 @@
+// Cross-browser compatibility: use 'browser' if available, otherwise 'chrome'
+globalThis.browser ??= globalThis.chrome;
+
+import { getScoreColor } from './utils/score-calculator.js';
+import {
+  validateSearchData,
+  searchLocation,
+  getGoogleMapsLink,
+  sendReport,
+} from './api/location-client.js';
+import { clearElement, createMessage, createLocationResultsList } from './utils/dom-helpers.js';
+import { getErrorMessage, ERROR_CODES } from './utils/error-messages.js';
+
+document.addEventListener('DOMContentLoaded', () => {
+  const errorMsg = document.getElementById('error-msg');
+  const errorPage = document.getElementById('error-page');
+  const errorCta = document.getElementById('error-cta');
+  const reportBtn = document.getElementById('report-btn');
+
+  // Show full error page for invalid page errors
+  function showErrorPage(message) {
+    document.body.classList.add('show-error-page');
+    const detailEl = document.getElementById('error-page-detail');
+    if (detailEl && message) {
+      detailEl.textContent = message;
+    }
+  }
+
+  // Handle CTA click to open in new tab
+  if (errorCta) {
+    errorCta.addEventListener('click', (e) => {
+      e.preventDefault();
+      const browserApi = globalThis.browser || globalThis.chrome;
+      browserApi.tabs.create({ url: errorCta.href });
+      window.close();
+    });
+  }
+
+  // Function to be injected into the page
+  async function extractRealEstateData() {
+    // Check if we are in the correct category
+    // URL check is fast and effective for Leboncoin
+    if (
+      !window.location.href.includes('/ventes_immobilieres/') &&
+      !window.location.href.includes('/locations/')
+    ) {
+      return {
+        error: 'Cette extension ne fonctionne que pour les ventes immobilières et les locations.',
+      };
+    }
+
+    const data = {
+      surface: 'Non trouvé',
+      terrain: 'Non trouvé',
+      dpe: 'Non trouvé',
+      ges: 'Non trouvé',
+      date_diag: 'Non trouvé',
+      conso_prim: 'Non trouvé',
+      conso_fin: 'Non trouvé',
+      city: 'Non trouvé',
+      zipcode: 'Non trouvé',
+    };
+
+    const debug = [];
+
+    // Strategy 1: __NEXT_DATA__ (Best source)
+    try {
+      const nextDataScript = document.getElementById('__NEXT_DATA__');
+      if (nextDataScript) {
+        debug.push('Found __NEXT_DATA__');
+        const jsonData = JSON.parse(nextDataScript.textContent);
+        debug.push('Parsed JSON');
+
+        // Navigate safely to ad
+        const pageProps = jsonData?.props?.pageProps;
+        if (!pageProps) debug.push('No pageProps');
+
+        const ad = pageProps?.ad;
+
+        if (ad) {
+          debug.push('Found ad object');
+          // Extract Location
+          if (ad.location) {
+            debug.push('Found location obj');
+            if (ad.location.city) data.city = ad.location.city;
+            if (ad.location.zipcode) data.zipcode = ad.location.zipcode;
+          } else {
+            debug.push('No location inside ad');
+          }
+
+          if (ad.attributes) {
+            const attributes = ad.attributes;
+
+            // Helper to find attribute by key or label
+            const findAttr = (key, labelPart) => {
+              return attributes.find(
+                (a) => a.key === key || (a.label && a.label.toLowerCase().includes(labelPart))
+              );
+            };
+
+            const surfaceAttr = findAttr('square', 'habitable');
+            if (surfaceAttr) data.surface = surfaceAttr.value_label || surfaceAttr.value + ' m²';
+
+            const terrainAttr = findAttr('land_plot_surface', 'terrain');
+            if (terrainAttr) data.terrain = terrainAttr.value_label || terrainAttr.value + ' m²';
+
+            const dpeAttr = findAttr('energy_rate', 'énergie');
+            if (dpeAttr) data.dpe = (dpeAttr.value_label || dpeAttr.value).toUpperCase();
+
+            const gesAttr = attributes.find(
+              (a) =>
+                a.key === 'ges_rate' ||
+                (a.label &&
+                  (a.label.toLowerCase() === 'ges' ||
+                    a.label.toLowerCase().includes('gaz à effet de serre')))
+            );
+            if (gesAttr) data.ges = (gesAttr.value_label || gesAttr.value).toUpperCase();
+
+            const dateAttr = attributes.find(
+              (a) => a.label && a.label.includes('Date de réalisation')
+            );
+            if (dateAttr) data.date_diag = dateAttr.value_label || dateAttr.value;
+
+            const primAttr = attributes.find((a) => a.label && a.label.includes('primaire'));
+            if (primAttr) data.conso_prim = primAttr.value_label || primAttr.value;
+
+            const finAttr = attributes.find((a) => a.label && a.label.includes('finale'));
+            if (finAttr) data.conso_fin = finAttr.value_label || finAttr.value;
+          }
+        } else {
+          debug.push('No ad object in pageProps');
+          // Inspect keys to see what we have
+          if (pageProps) debug.push('pageProps keys: ' + Object.keys(pageProps).join(', '));
+        }
+      } else {
+        debug.push('No __NEXT_DATA__ script found');
+      }
+    } catch (e) {
+      console.log('Error parsing __NEXT_DATA__:', e);
+      debug.push('Error: ' + e.message);
+    }
+
+    data.debugLog = debug;
+
+    // Check if we are missing data, if so, try to expand description
+    const missingData = Object.values(data).some((v) => v === 'Non trouvé');
+
+    if (missingData) {
+      // Try to find "Voir plus" button
+      // 1. Try specific QA ID
+      let seeMoreBtn = document.querySelector(
+        'button[data-qa-id="adview_description_expand_button"]'
+      );
+
+      // 2. Try by text content if not found
+      if (!seeMoreBtn) {
+        const buttons = Array.from(
+          document.querySelectorAll('button, div[role="button"], span[role="button"]')
+        );
+        seeMoreBtn = buttons.find((b) => {
+          const text = b.innerText.toLowerCase();
+          return (
+            text.includes('voir plus') ||
+            text.includes('afficher plus') ||
+            text.includes('lire la suite')
+          );
+        });
+      }
+
+      if (seeMoreBtn) {
+        // Scroll to button to ensure it's interactive
+        seeMoreBtn.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        // Small delay for scroll
+        await new Promise((r) => setTimeout(r, 100));
+        seeMoreBtn.click();
+        // Wait for expansion (increased delay)
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+      }
+    }
+
+    // Strategy 2: DOM Scraping (Fallback & Supplement)
+    if (data.surface === 'Non trouvé') {
+      const bodyText = document.body.innerText;
+      const surfaceMatch = bodyText.match(/Surface habitable\s*[:\n]?\s*(\d+(?:[.,]\d+)?\s*m²)/i);
+      if (surfaceMatch) data.surface = surfaceMatch[1];
+
+      const terrainMatch = bodyText.match(
+        /Surface totale du terrain\s*[:\n]?\s*(\d+(?:[.,]\d+)?\s*m²)/i
+      );
+      if (terrainMatch) data.terrain = terrainMatch[1];
+    }
+
+    // Fallback for location
+    if (data.zipcode === 'Non trouvé' || data.city === 'Non trouvé') {
+      // Strategy 1b: Next.js router cache — contains current page props after client-side navigation,
+      // unlike __NEXT_DATA__ which only holds the initial SSR page's props
+      try {
+        const routerComponents = window.next?.router?.components;
+        if (routerComponents) {
+          for (const comp of Object.values(routerComponents)) {
+            const location = comp?.props?.pageProps?.ad?.location;
+            if (location) {
+              if (location.city && data.city === 'Non trouvé') data.city = location.city;
+              if (location.zipcode && data.zipcode === 'Non trouvé')
+                data.zipcode = location.zipcode;
+              debug.push('Location from Next.js router cache');
+              break;
+            }
+          }
+        }
+      } catch (e) {
+        debug.push('Router cache error: ' + e.message);
+      }
+    }
+
+    if (data.zipcode === 'Non trouvé' || data.city === 'Non trouvé') {
+      // New Leboncoin DOM: data-test-id="location-map-title"
+      // Text format: "Neighborhood\n\nCity (Zipcode)"
+      const locationTitle = document.querySelector('[data-test-id="location-map-title"]');
+      if (locationTitle) {
+        const match = locationTitle.innerText.match(
+          /([A-ZÀ-Ÿa-zà-ÿ][A-ZÀ-Ÿa-zà-ÿ\s\-]+?)\s*\((\d{5})\)/
+        );
+        if (match) {
+          if (data.city === 'Non trouvé') data.city = match[1].trim();
+          if (data.zipcode === 'Non trouvé') data.zipcode = match[2];
+        }
+      }
+
+      // Map anchor aria-label: "City Zipcode, Neighborhood"
+      if (data.city === 'Non trouvé' || data.zipcode === 'Non trouvé') {
+        const mapLink = document.querySelector('a[href$="#map"][aria-label]');
+        if (mapLink) {
+          const match = mapLink.getAttribute('aria-label').match(/^(.+?)\s+(\d{5})/);
+          if (match) {
+            if (data.city === 'Non trouvé') data.city = match[1].trim();
+            if (data.zipcode === 'Non trouvé') data.zipcode = match[2];
+          }
+        }
+      }
+
+      // Legacy selector (kept for backward compat)
+      if (data.city === 'Non trouvé' || data.zipcode === 'Non trouvé') {
+        const locationEl = document.querySelector('[data-qa-id="adview_location_container"]');
+        if (locationEl) {
+          const text = locationEl.innerText;
+          const zipMatch = text.match(/\b\d{5}\b/);
+          if (zipMatch) {
+            if (data.zipcode === 'Non trouvé') data.zipcode = zipMatch[0];
+            const parts = text.split(zipMatch[0]);
+            if (parts[0] && data.city === 'Non trouvé') data.city = parts[0].trim();
+          }
+        }
+      }
+    }
+
+    // Regex on Description Text (now expanded)
+    const descriptionEl =
+      document.querySelector('[data-qa-id="adview_description_container"]') || document.body;
+    const descText = descriptionEl.innerText;
+
+    if (data.date_diag === 'Non trouvé') {
+      const dateMatch = descText.match(
+        /Date de réalisation du diagnostic(?: énergétique)?\s*:\s*(\d{2}\/\d{2}\/\d{4})/i
+      );
+      if (dateMatch) data.date_diag = dateMatch[1];
+    }
+
+    if (data.conso_prim === 'Non trouvé') {
+      const primMatch = descText.match(/Consommation énergie primaire\s*:\s*([\d\s]+kWh\/m²\/an)/i);
+      if (primMatch) data.conso_prim = primMatch[1];
+    }
+
+    if (data.conso_fin === 'Non trouvé') {
+      const finMatch = descText.match(/Consommation énergie finale\s*:\s*([^.\n]+)/i);
+      if (finMatch) data.conso_fin = finMatch[1].trim();
+    }
+
+    // DPE/GES from badges if not found
+    if (data.dpe === 'Non trouvé') {
+      const dpeBadge = document.querySelector(
+        '[aria-label*="Diagnostic énergétique"], [aria-label*="Classe énergie"]'
+      );
+      if (dpeBadge) {
+        const match = dpeBadge
+          .getAttribute('aria-label')
+          .match(/(?:Diagnostic énergétique|Classe énergie)\s*:\s*([A-G])/i);
+        if (match) data.dpe = match[1].toUpperCase();
+      } else {
+        const dpeMatch = document.body.innerText.match(/Classe énergie\s*([A-G])(?!\s*[A-G])/i);
+        if (dpeMatch) data.dpe = dpeMatch[1].toUpperCase();
+      }
+    }
+
+    if (data.ges === 'Non trouvé') {
+      const gesBadge = document.querySelector(
+        '[aria-label*="Indice émission de gaz à effet de serre"], [aria-label*="GES"]'
+      );
+      if (gesBadge) {
+        const match = gesBadge
+          .getAttribute('aria-label')
+          .match(/(?:Indice émission de gaz à effet de serre|GES)\s*:\s*([A-G])/i);
+        if (match) data.ges = match[1].toUpperCase();
+      } else {
+        // Fallback regex
+        const gesMatch = document.body.innerText.match(/GES\s*[:]?\s*([A-G])\b/i);
+        if (gesMatch) {
+          const index = gesMatch.index + gesMatch[0].length;
+          const nextChars = document.body.innerText.substring(index, index + 5);
+          if (!/^\s*[A-G]\b/.test(nextChars)) {
+            data.ges = gesMatch[1].toUpperCase();
+          }
+        }
+      }
+    }
+
+    // Strategy 3: Visual Extraction (Computed Style)
+    // This is powerful for the "Diagnostics" section where the value is indicated by a colored badge
+    function findValueFromVisualScale(labelPart) {
+      // Find all elements containing the label
+      const allElements = Array.from(document.querySelectorAll('div, p, span, h3, h4'));
+      const labelEl = allElements.find(
+        (el) => el.innerText.includes(labelPart) && el.innerText.length < 50
+      ); // Ensure it's a short label
+
+      if (!labelEl) return null;
+
+      // Traverse up to find the container row (usually the parent or grandparent)
+      // We look for a container that has multiple children with single letters
+      let container = labelEl.parentElement;
+      let letters = [];
+      let attempts = 0;
+
+      while (container && attempts < 4) {
+        // Find potential scale letters
+        const candidates = Array.from(container.querySelectorAll('div, span, p'));
+
+        // CRITICAL FIX: Only consider letters that are AFTER the label in the DOM
+        // This prevents GES from picking up DPE letters if they share a parent
+        // and ensures DPE picks up its own letters (closest following)
+        letters = candidates.filter((el) => {
+          return (
+            /^[A-G]$/.test(el.innerText.trim()) &&
+            labelEl.compareDocumentPosition(el) & Node.DOCUMENT_POSITION_FOLLOWING
+          );
+        });
+
+        if (letters.length >= 5) {
+          // Found the scale!
+          // If we found too many (e.g. both DPE and GES scales), take the first 7 (A-G)
+          // This assumes the closest scale is the correct one
+          if (letters.length > 7) {
+            letters = letters.slice(0, 7);
+          }
+          break;
+        }
+        container = container.parentElement;
+        attempts++;
+      }
+
+      if (letters.length < 5) return null;
+
+      // Now find the "active" letter
+      // Since all letters might have different colors (A=Green, G=Red), we can't rely on unique background color.
+      // Instead, we look for the one that is LARGER or BOLDER.
+
+      const metrics = letters.map((el) => {
+        const style = window.getComputedStyle(el);
+        const rect = el.getBoundingClientRect();
+        return {
+          el,
+          height: rect.height,
+          width: rect.width,
+          fontWeight: parseInt(style.fontWeight) || 400,
+          fontSize: parseFloat(style.fontSize) || 12,
+        };
+      });
+
+      // Helper to find outlier
+      const findOutlier = (items, key) => {
+        if (items.length < 3) return null;
+        // Calculate mode (most common value)
+        const counts = {};
+        items.forEach((i) => {
+          const val = Math.round(i[key] * 10) / 10; // Round to avoid float precision issues
+          counts[val] = (counts[val] || 0) + 1;
+        });
+
+        // Find the value that appears most often (the "normal" size)
+        const commonVal = Object.keys(counts).reduce((a, b) => (counts[a] > counts[b] ? a : b));
+
+        // Find an item that is significantly larger than commonVal
+        return items.find((i) => {
+          const val = Math.round(i[key] * 10) / 10;
+          return val > parseFloat(commonVal) * 1.1; // 10% larger
+        });
+      };
+
+      // Try height, then width, then font size
+      let active = findOutlier(metrics, 'height');
+      if (!active) active = findOutlier(metrics, 'width');
+      if (!active) active = findOutlier(metrics, 'fontSize');
+      if (!active) active = findOutlier(metrics, 'fontWeight');
+
+      if (active) {
+        return active.el.innerText.trim();
+      }
+
+      return null;
+    }
+
+    if (data.dpe === 'Non trouvé') {
+      const visualDpe =
+        findValueFromVisualScale('Classe énergie') ||
+        findValueFromVisualScale('Diagnostic énergétique');
+      if (visualDpe) data.dpe = visualDpe;
+    }
+
+    if (data.ges === 'Non trouvé') {
+      const visualGes =
+        findValueFromVisualScale('GES') || findValueFromVisualScale('Gaz à effet de serre');
+      if (visualGes) data.ges = visualGes;
+    }
+
+    return data;
+  }
+
+  // Function to prepare Location Search (Manual Trigger)
+  function prepareLocationSearch(data) {
+    const searchBtn = document.getElementById('search-location-btn');
+    const locationResults = document.getElementById('location-results');
+
+    // Reset
+    clearElement(locationResults);
+    searchBtn.style.display = 'none';
+
+    // Validate data
+    const validation = validateSearchData(data);
+    if (!validation.isValid) {
+      const msg = createMessage(
+        `Recherche non disponible : ${validation.missing.join(', ')} manquant(s).`,
+        '#999'
+      );
+      msg.style.fontSize = '12px';
+      locationResults.appendChild(msg);
+      return;
+    }
+
+    // Show warning if optional fields are missing
+    if (validation.warnings.length > 0) {
+      const msg = createMessage(
+        `⚠️ ${validation.warnings.join(', ')} manquant(e) — les résultats seront moins précis.`,
+        '#b45309'
+      );
+      msg.style.fontSize = '12px';
+      locationResults.appendChild(msg);
+    }
+
+    // Show Button
+    searchBtn.style.display = 'block';
+    searchBtn.onclick = () => executeLocationSearch(data);
+  }
+
+  async function executeLocationSearch(data) {
+    const locationLoading = document.getElementById('location-loading');
+    const locationResults = document.getElementById('location-results');
+    const searchBtn = document.getElementById('search-location-btn');
+
+    searchBtn.disabled = true;
+    searchBtn.textContent = 'Recherche en cours...';
+    locationLoading.style.display = 'block';
+    clearElement(locationResults);
+
+    try {
+      const result = await searchLocation(data);
+
+      locationLoading.style.display = 'none';
+      searchBtn.textContent = 'Lancer la recherche';
+      searchBtn.disabled = false;
+
+      if (result.results && result.results.length > 0) {
+        const resultsList = createLocationResultsList(
+          result.results,
+          getGoogleMapsLink,
+          getScoreColor
+        );
+        locationResults.appendChild(resultsList);
+      } else {
+        locationResults.appendChild(
+          createMessage('Aucune adresse trouvée avec ces critères stricts.')
+        );
+      }
+    } catch (error) {
+      console.error('API Error:', error);
+      locationLoading.style.display = 'none';
+      searchBtn.textContent = 'Lancer la recherche';
+      searchBtn.disabled = false;
+      clearElement(locationResults);
+      const errorMessage =
+        error.code && ERROR_CODES[error.code]
+          ? getErrorMessage(error.code)
+          : error.message || 'Erreur lors de la recherche.';
+      locationResults.appendChild(createMessage(errorMessage, 'red'));
+    }
+  }
+
+  browser.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+    if (!tabs[0] || !tabs[0].id) {
+      showErrorPage("Impossible d'accéder à l'onglet actif.");
+      return;
+    }
+
+    const tabUrl = tabs[0].url || '';
+
+    // Check if we're on a Leboncoin page before trying to inject
+    if (!tabUrl.includes('leboncoin.fr')) {
+      showErrorPage(
+        "Cette extension fonctionne uniquement sur Leboncoin. Rendez-vous sur une annonce de vente ou de location pour l'utiliser."
+      );
+      return;
+    }
+
+    browser.scripting.executeScript(
+      {
+        target: { tabId: tabs[0].id },
+        func: extractRealEstateData,
+      },
+      (results) => {
+        if (browser.runtime.lastError) {
+          showErrorPage(
+            "Impossible d'accéder à cette page. Vérifiez que vous êtes sur une annonce Leboncoin."
+          );
+          return;
+        }
+
+        if (results && results[0] && results[0].result) {
+          const res = results[0].result;
+
+          if (res.error) {
+            // Show full error page for invalid page type
+            showErrorPage(res.error);
+            return;
+          }
+
+          // Display Results
+          const fields = [
+            'city',
+            'zipcode',
+            'surface',
+            'terrain',
+            'date_diag',
+            'conso_prim',
+            'conso_fin',
+          ];
+
+          let foundCount = 0;
+          const totalFields = fields.length + 2; // +2 for DPE and GES
+
+          fields.forEach((field) => {
+            const el = document.getElementById(field);
+            if (el) {
+              const value = res[field] || 'Non trouvé';
+              el.textContent = value === 'Non trouvé' ? '—' : value;
+              el.classList.remove('loading', 'not-found');
+              if (value === 'Non trouvé' || value === '--' || value === '—') {
+                el.classList.add('not-found');
+              } else {
+                foundCount++;
+              }
+            }
+          });
+
+          // Handle DPE/GES badges with colors
+          ['dpe', 'ges'].forEach((field) => {
+            const el = document.getElementById(field);
+            if (el) {
+              const value = res[field];
+              // Remove all energy classes
+              el.classList.remove(
+                'not-found',
+                'energy-A',
+                'energy-B',
+                'energy-C',
+                'energy-D',
+                'energy-E',
+                'energy-F',
+                'energy-G'
+              );
+
+              if (value && value !== 'Non trouvé' && /^[A-G]$/i.test(value)) {
+                el.textContent = value.toUpperCase();
+                el.classList.add(`energy-${value.toUpperCase()}`);
+                foundCount++;
+              } else {
+                el.textContent = '—';
+                el.classList.add('not-found');
+              }
+            }
+          });
+
+          // Update data status badge
+          const dataStatusEl = document.getElementById('data-status');
+          if (dataStatusEl) {
+            const ratio = foundCount / totalFields;
+            if (ratio >= 0.8) {
+              dataStatusEl.textContent = 'Complet';
+              dataStatusEl.className = 'card-badge success';
+            } else if (ratio >= 0.5) {
+              dataStatusEl.textContent = 'Partiel';
+              dataStatusEl.className = 'card-badge warning';
+            } else {
+              dataStatusEl.textContent = 'Incomplet';
+              dataStatusEl.className = 'card-badge warning';
+            }
+            dataStatusEl.style.display = 'inline-block';
+          }
+
+          // Show and wire the report button
+          reportBtn.style.display = 'block';
+          reportBtn.onclick = async () => {
+            reportBtn.disabled = true;
+            reportBtn.textContent = 'Envoi...';
+            try {
+              // Exclude internal debug log from the report
+              const { debugLog: _debug, ...extractedData } = res;
+              await sendReport(tabUrl, extractedData);
+              reportBtn.textContent = '✓ Rapport envoyé';
+              setTimeout(() => {
+                reportBtn.textContent = 'Signaler une erreur';
+                reportBtn.disabled = false;
+              }, 2000);
+            } catch {
+              reportBtn.textContent = 'Signaler une erreur';
+              reportBtn.disabled = false;
+              errorMsg.textContent = "Impossible d'envoyer le rapport.";
+              errorMsg.style.display = 'block';
+              setTimeout(() => {
+                errorMsg.style.display = 'none';
+              }, 3000);
+            }
+          };
+
+          // Prepare Location Search (Manual)
+          prepareLocationSearch(res);
+        } else {
+          showErrorPage(
+            "Données non trouvées sur cette page. Assurez-vous d'être sur une annonce immobilière."
+          );
+        }
+      }
+    );
+  });
+});
