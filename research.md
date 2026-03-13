@@ -6,7 +6,9 @@
 
 **Core value proposition:** When browsing a property listing on Leboncoin, the extension extracts key data (surface, DPE, GES, location, energy consumption) directly from the page, then cross-references it against the official ADEME energy diagnostics database to find the real address of the property — which Leboncoin intentionally hides.
 
-**Version:** Extension v1.0.3, API v1.0.0
+**Version:** Extension v1.0.4, API v1.0.0
+
+**Repository:** npm workspaces monorepo — `packages/extension/` + `packages/api/`
 
 ---
 
@@ -18,7 +20,7 @@
 │                                                          │
 │  ┌─────────────────────────────────────────────────┐     │
 │  │        Chrome/Firefox Extension (MV3)           │     │
-│  │          AnnonceImmoLocator/                     │     │
+│  │          packages/extension/                    │     │
 │  │                                                  │     │
 │  │  popup.html ─→ popup.js (esbuild bundle)        │     │
 │  │       │                                          │     │
@@ -39,7 +41,7 @@
 │                                                          │
 │  ┌─────────────────────────────────────────────────┐     │
 │  │          Node.js Express API (v5)               │     │
-│  │          immo-locator-api/                       │     │
+│  │          packages/api/                          │     │
 │  │                                                  │     │
 │  │  Middleware: Helmet, CORS, Rate Limit, Pino     │     │
 │  │                                                  │     │
@@ -69,11 +71,11 @@
 
 ---
 
-## 3. Extension — AnnonceImmoLocator/
+## 3. Extension — packages/extension/
 
 ### 3.1 Manifest & Permissions
 
-- **Manifest V3**, version 1.0.3
+- **Manifest V3**, version 1.0.4
 - **Permissions:** `activeTab` + `scripting` (minimal — no broad host access)
 - **Host permissions:** only `https://api.immolocator.fr/*`
 - **CSP:** `script-src 'self'; object-src 'self'; connect-src https://api.immolocator.fr`
@@ -164,7 +166,7 @@ The core of the extension is the `extractRealEstateData()` function injected int
 
 ---
 
-## 4. Backend API — immo-locator-api/
+## 4. Backend API — packages/api/
 
 ### 4.1 Stack
 
@@ -227,11 +229,10 @@ The core of the extension is the `extractRealEstateData()` function injected int
 #### `POST /api/reports` (`src/routes/reports.js`)
 
 1. Check `url` and `extracted` are present
-2. `cleanExtracted()` — backward compat: strips units from numeric fields ("76 m²" → "76"), filters "Non trouvé" values, replaces commas with dots
-3. Validate cleaned data against `extractedSchema.safeParse()` (strict, all fields nullable)
-4. Validate URL is `http(s)://…leboncoin.fr/…`
-5. `recordReport()` — write to SQLite
-6. Return `{ success: true }`
+2. Validate cleaned data against `extractedSchema.safeParse()` (strict, all fields nullable)
+3. Validate URL is `http(s)://…leboncoin.fr/…`
+4. `recordReport()` — write to SQLite
+5. Return `{ success: true }`
 
 ### 4.4 ADEME Client (`src/clients/ademe-client.js`)
 
@@ -303,7 +304,7 @@ The `calculateMatchScore()` function starts at 100 and deducts points:
 - **VPS:** Debian Linux, reachable at `api.immolocator.fr`
 - **Nginx:** reverse proxy with SSL termination (Let's Encrypt + Certbot)
 - **PM2:** process manager (`ecosystem.config.cjs`): fork mode, 1 instance, 256MB memory limit, auto-restart
-- **Deploy script:** `deploy/deploy.sh` — rsync over SSH (port 65422, ed25519 key), npm install --production, PM2 restart, health check
+- **Deploy script:** `deploy/deploy.sh` — rsync over SSH, npm install --production, PM2 restart, health check
 - **Setup script:** `deploy/setup-vps.sh` — full VPS provisioning (Node 20, PM2, Nginx, Certbot)
 - **fail2ban:** Nginx 404 jail (20 404s in 60s → 1h IP ban)
 
@@ -375,21 +376,17 @@ The extension has no persistent background script. All logic runs in the popup l
 
 The most creative piece of engineering: detecting which DPE/GES letter is "active" on a colored A-G scale by measuring CSS computed styles. It finds the outlier element (larger height/width/fontSize/fontWeight) compared to the mode. This handles cases where Leboncoin renders energy badges as pure visual elements without text labels or aria attributes.
 
-### 7.3 Backward Compatibility Layer (`cleanExtracted`)
-
-The backend's `reports.js` includes a `cleanExtracted()` function that strips units from numeric strings ("76 m²" → "76") and filters "Non trouvé" values. This exists to handle reports from older extension versions (v1.0.0) that send raw display strings instead of cleaned values. Per project memory, this should be removed once v1.0.0 is no longer in use.
-
-### 7.4 Firefox Compatibility
+### 7.3 Firefox Compatibility
 
 - `moz-extension://` origins are accepted by CORS (any UUID, since Firefox addon IDs change per installation)
 - Link clicks manually open new tabs and close the popup (Firefox doesn't auto-close popups on external navigation)
 - `globalThis.browser ??= globalThis.chrome` ensures API compatibility
 
-### 7.5 No API Authentication
+### 7.4 No API Authentication
 
 Intentional decision: since the API key would be visible in the extension's source code, it provides no real security. Rate limiting is considered sufficient protection.
 
-### 7.6 Express 5
+### 7.5 Express 5
 
 The API uses Express 5 (v5.2.1), which is the latest major version. This provides built-in async error handling and other improvements over Express 4.
 
@@ -398,70 +395,71 @@ The API uses Express 5 (v5.2.1), which is the latest major version. This provide
 ## 8. File Structure Summary
 
 ```
-immo-locator/
-├── AnnonceImmoLocator/              # Chrome/Firefox extension
-│   ├── manifest.json                # MV3 manifest (v1.0.3)
-│   ├── popup.html                   # Popup UI (inline CSS)
-│   ├── popup.js                     # Built bundle (esbuild IIFE)
-│   ├── package.json                 # Dev deps only (vitest, esbuild, eslint)
-│   ├── src/
-│   │   ├── popup.js                 # Main logic (653 lines)
-│   │   ├── index.js                 # Module re-exports
-│   │   ├── api/
-│   │   │   └── location-client.js   # API client (validation, search, reports)
-│   │   ├── extractors/
-│   │   │   └── next-data-extractor.js
-│   │   └── utils/
-│   │       ├── dom-helpers.js       # Safe DOM manipulation
-│   │       ├── error-messages.js    # French error codes/messages
-│   │       ├── parsers.js           # Data parsing (301 lines)
-│   │       ├── score-calculator.js  # Score → color
-│   │       ├── url-validator.js     # Leboncoin URL validation
-│   │       └── validation-constants.js  # Bounds & patterns
-│   ├── tests/
-│   │   ├── unit/ (5 files)
-│   │   ├── integration/ (3 files)
-│   │   ├── e2e/ (1 file)
-│   │   ├── mocks/chrome-api.js
-│   │   └── fixtures/ (ademe-response.json, leboncoin-next-data.json)
-│   ├── scripts/build.js             # esbuild config
-│   ├── icons/ (16, 32, 48, 128px + SVG)
-│   ├── docs/privacy.html
-│   ├── .github/workflows/ (ci.yml, release.yml)
-│   ├── .husky/ (pre-commit)
-│   ├── vitest.config.js, vitest.workspace.js
-│   ├── .eslintrc.cjs, .prettierrc
-│   └── CHANGELOG.md, CLAUDE.md
+immo-locator/                          # Monorepo root
+├── package.json                       # npm workspaces config
+├── vitest.workspace.js                # Vitest workspace (packages/*)
+├── packages/
+│   ├── extension/                     # Chrome/Firefox extension
+│   │   ├── manifest.json              # MV3 manifest (v1.0.4)
+│   │   ├── popup.html                 # Popup UI (inline CSS)
+│   │   ├── popup.js                   # Built bundle (esbuild IIFE)
+│   │   ├── package.json               # Dev deps (vitest, esbuild, jsdom)
+│   │   ├── src/
+│   │   │   ├── popup.js               # Main logic
+│   │   │   ├── index.js               # Module re-exports
+│   │   │   ├── api/
+│   │   │   │   └── location-client.js # API client (validation, search, reports)
+│   │   │   ├── extractors/
+│   │   │   │   └── next-data-extractor.js
+│   │   │   └── utils/
+│   │   │       ├── dom-helpers.js     # Safe DOM manipulation
+│   │   │       ├── error-messages.js  # French error codes/messages
+│   │   │       ├── parsers.js         # Data parsing
+│   │   │       ├── score-calculator.js
+│   │   │       ├── url-validator.js
+│   │   │       └── validation-constants.js
+│   │   ├── tests/
+│   │   │   ├── unit/ (5 files)
+│   │   │   ├── integration/ (3 files)
+│   │   │   ├── e2e/ (1 file)
+│   │   │   ├── mocks/chrome-api.js
+│   │   │   └── fixtures/
+│   │   ├── scripts/build.js           # esbuild config
+│   │   ├── icons/ (16, 32, 48, 128px + SVG)
+│   │   ├── docs/privacy.html
+│   │   ├── .github/workflows/ (ci.yml, release.yml)
+│   │   ├── vitest.config.js, vitest.workspace.js
+│   │   ├── CHANGELOG.md
+│   │   └── LICENSE (AGPL-3.0)
+│   │
+│   └── api/                           # Backend API
+│       ├── package.json               # Express 5, better-sqlite3, Zod, Pino
+│       ├── src/
+│       │   ├── index.js               # App setup, middleware, validation
+│       │   ├── db.js                  # SQLite schema, CRUD, retention
+│       │   ├── logger.js              # Pino + rotating file stream
+│       │   ├── clients/
+│       │   │   └── ademe-client.js    # ADEME API client (cache, circuit breaker)
+│       │   ├── routes/
+│       │   │   ├── location.js        # POST /api/location/search
+│       │   │   └── reports.js         # POST /api/reports
+│       │   ├── schemas/
+│       │   │   └── search.js          # Zod search schema
+│       │   ├── services/
+│       │   │   └── dpe-service.js     # Scoring & result processing
+│       │   └── utils/
+│       │       └── parsers.js         # French date parsing
+│       ├── tests/ (7 test files)
+│       ├── deploy/
+│       │   ├── deploy.sh              # rsync + SSH deploy
+│       │   └── setup-vps.sh           # VPS provisioning
+│       ├── ecosystem.config.cjs       # PM2 config
+│       ├── .env.example
+│       ├── vitest.config.js
+│       └── LICENSE (AGPL-3.0)
 │
-├── immo-locator-api/                # Backend API
-│   ├── package.json                 # Express 5, better-sqlite3, Zod, Pino
-│   ├── src/
-│   │   ├── index.js                 # App setup, middleware, validation
-│   │   ├── db.js                    # SQLite schema, CRUD, retention
-│   │   ├── logger.js                # Pino + rotating file stream
-│   │   ├── clients/
-│   │   │   └── ademe-client.js      # ADEME API client (cache, circuit breaker)
-│   │   ├── routes/
-│   │   │   ├── location.js          # POST /api/location/search
-│   │   │   └── reports.js           # POST /api/reports
-│   │   ├── schemas/
-│   │   │   └── search.js            # Zod search schema
-│   │   ├── services/
-│   │   │   └── dpe-service.js       # Scoring & result processing
-│   │   └── utils/
-│   │       └── parsers.js           # French date parsing
-│   ├── tests/ (7 test files)
-│   ├── deploy/
-│   │   ├── deploy.sh                # rsync + SSH deploy
-│   │   └── setup-vps.sh             # VPS provisioning
-│   ├── ecosystem.config.cjs         # PM2 config
-│   ├── .env.example
-│   ├── PLAN.md                      # Production readiness plan (14 tasks, all done)
-│   └── .gitignore
-│
-├── data/searches.db                 # SQLite database
-├── logs/app.log                     # Application logs
-└── .claude/settings.local.json      # Claude Code permissions
+├── data/searches.db                   # SQLite database (gitignored)
+└── logs/app.log                       # Application logs (gitignored)
 ```
 
 ---
@@ -469,24 +467,11 @@ immo-locator/
 ## 9. Test Coverage
 
 **Extension:** ~205 tests across unit, integration, and e2e suites
-**API:** 34 tests covering all routes, schemas, services, clients, and error handling
+**API:** 59 tests covering all routes, schemas, services, clients, and error handling
 
 Test infrastructure:
 
-- **Framework:** Vitest for both projects
+- **Framework:** Vitest for both projects (workspace config at root)
 - **HTTP testing:** Supertest (API)
 - **Browser mocking:** jsdom + custom Chrome API mock (extension)
 - **Fixtures:** sample ADEME API responses and Leboncoin **NEXT_DATA** JSON
-
----
-
-## 10. Remaining TODOs
-
-Per PLAN.md checklist, two items are still unchecked:
-
-- [ ] End-to-end validation with the published Chrome extension
-- [ ] End-to-end validation with the published Firefox extension
-
-Per project memory:
-
-- Once v1.0.0 is no longer in use: remove `cleanExtracted()` in `reports.js` and apply strict Zod schema directly on raw `extracted` data
