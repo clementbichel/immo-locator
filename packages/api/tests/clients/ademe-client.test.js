@@ -23,11 +23,11 @@ describe('buildAdemeParams', () => {
     expect(params.get('code_postal_ban_eq')).toBe('75011');
     expect(params.get('etiquette_dpe_eq')).toBe('D');
     expect(params.get('etiquette_ges_eq')).toBe('E');
-    expect(params.get('surface_habitable_logement_gte')).toBe('40');
-    expect(params.get('surface_habitable_logement_lte')).toBe('50');
-    expect(params.get('date_etablissement_dpe_gte')).toBe('2024-03-08');
-    expect(params.get('date_etablissement_dpe_lte')).toBe('2024-03-22');
-    expect(params.get('size')).toBe('5');
+    expect(params.get('surface_habitable_logement_gte')).toBe('38');
+    expect(params.get('surface_habitable_logement_lte')).toBe('52');
+    expect(params.get('date_etablissement_dpe_gte')).toBe('2024-03-01');
+    expect(params.get('date_etablissement_dpe_lte')).toBe('2024-03-29');
+    expect(params.has('size')).toBe(false);
   });
 
   it('uses city when zipcode is missing', () => {
@@ -39,8 +39,8 @@ describe('buildAdemeParams', () => {
 
   it('includes primary energy range when provided', () => {
     const params = buildAdemeParams(baseData);
-    expect(params.get('conso_5_usages_par_m2_ep_gte')).toBe('207');
-    expect(params.get('conso_5_usages_par_m2_ep_lte')).toBe('253');
+    expect(params.get('conso_5_usages_par_m2_ep_gte')).toBe('161');
+    expect(params.get('conso_5_usages_par_m2_ep_lte')).toBe('299');
   });
 
   it('skips primary energy when null', () => {
@@ -51,8 +51,8 @@ describe('buildAdemeParams', () => {
 
   it('includes final energy range when provided', () => {
     const params = buildAdemeParams(baseData);
-    expect(params.get('conso_5_usages_par_m2_ef_gte')).toBe('162');
-    expect(params.get('conso_5_usages_par_m2_ef_lte')).toBe('198');
+    expect(params.get('conso_5_usages_par_m2_ef_gte')).toBe('153');
+    expect(params.get('conso_5_usages_par_m2_ef_lte')).toBe('207');
   });
 
   it('skips final energy when null', () => {

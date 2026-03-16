@@ -1,6 +1,7 @@
 import { LRUCache } from 'lru-cache';
 import { parseFrenchDate, formatDateISO } from '../utils/parsers.js';
 import { logger } from '../logger.js';
+import { MATCH_CONFIG } from '../services/dpe-service.js';
 
 const cache = new LRUCache({
   max: 500,
@@ -32,31 +33,34 @@ export function buildAdemeParams(data) {
   if (data.ges) params.append('etiquette_ges_eq', data.ges);
 
   if (data.surface !== null && data.surface !== undefined) {
-    params.append('surface_habitable_logement_gte', String(Math.floor(data.surface * 0.9)));
-    params.append('surface_habitable_logement_lte', String(Math.ceil(data.surface * 1.1)));
+    const dev = MATCH_CONFIG.surface.maxDeviation;
+    params.append('surface_habitable_logement_gte', String(Math.floor(data.surface * (1 - dev))));
+    params.append('surface_habitable_logement_lte', String(Math.ceil(data.surface * (1 + dev))));
   }
 
   const diagDate = parseFrenchDate(data.date_diag);
   if (diagDate) {
+    const days = MATCH_CONFIG.date.maxDays;
     const minDate = new Date(diagDate);
-    minDate.setDate(diagDate.getDate() - 7);
+    minDate.setDate(diagDate.getDate() - days);
     const maxDate = new Date(diagDate);
-    maxDate.setDate(diagDate.getDate() + 7);
+    maxDate.setDate(diagDate.getDate() + days);
     params.append('date_etablissement_dpe_gte', formatDateISO(minDate));
     params.append('date_etablissement_dpe_lte', formatDateISO(maxDate));
   }
 
   if (data.conso_prim !== null && data.conso_prim !== undefined) {
-    params.append('conso_5_usages_par_m2_ep_gte', String(Math.round(data.conso_prim * 0.9)));
-    params.append('conso_5_usages_par_m2_ep_lte', String(Math.round(data.conso_prim * 1.1)));
+    const dev = MATCH_CONFIG.conso_prim.maxDeviation;
+    params.append('conso_5_usages_par_m2_ep_gte', String(Math.round(data.conso_prim * (1 - dev))));
+    params.append('conso_5_usages_par_m2_ep_lte', String(Math.round(data.conso_prim * (1 + dev))));
   }
 
   if (data.conso_fin !== null && data.conso_fin !== undefined) {
-    params.append('conso_5_usages_par_m2_ef_gte', String(Math.round(data.conso_fin * 0.9)));
-    params.append('conso_5_usages_par_m2_ef_lte', String(Math.round(data.conso_fin * 1.1)));
+    const dev = MATCH_CONFIG.conso_fin.maxDeviation;
+    params.append('conso_5_usages_par_m2_ef_gte', String(Math.round(data.conso_fin * (1 - dev))));
+    params.append('conso_5_usages_par_m2_ef_lte', String(Math.round(data.conso_fin * (1 + dev))));
   }
 
-  params.append('size', '5');
   params.append(
     'select',
     'adresse_ban,etiquette_dpe,etiquette_ges,date_etablissement_dpe,surface_habitable_logement,nom_commune_ban,conso_5_usages_par_m2_ep,conso_5_usages_par_m2_ef'

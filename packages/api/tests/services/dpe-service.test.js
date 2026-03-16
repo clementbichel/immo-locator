@@ -260,4 +260,19 @@ describe('processResults', () => {
     const results = processResults({ surface: 45 }, []);
     expect(results).toEqual([]);
   });
+
+  it('returns at most MAX_RESULTS results', () => {
+    const adData = { surface: 45, date_diag: '15/03/2024' };
+    // Create 8 near-perfect matches
+    const ademeResults = Array.from({ length: 8 }, (_, i) => ({
+      adresse_ban: `Addr${i}`,
+      surface_habitable_logement: 45,
+      date_etablissement_dpe: '2024-03-15',
+      etiquette_dpe: 'D',
+      etiquette_ges: 'E',
+      nom_commune_ban: 'Paris',
+    }));
+    const results = processResults(adData, ademeResults);
+    expect(results).toHaveLength(5);
+  });
 });

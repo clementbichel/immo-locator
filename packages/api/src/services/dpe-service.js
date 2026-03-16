@@ -27,6 +27,7 @@ export const MATCH_CONFIG = {
 };
 
 export const MIN_SCORE_THRESHOLD = 50;
+export const MAX_RESULTS = 5;
 
 export function percentFieldMatch(actual, expected, maxDeviation) {
   if (expected === 0) return actual === 0 ? 1 : 0;
@@ -118,5 +119,6 @@ export function processResults(adData, ademeResults) {
   if (scored.length === 0) return scored;
 
   const filtered = scored.filter((r) => r.score >= MIN_SCORE_THRESHOLD);
-  return filtered.length > 0 ? filtered : [scored[0]];
+  const kept = filtered.length > 0 ? filtered : [scored[0]];
+  return kept.slice(0, MAX_RESULTS);
 }
