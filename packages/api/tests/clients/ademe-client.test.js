@@ -1,5 +1,10 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { buildAdemeParams, buildAdemeUrl, fetchAdeme, _resetBreaker } from '../../src/clients/ademe-client.js';
+import {
+  buildAdemeParams,
+  buildAdemeUrl,
+  fetchAdeme,
+  _resetBreaker,
+} from '../../src/clients/ademe-client.js';
 
 describe('buildAdemeParams', () => {
   const baseData = {
@@ -10,6 +15,7 @@ describe('buildAdemeParams', () => {
     surface: 45,
     date_diag: '15/03/2024',
     conso_prim: 230,
+    conso_fin: 180,
   };
 
   it('builds params with zipcode, dpe, ges, surface range, date range', () => {
@@ -42,11 +48,34 @@ describe('buildAdemeParams', () => {
     const params = buildAdemeParams(data);
     expect(params.get('conso_5_usages_par_m2_ep_gte')).toBeNull();
   });
+
+  it('includes final energy range when provided', () => {
+    const params = buildAdemeParams(baseData);
+    expect(params.get('conso_5_usages_par_m2_ef_gte')).toBe('162');
+    expect(params.get('conso_5_usages_par_m2_ef_lte')).toBe('198');
+  });
+
+  it('skips final energy when null', () => {
+    const data = { ...baseData, conso_fin: null };
+    const params = buildAdemeParams(data);
+    expect(params.get('conso_5_usages_par_m2_ef_gte')).toBeNull();
+  });
+
+  it('includes conso_5_usages_par_m2_ef in select', () => {
+    const params = buildAdemeParams(baseData);
+    expect(params.get('select')).toContain('conso_5_usages_par_m2_ef');
+  });
 });
 
 describe('buildAdemeUrl', () => {
   it('returns full URL with params', () => {
-    const url = buildAdemeUrl({ zipcode: '75011', dpe: 'D', ges: 'E', surface: 45, date_diag: '15/03/2024' });
+    const url = buildAdemeUrl({
+      zipcode: '75011',
+      dpe: 'D',
+      ges: 'E',
+      surface: 45,
+      date_diag: '15/03/2024',
+    });
     expect(url).toContain('data.ademe.fr');
     expect(url).toContain('code_postal_ban_eq=75011');
   });
@@ -86,11 +115,14 @@ describe('fetchAdeme circuit breaker', () => {
     _resetBreaker();
     // Manually set failures to threshold but with old openedAt (simulate time passed)
     // Instead, just reset and do a success path
-    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
-      ok: true,
-      status: 200,
-      json: () => Promise.resolve({ results: [] }),
-    }));
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue({
+        ok: true,
+        status: 200,
+        json: () => Promise.resolve({ results: [] }),
+      })
+    );
 
     const result = await fetchAdeme({ ...data, surface: 50 });
     expect(result).toEqual({ results: [] });

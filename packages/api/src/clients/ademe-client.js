@@ -7,13 +7,15 @@ const cache = new LRUCache({
   ttl: 60 * 60 * 1000, // 1 heure
 });
 
-const ADEME_API_URL = process.env.ADEME_API_URL || 'https://data.ademe.fr/data-fair/api/v1/datasets/dpe03existant/lines';
+const ADEME_API_URL =
+  process.env.ADEME_API_URL ||
+  'https://data.ademe.fr/data-fair/api/v1/datasets/dpe03existant/lines';
 
 // Circuit breaker state
 const breaker = {
   failures: 0,
   openedAt: 0,
-  threshold: 3,       // open after 3 consecutive failures
+  threshold: 3, // open after 3 consecutive failures
   cooldownMs: 30_000, // retry after 30s
 };
 
@@ -29,7 +31,7 @@ export function buildAdemeParams(data) {
   if (data.dpe) params.append('etiquette_dpe_eq', data.dpe);
   if (data.ges) params.append('etiquette_ges_eq', data.ges);
 
-  if (data.surface != null) {
+  if (data.surface !== null && data.surface !== undefined) {
     params.append('surface_habitable_logement_gte', String(Math.floor(data.surface * 0.9)));
     params.append('surface_habitable_logement_lte', String(Math.ceil(data.surface * 1.1)));
   }
@@ -44,13 +46,21 @@ export function buildAdemeParams(data) {
     params.append('date_etablissement_dpe_lte', formatDateISO(maxDate));
   }
 
-  if (data.conso_prim != null) {
+  if (data.conso_prim !== null && data.conso_prim !== undefined) {
     params.append('conso_5_usages_par_m2_ep_gte', String(Math.round(data.conso_prim * 0.9)));
     params.append('conso_5_usages_par_m2_ep_lte', String(Math.round(data.conso_prim * 1.1)));
   }
 
+  if (data.conso_fin !== null && data.conso_fin !== undefined) {
+    params.append('conso_5_usages_par_m2_ef_gte', String(Math.round(data.conso_fin * 0.9)));
+    params.append('conso_5_usages_par_m2_ef_lte', String(Math.round(data.conso_fin * 1.1)));
+  }
+
   params.append('size', '5');
-  params.append('select', 'adresse_ban,etiquette_dpe,etiquette_ges,date_etablissement_dpe,surface_habitable_logement,nom_commune_ban,conso_5_usages_par_m2_ep');
+  params.append(
+    'select',
+    'adresse_ban,etiquette_dpe,etiquette_ges,date_etablissement_dpe,surface_habitable_logement,nom_commune_ban,conso_5_usages_par_m2_ep,conso_5_usages_par_m2_ef'
+  );
 
   return params;
 }
@@ -89,14 +99,20 @@ export async function fetchAdeme(data) {
   } catch (e) {
     breaker.failures++;
     breaker.openedAt = Date.now();
-    logger.error({ failures: breaker.failures, error: e.message }, 'ADEME fetch error — circuit breaker incremented');
+    logger.error(
+      { failures: breaker.failures, error: e.message },
+      'ADEME fetch error — circuit breaker incremented'
+    );
     throw e;
   }
   const duration = Date.now() - start;
   if (!response.ok) {
     breaker.failures++;
     breaker.openedAt = Date.now();
-    logger.error({ status: response.status, duration, failures: breaker.failures }, 'ADEME API request failed — circuit breaker incremented');
+    logger.error(
+      { status: response.status, duration, failures: breaker.failures },
+      'ADEME API request failed — circuit breaker incremented'
+    );
     const err = new Error(`ADEME API error: ${response.status}`);
     err.status = response.status;
     throw err;
@@ -104,7 +120,10 @@ export async function fetchAdeme(data) {
 
   // Success: reset circuit breaker
   if (breaker.failures > 0) {
-    logger.info({ previousFailures: breaker.failures }, 'ADEME circuit breaker CLOSED — reset after success');
+    logger.info(
+      { previousFailures: breaker.failures },
+      'ADEME circuit breaker CLOSED — reset after success'
+    );
   }
   breaker.failures = 0;
 

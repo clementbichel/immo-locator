@@ -1,10 +1,18 @@
 import { describe, it, expect } from 'vitest';
-import { calculateMatchScore, validateSearchData, processResults } from '../../src/services/dpe-service.js';
+import {
+  calculateMatchScore,
+  validateSearchData,
+  processResults,
+} from '../../src/services/dpe-service.js';
 
 describe('validateSearchData', () => {
   it('returns valid for complete data', () => {
     const result = validateSearchData({
-      zipcode: '75011', dpe: 'D', ges: 'E', surface: 45, date_diag: '15/03/2024',
+      zipcode: '75011',
+      dpe: 'D',
+      ges: 'E',
+      surface: 45,
+      date_diag: '15/03/2024',
     });
     expect(result.isValid).toBe(true);
     expect(result.missing).toHaveLength(0);
@@ -19,20 +27,25 @@ describe('validateSearchData', () => {
 
   it('accepts city as alternative to zipcode', () => {
     const result = validateSearchData({
-      city: 'Paris', dpe: 'D', ges: 'E', surface: 45, date_diag: '15/03/2024',
+      city: 'Paris',
+      dpe: 'D',
+      ges: 'E',
+      surface: 45,
+      date_diag: '15/03/2024',
     });
     expect(result.isValid).toBe(true);
   });
 });
 
 describe('calculateMatchScore', () => {
-  const adData = { surface: 45, date_diag: '15/03/2024', conso_prim: 230 };
+  const adData = { surface: 45, date_diag: '15/03/2024', conso_prim: 230, conso_fin: 180 };
 
   it('returns 100 for perfect match', () => {
     const ademeItem = {
       surface_habitable_logement: 45,
       date_etablissement_dpe: '2024-03-15',
       conso_5_usages_par_m2_ep: 230,
+      conso_5_usages_par_m2_ef: 180,
     };
     expect(calculateMatchScore(adData, ademeItem)).toBe(100);
   });
@@ -53,8 +66,21 @@ describe('calculateMatchScore', () => {
       surface_habitable_logement: 45,
       date_etablissement_dpe: '2024-03-20',
       conso_5_usages_par_m2_ep: 230,
+      conso_5_usages_par_m2_ef: 180,
     };
     const score = calculateMatchScore(adData, ademeItem);
+    expect(score).toBe(90);
+  });
+
+  it('penalizes final energy deviation', () => {
+    const ademeItem = {
+      surface_habitable_logement: 45,
+      date_etablissement_dpe: '2024-03-15',
+      conso_5_usages_par_m2_ep: 230,
+      conso_5_usages_par_m2_ef: 198,
+    };
+    const score = calculateMatchScore(adData, ademeItem);
+    // 10% écart → -10 points
     expect(score).toBe(90);
   });
 });
@@ -63,8 +89,24 @@ describe('processResults', () => {
   it('scores and sorts results descending', () => {
     const adData = { surface: 45, date_diag: '15/03/2024', conso_prim: 230 };
     const ademeResults = [
-      { adresse_ban: 'Addr1', surface_habitable_logement: 50, date_etablissement_dpe: '2024-03-15', conso_5_usages_par_m2_ep: 230, etiquette_dpe: 'D', etiquette_ges: 'E', nom_commune_ban: 'Paris' },
-      { adresse_ban: 'Addr2', surface_habitable_logement: 45, date_etablissement_dpe: '2024-03-15', conso_5_usages_par_m2_ep: 230, etiquette_dpe: 'D', etiquette_ges: 'E', nom_commune_ban: 'Paris' },
+      {
+        adresse_ban: 'Addr1',
+        surface_habitable_logement: 50,
+        date_etablissement_dpe: '2024-03-15',
+        conso_5_usages_par_m2_ep: 230,
+        etiquette_dpe: 'D',
+        etiquette_ges: 'E',
+        nom_commune_ban: 'Paris',
+      },
+      {
+        adresse_ban: 'Addr2',
+        surface_habitable_logement: 45,
+        date_etablissement_dpe: '2024-03-15',
+        conso_5_usages_par_m2_ep: 230,
+        etiquette_dpe: 'D',
+        etiquette_ges: 'E',
+        nom_commune_ban: 'Paris',
+      },
     ];
     const results = processResults(adData, ademeResults);
     expect(results[0].score).toBeGreaterThanOrEqual(results[1].score);
@@ -74,7 +116,15 @@ describe('processResults', () => {
   it('maps ADEME fields to API response format', () => {
     const adData = { surface: 45, date_diag: '15/03/2024' };
     const ademeResults = [
-      { adresse_ban: '12 Rue X', nom_commune_ban: 'Paris', etiquette_dpe: 'D', etiquette_ges: 'E', surface_habitable_logement: 44, date_etablissement_dpe: '2024-03-14', conso_5_usages_par_m2_ep: 200 },
+      {
+        adresse_ban: '12 Rue X',
+        nom_commune_ban: 'Paris',
+        etiquette_dpe: 'D',
+        etiquette_ges: 'E',
+        surface_habitable_logement: 44,
+        date_etablissement_dpe: '2024-03-14',
+        conso_5_usages_par_m2_ep: 200,
+      },
     ];
     const results = processResults(adData, ademeResults);
     expect(results[0]).toHaveProperty('address', '12 Rue X');
@@ -84,6 +134,7 @@ describe('processResults', () => {
     expect(results[0]).toHaveProperty('surface', 44);
     expect(results[0]).toHaveProperty('diagnosis_date', '2024-03-14');
     expect(results[0]).toHaveProperty('primary_energy', 200);
+    expect(results[0]).toHaveProperty('final_energy');
     expect(results[0]).toHaveProperty('score');
   });
 });
