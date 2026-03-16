@@ -32,7 +32,7 @@ rsync -avz -e "ssh ${SSH_OPTS}" \
   "${SCRIPT_DIR}/../" "${VPS_TARGET}:${APP_DIR}/"
 
 echo "2. Installing dependencies on VPS..."
-ssh ${SSH_OPTS} "${VPS_TARGET}" "cd ${APP_DIR} && npm install --production"
+ssh ${SSH_OPTS} "${VPS_TARGET}" "cd ${APP_DIR} && npm install --omit=dev"
 
 echo "3. Restarting app with PM2..."
 ssh ${SSH_OPTS} "${VPS_TARGET}" "cd ${APP_DIR} && pm2 restart immo-locator-api 2>/dev/null || pm2 start src/index.js --name immo-locator-api && pm2 save"
