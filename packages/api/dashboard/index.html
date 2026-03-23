@@ -1,0 +1,427 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline'"
+    />
+    <title>Immo-Locator Admin</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        background: #f5f5f5;
+        color: #333;
+      }
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      h1 {
+        font-size: 1.5rem;
+        margin-bottom: 20px;
+      }
+      h2 {
+        font-size: 1.1rem;
+        margin-bottom: 12px;
+        color: #555;
+      }
+
+      /* Auth */
+      #auth-screen {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 80vh;
+      }
+      #auth-screen form {
+        background: #fff;
+        padding: 32px;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      }
+      #auth-screen input {
+        display: block;
+        width: 320px;
+        padding: 10px;
+        margin: 12px 0;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 14px;
+      }
+      #auth-screen button {
+        width: 100%;
+        padding: 10px;
+        background: #2563eb;
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+      }
+      #auth-screen button:hover {
+        background: #1d4ed8;
+      }
+      #auth-error {
+        color: #dc2626;
+        margin-top: 8px;
+        font-size: 13px;
+      }
+
+      /* Dashboard */
+      #dashboard {
+        display: none;
+      }
+      .metrics {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: 16px;
+        margin-bottom: 24px;
+      }
+      .metric-card {
+        background: #fff;
+        padding: 16px;
+        border-radius: 8px;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+      }
+      .metric-card .value {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: #2563eb;
+      }
+      .metric-card .label {
+        font-size: 0.85rem;
+        color: #888;
+        margin-top: 4px;
+      }
+      .charts {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        margin-bottom: 24px;
+      }
+      .chart-card {
+        background: #fff;
+        padding: 16px;
+        border-radius: 8px;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+      }
+      @media (max-width: 768px) {
+        .charts {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      /* Reports table */
+      .table-card {
+        background: #fff;
+        padding: 16px;
+        border-radius: 8px;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+        overflow-x: auto;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 13px;
+      }
+      th,
+      td {
+        text-align: left;
+        padding: 8px 10px;
+        border-bottom: 1px solid #eee;
+      }
+      th {
+        background: #f9fafb;
+        font-weight: 600;
+        color: #555;
+      }
+      td {
+        max-width: 250px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .error-msg {
+        background: #fef2f2;
+        color: #dc2626;
+        padding: 12px;
+        border-radius: 6px;
+        margin-bottom: 16px;
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <!-- Auth -->
+      <div id="auth-screen">
+        <form id="auth-form">
+          <h1>Immo-Locator Admin</h1>
+          <input
+            type="password"
+            id="key-input"
+            placeholder="Admin API Key"
+            autocomplete="off"
+            required
+          />
+          <button type="submit">Se connecter</button>
+          <div id="auth-error"></div>
+        </form>
+      </div>
+
+      <!-- Dashboard -->
+      <div id="dashboard">
+        <h1>Immo-Locator Admin</h1>
+        <div id="error-banner" class="error-msg"></div>
+
+        <div class="metrics" id="metrics"></div>
+
+        <div class="charts">
+          <div class="chart-card">
+            <h2>Recherches / jour (30j)</h2>
+            <canvas id="chart-daily"></canvas>
+          </div>
+          <div class="chart-card">
+            <h2>Par DPE</h2>
+            <canvas id="chart-dpe"></canvas>
+          </div>
+          <div class="chart-card">
+            <h2>Par statut</h2>
+            <canvas id="chart-status"></canvas>
+          </div>
+          <div class="chart-card">
+            <h2>Top 10 villes</h2>
+            <canvas id="chart-cities"></canvas>
+          </div>
+        </div>
+
+        <div class="table-card">
+          <h2>Derniers rapports</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>URL</th>
+                <th>Ville</th>
+                <th>DPE</th>
+                <th>Surface</th>
+              </tr>
+            </thead>
+            <tbody id="reports-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
+    <script>
+      const API_BASE = '/api/admin';
+      let apiKey = sessionStorage.getItem('adminKey') || '';
+
+      // --- Auth ---
+      const authScreen = document.getElementById('auth-screen');
+      const dashboard = document.getElementById('dashboard');
+      const authForm = document.getElementById('auth-form');
+      const keyInput = document.getElementById('key-input');
+      const authError = document.getElementById('auth-error');
+
+      if (apiKey) {
+        tryLoad();
+      }
+
+      authForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        apiKey = keyInput.value.trim();
+        if (!apiKey) return;
+        sessionStorage.setItem('adminKey', apiKey);
+        tryLoad();
+      });
+
+      async function tryLoad() {
+        try {
+          const res = await apiFetch('/stats');
+          if (!res.ok) {
+            const body = await res.json().catch(() => ({}));
+            authError.textContent = body.message || `Erreur ${res.status}`;
+            sessionStorage.removeItem('adminKey');
+            return;
+          }
+          authScreen.style.display = 'none';
+          dashboard.style.display = 'block';
+          const stats = await res.json();
+          render(stats);
+        } catch (err) {
+          authError.textContent = 'Connexion impossible.';
+        }
+      }
+
+      function apiFetch(path) {
+        return fetch(API_BASE + path, {
+          headers: { 'X-Admin-Key': apiKey },
+        });
+      }
+
+      // --- Render ---
+      async function render(stats) {
+        renderMetrics(stats);
+        renderDpeChart(stats.searches.byDpe);
+        renderStatusChart(stats.searches.byStatus);
+        renderCitiesChart(stats.searches.topCities);
+        await renderDailyChart();
+        await renderReports();
+      }
+
+      function renderMetrics(stats) {
+        const container = document.getElementById('metrics');
+        container.innerHTML = '';
+        const items = [
+          { value: stats.searches.total, label: 'Recherches totales' },
+          { value: stats.searches.today, label: "Aujourd'hui" },
+          { value: stats.searches.last7d, label: '7 derniers jours' },
+          { value: stats.searches.last30d, label: '30 derniers jours' },
+          { value: stats.searches.avgDurationMs + ' ms', label: 'Durée moyenne' },
+          { value: stats.reports.total, label: 'Rapports' },
+        ];
+        for (const item of items) {
+          const card = document.createElement('div');
+          card.className = 'metric-card';
+          const val = document.createElement('div');
+          val.className = 'value';
+          val.textContent = item.value;
+          const lbl = document.createElement('div');
+          lbl.className = 'label';
+          lbl.textContent = item.label;
+          card.appendChild(val);
+          card.appendChild(lbl);
+          container.appendChild(card);
+        }
+      }
+
+      const DPE_COLORS = {
+        A: '#319834',
+        B: '#33cc31',
+        C: '#cbfc34',
+        D: '#fcfc32',
+        E: '#fccc32',
+        F: '#fc9831',
+        G: '#fc3430',
+      };
+
+      function renderDpeChart(byDpe) {
+        const labels = Object.keys(byDpe).sort();
+        const data = labels.map((l) => byDpe[l]);
+        new Chart(document.getElementById('chart-dpe'), {
+          type: 'pie',
+          data: {
+            labels,
+            datasets: [{ data, backgroundColor: labels.map((l) => DPE_COLORS[l] || '#ccc') }],
+          },
+          options: { plugins: { legend: { position: 'bottom' } } },
+        });
+      }
+
+      function renderStatusChart(byStatus) {
+        const labels = Object.keys(byStatus);
+        const data = labels.map((l) => byStatus[l]);
+        new Chart(document.getElementById('chart-status'), {
+          type: 'doughnut',
+          data: {
+            labels,
+            datasets: [{ data, backgroundColor: ['#22c55e', '#f59e0b', '#ef4444'] }],
+          },
+          options: { plugins: { legend: { position: 'bottom' } } },
+        });
+      }
+
+      function renderCitiesChart(topCities) {
+        const labels = topCities.map((c) => c.city);
+        const data = topCities.map((c) => c.count);
+        new Chart(document.getElementById('chart-cities'), {
+          type: 'bar',
+          data: {
+            labels,
+            datasets: [{ label: 'Recherches', data, backgroundColor: '#2563eb' }],
+          },
+          options: { indexAxis: 'y', plugins: { legend: { display: false } } },
+        });
+      }
+
+      async function renderDailyChart() {
+        try {
+          const now = Date.now();
+          const from = now - 30 * 24 * 60 * 60 * 1000;
+          const res = await apiFetch(`/searches?from=${from}&limit=200`);
+          if (!res.ok) return;
+          const { data } = await res.json();
+
+          // Group by day
+          const counts = {};
+          for (const row of data) {
+            const day = new Date(row.ts).toISOString().split('T')[0];
+            counts[day] = (counts[day] || 0) + 1;
+          }
+
+          // Fill missing days
+          const labels = [];
+          const values = [];
+          for (let i = 29; i >= 0; i--) {
+            const d = new Date(now - i * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+            labels.push(d.slice(5)); // MM-DD
+            values.push(counts[d] || 0);
+          }
+
+          new Chart(document.getElementById('chart-daily'), {
+            type: 'bar',
+            data: {
+              labels,
+              datasets: [{ label: 'Recherches', data: values, backgroundColor: '#2563eb' }],
+            },
+            options: {
+              plugins: { legend: { display: false } },
+              scales: { y: { beginAtZero: true } },
+            },
+          });
+        } catch {
+          /* ignore */
+        }
+      }
+
+      async function renderReports() {
+        try {
+          const res = await apiFetch('/reports?limit=20');
+          if (!res.ok) return;
+          const { data } = await res.json();
+          const tbody = document.getElementById('reports-body');
+          tbody.innerHTML = '';
+          for (const row of data) {
+            const tr = document.createElement('tr');
+            const cells = [
+              new Date(row.ts).toLocaleString('fr-FR'),
+              row.url,
+              row.city || '',
+              row.dpe || '',
+              row.surface || '',
+            ];
+            for (const text of cells) {
+              const td = document.createElement('td');
+              td.textContent = text;
+              tr.appendChild(td);
+            }
+            tbody.appendChild(tr);
+          }
+        } catch {
+          /* ignore */
+        }
+      }
+    </script>
+  </body>
+</html>

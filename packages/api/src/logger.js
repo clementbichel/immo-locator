@@ -10,7 +10,7 @@ const logsDir = path.resolve(__dirname, '..', 'logs');
 mkdirSync(logsDir, { recursive: true });
 
 const fileStream = rfsCreateStream(
-  (time, index) => {
+  (time, _index) => {
     if (!time) return 'app.log';
     const date = time.toISOString().split('T')[0];
     return `app.${date}.log`;
@@ -23,9 +23,9 @@ const fileStream = rfsCreateStream(
 );
 
 export const logger = pino(
-  { level: process.env.LOG_LEVEL || 'info' },
-  pino.multistream([
-    { stream: process.stdout },
-    { stream: fileStream },
-  ])
+  {
+    level: process.env.LOG_LEVEL || 'info',
+    redact: ['req.headers["x-admin-key"]'],
+  },
+  pino.multistream([{ stream: process.stdout }, { stream: fileStream }])
 );
