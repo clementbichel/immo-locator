@@ -186,6 +186,16 @@
       a.url-link:hover {
         text-decoration: underline;
       }
+      .csv-link {
+        font-size: 0.75rem;
+        font-weight: 400;
+        color: #2563eb;
+        cursor: pointer;
+        margin-left: 8px;
+      }
+      .csv-link:hover {
+        text-decoration: underline;
+      }
     </style>
   </head>
   <body>
@@ -233,7 +243,7 @@
         </div>
 
         <div class="table-card">
-          <h2>Dernières recherches</h2>
+          <h2>Dernières recherches <a class="csv-link" id="export-searches">Export CSV</a></h2>
           <div class="table-filters">
             <button class="active" data-status="">Toutes</button>
             <button data-status="ok">OK</button>
@@ -259,7 +269,7 @@
         </div>
 
         <div class="table-card" style="margin-top: 20px">
-          <h2>Derniers rapports</h2>
+          <h2>Derniers rapports <a class="csv-link" id="export-reports">Export CSV</a></h2>
           <table>
             <thead>
               <tr>
@@ -537,6 +547,26 @@
           /* ignore */
         }
       }
+
+      // --- CSV export ---
+      async function downloadCsv(endpoint, filename) {
+        const res = await apiFetch(endpoint);
+        if (!res.ok) return;
+        const blob = await res.blob();
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        a.click();
+        URL.revokeObjectURL(url);
+      }
+
+      document.getElementById('export-searches').addEventListener('click', () => {
+        downloadCsv('/export/searches', 'searches.csv');
+      });
+      document.getElementById('export-reports').addEventListener('click', () => {
+        downloadCsv('/export/reports', 'reports.csv');
+      });
     </script>
   </body>
 </html>
