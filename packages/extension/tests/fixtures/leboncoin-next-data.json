@@ -13,57 +13,75 @@
         "attributes": [
           {
             "key": "square",
-            "label": "Surface habitable",
-            "value": 150,
-            "value_label": "150 m²"
+            "value": "150",
+            "values": ["150"],
+            "key_label": "Surface habitable",
+            "value_label": "150 m²",
+            "generic": true
           },
           {
             "key": "land_plot_surface",
-            "label": "Surface du terrain",
-            "value": 800,
-            "value_label": "800 m²"
+            "value": "800",
+            "values": ["800"],
+            "key_label": "Surface totale du terrain",
+            "value_label": "800 m²",
+            "generic": true
           },
           {
             "key": "energy_rate",
-            "label": "Classe énergie",
-            "value": "C",
-            "value_label": "C"
+            "value": "c",
+            "values": ["c"],
+            "key_label": "Classe énergie",
+            "value_label": "C",
+            "generic": true
           },
           {
-            "key": "ges_rate",
-            "label": "GES",
-            "value": "D",
-            "value_label": "D"
+            "key": "ges",
+            "value": "d",
+            "values": ["d"],
+            "key_label": "GES",
+            "value_label": "D",
+            "generic": true
           },
           {
             "key": "rooms",
-            "label": "Pièces",
-            "value": 6,
-            "value_label": "6"
+            "value": "6",
+            "values": ["6"],
+            "key_label": "Nombre de pièces",
+            "value_label": "6",
+            "generic": true
           },
           {
             "key": "bedrooms",
-            "label": "Chambres",
-            "value": 4,
-            "value_label": "4"
+            "value": "4",
+            "values": ["4"],
+            "key_label": "Nombre de chambres",
+            "value_label": "4 ch.",
+            "generic": true
           },
           {
             "key": "diag_date",
-            "label": "Date de réalisation du DPE",
             "value": "2024-01-15",
-            "value_label": "15/01/2024"
+            "values": ["2024-01-15"],
+            "key_label": "Date de réalisation du DPE",
+            "value_label": "15/01/2024",
+            "generic": true
           },
           {
             "key": "primary_energy",
-            "label": "Consommation énergie primaire",
-            "value": 185,
-            "value_label": "185 kWh/m²/an"
+            "value": "185",
+            "values": ["185"],
+            "key_label": "Consommation énergie primaire",
+            "value_label": "185 kWh/m²/an",
+            "generic": true
           },
           {
             "key": "final_energy",
-            "label": "Consommation énergie finale",
-            "value": 120,
-            "value_label": "120 kWh/m²/an"
+            "value": "120",
+            "values": ["120"],
+            "key_label": "Consommation énergie finale",
+            "value_label": "120 kWh/m²/an",
+            "generic": true
           }
         ],
         "price": [450000],

@@ -10,9 +10,11 @@ export function findAttribute(attributes, key, labelPart) {
     return undefined;
   }
 
-  return attributes.find(
-    (a) => a.key === key || (a.label && a.label.toLowerCase().includes(labelPart))
-  );
+  return attributes.find((a) => {
+    if (a.key === key) return true;
+    const label = (a.key_label || a.label || '').toLowerCase();
+    return label.includes(labelPart);
+  });
 }
 
 /**
@@ -25,12 +27,11 @@ export function findGesAttribute(attributes) {
     return undefined;
   }
 
-  return attributes.find(
-    (a) =>
-      a.key === 'ges_rate' ||
-      (a.label &&
-        (a.label.toLowerCase() === 'ges' || a.label.toLowerCase().includes('gaz à effet de serre')))
-  );
+  return attributes.find((a) => {
+    if (a.key === 'ges' || a.key === 'ges_rate') return true;
+    const label = (a.key_label || a.label || '').toLowerCase();
+    return label === 'ges' || label.includes('gaz à effet de serre');
+  });
 }
 
 /**
@@ -44,7 +45,10 @@ export function findAttributeByLabel(attributes, labelPart) {
     return undefined;
   }
 
-  return attributes.find((a) => a.label && a.label.includes(labelPart));
+  return attributes.find((a) => {
+    const label = a.key_label || a.label || '';
+    return label.includes(labelPart);
+  });
 }
 
 /**

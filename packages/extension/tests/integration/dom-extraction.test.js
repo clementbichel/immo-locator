@@ -12,19 +12,28 @@ import leboncoinNextData from '../fixtures/leboncoin-next-data.json';
 describe('next-data-extractor', () => {
   describe('findAttribute', () => {
     const attributes = [
-      { key: 'square', label: 'Surface habitable', value: 120, value_label: '120 m²' },
-      { key: 'energy_rate', label: 'Classe énergie', value: 'D', value_label: 'D' },
-      { key: 'rooms', label: 'Pièces', value: 6, value_label: '6' },
+      { key: 'square', key_label: 'Surface habitable', value: '120', value_label: '120 m²' },
+      { key: 'energy_rate', key_label: 'Classe énergie', value: 'd', value_label: 'D' },
+      { key: 'rooms', key_label: 'Nombre de pièces', value: '6', value_label: '6' },
     ];
 
     it('should find attribute by key', () => {
       const attr = findAttribute(attributes, 'square', 'surface');
       expect(attr).toBeDefined();
-      expect(attr.value).toBe(120);
+      expect(attr.value).toBe('120');
     });
 
-    it('should find attribute by label part', () => {
+    it('should find attribute by key_label part', () => {
       const attr = findAttribute(attributes, 'unknown', 'habitable');
+      expect(attr).toBeDefined();
+      expect(attr.key).toBe('square');
+    });
+
+    it('should find attribute by legacy label field', () => {
+      const legacyAttributes = [
+        { key: 'square', label: 'Surface habitable', value: '120', value_label: '120 m²' },
+      ];
+      const attr = findAttribute(legacyAttributes, 'unknown', 'habitable');
       expect(attr).toBeDefined();
       expect(attr.key).toBe('square');
     });
@@ -41,21 +50,33 @@ describe('next-data-extractor', () => {
   });
 
   describe('findGesAttribute', () => {
-    it('should find by ges_rate key', () => {
-      const attributes = [{ key: 'ges_rate', label: 'GES', value: 'D' }];
+    it('should find by ges key', () => {
+      const attributes = [{ key: 'ges', key_label: 'GES', value: 'd', value_label: 'D' }];
       const attr = findGesAttribute(attributes);
       expect(attr).toBeDefined();
-      expect(attr.value).toBe('D');
+      expect(attr.value).toBe('d');
     });
 
-    it('should find by label "ges"', () => {
-      const attributes = [{ key: 'other', label: 'ges', value: 'E' }];
+    it('should find by legacy ges_rate key', () => {
+      const attributes = [{ key: 'ges_rate', key_label: 'GES', value: 'D' }];
       const attr = findGesAttribute(attributes);
       expect(attr).toBeDefined();
     });
 
-    it('should find by label containing "gaz à effet de serre"', () => {
-      const attributes = [{ key: 'other', label: 'Indice gaz à effet de serre', value: 'C' }];
+    it('should find by key_label "ges"', () => {
+      const attributes = [{ key: 'other', key_label: 'ges', value: 'E' }];
+      const attr = findGesAttribute(attributes);
+      expect(attr).toBeDefined();
+    });
+
+    it('should find by key_label containing "gaz à effet de serre"', () => {
+      const attributes = [{ key: 'other', key_label: 'Indice gaz à effet de serre', value: 'C' }];
+      const attr = findGesAttribute(attributes);
+      expect(attr).toBeDefined();
+    });
+
+    it('should find by legacy label field', () => {
+      const attributes = [{ key: 'other', label: 'GES', value: 'E' }];
       const attr = findGesAttribute(attributes);
       expect(attr).toBeDefined();
     });
@@ -67,8 +88,8 @@ describe('next-data-extractor', () => {
 
   describe('findAttributeByLabel', () => {
     const attributes = [
-      { key: 'diag_date', label: 'Date de réalisation du DPE', value: '15/01/2024' },
-      { key: 'primary_energy', label: 'Consommation énergie primaire', value: 185 },
+      { key: 'diag_date', key_label: 'Date de réalisation du DPE', value: '15/01/2024' },
+      { key: 'primary_energy', key_label: 'Consommation énergie primaire', value: '185' },
     ];
 
     it('should find attribute containing label part', () => {

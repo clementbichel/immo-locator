@@ -13,7 +13,7 @@ import { getErrorMessage, ERROR_CODES } from './utils/error-messages.js';
 
 document.addEventListener('DOMContentLoaded', () => {
   const errorMsg = document.getElementById('error-msg');
-  const errorPage = document.getElementById('error-page');
+  const errorPage = document.getElementById('error-page'); // eslint-disable-line no-unused-vars
   const errorCta = document.getElementById('error-cta');
   const reportBtn = document.getElementById('report-btn');
 
@@ -93,9 +93,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Helper to find attribute by key or label
             const findAttr = (key, labelPart) => {
-              return attributes.find(
-                (a) => a.key === key || (a.label && a.label.toLowerCase().includes(labelPart))
-              );
+              return attributes.find((a) => {
+                if (a.key === key) return true;
+                const label = (a.key_label || a.label || '').toLowerCase();
+                return label.includes(labelPart);
+              });
             };
 
             const surfaceAttr = findAttr('square', 'habitable');
@@ -107,24 +109,29 @@ document.addEventListener('DOMContentLoaded', () => {
             const dpeAttr = findAttr('energy_rate', 'énergie');
             if (dpeAttr) data.dpe = (dpeAttr.value_label || dpeAttr.value).toUpperCase();
 
-            const gesAttr = attributes.find(
-              (a) =>
-                a.key === 'ges_rate' ||
-                (a.label &&
-                  (a.label.toLowerCase() === 'ges' ||
-                    a.label.toLowerCase().includes('gaz à effet de serre')))
-            );
+            const gesAttr = attributes.find((a) => {
+              if (a.key === 'ges' || a.key === 'ges_rate') return true;
+              const label = (a.key_label || a.label || '').toLowerCase();
+              return label === 'ges' || label.includes('gaz à effet de serre');
+            });
             if (gesAttr) data.ges = (gesAttr.value_label || gesAttr.value).toUpperCase();
 
-            const dateAttr = attributes.find(
-              (a) => a.label && a.label.includes('Date de réalisation')
-            );
+            const dateAttr = attributes.find((a) => {
+              const label = a.key_label || a.label || '';
+              return label.includes('Date de réalisation');
+            });
             if (dateAttr) data.date_diag = dateAttr.value_label || dateAttr.value;
 
-            const primAttr = attributes.find((a) => a.label && a.label.includes('primaire'));
+            const primAttr = attributes.find((a) => {
+              const label = a.key_label || a.label || '';
+              return label.includes('primaire');
+            });
             if (primAttr) data.conso_prim = primAttr.value_label || primAttr.value;
 
-            const finAttr = attributes.find((a) => a.label && a.label.includes('finale'));
+            const finAttr = attributes.find((a) => {
+              const label = a.key_label || a.label || '';
+              return label.includes('finale');
+            });
             if (finAttr) data.conso_fin = finAttr.value_label || finAttr.value;
           }
         } else {
@@ -136,7 +143,7 @@ document.addEventListener('DOMContentLoaded', () => {
         debug.push('No __NEXT_DATA__ script found');
       }
     } catch (e) {
-      console.log('Error parsing __NEXT_DATA__:', e);
+      debug.push('Error parsing __NEXT_DATA__: ' + e.message);
       debug.push('Error: ' + e.message);
     }
 
@@ -201,8 +208,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const location = comp?.props?.pageProps?.ad?.location;
             if (location) {
               if (location.city && data.city === 'Non trouvé') data.city = location.city;
-              if (location.zipcode && data.zipcode === 'Non trouvé')
+              if (location.zipcode && data.zipcode === 'Non trouvé') {
                 data.zipcode = location.zipcode;
+              }
               debug.push('Location from Next.js router cache');
               break;
             }
@@ -219,7 +227,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const locationTitle = document.querySelector('[data-test-id="location-map-title"]');
       if (locationTitle) {
         const match = locationTitle.innerText.match(
-          /([A-ZÀ-Ÿa-zà-ÿ][A-ZÀ-Ÿa-zà-ÿ\s\-]+?)\s*\((\d{5})\)/
+          /([A-ZÀ-Ÿa-zà-ÿ][A-ZÀ-Ÿa-zà-ÿ\s-]+?)\s*\((\d{5})\)/
         );
         if (match) {
           if (data.city === 'Non trouvé') data.city = match[1].trim();
@@ -267,12 +275,16 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (data.conso_prim === 'Non trouvé') {
-      const primMatch = descText.match(/Consommation énergie primaire\s*:\s*([\d\s]+kWh\/m²\/an)/i);
-      if (primMatch) data.conso_prim = primMatch[1];
+      const primMatch = descText.match(
+        /Consommation énergie primaire\s*:?\s*([\d\s,.]+\s*kWh\/m²\/an)/i
+      );
+      if (primMatch) data.conso_prim = primMatch[1].trim();
     }
 
     if (data.conso_fin === 'Non trouvé') {
-      const finMatch = descText.match(/Consommation énergie finale\s*:\s*([^.\n]+)/i);
+      const finMatch = descText.match(
+        /Consommation énergie finale\s*:?\s*([\d\s,.]+\s*kWh\/m²\/an)/i
+      );
       if (finMatch) data.conso_fin = finMatch[1].trim();
     }
 
@@ -622,7 +634,7 @@ document.addEventListener('DOMContentLoaded', () => {
             reportBtn.textContent = 'Envoi...';
             try {
               // Exclude internal debug log from the report
-              const { debugLog: _debug, ...extractedData } = res;
+              const { debugLog: _unusedDebug, ...extractedData } = res; // eslint-disable-line no-unused-vars
               await sendReport(tabUrl, extractedData);
               reportBtn.textContent = '✓ Rapport envoyé';
               setTimeout(() => {

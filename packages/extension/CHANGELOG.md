@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.5] - 2026-03-13
+
+### Fixed
+
+- Fixed attribute extraction using `key_label` field instead of `label` to match real Leboncoin data structure
+- Fixed GES detection: accept `ges` key in addition to `ges_rate`
+- Updated test fixtures to match real Leboncoin `__NEXT_DATA__` format
+
 ## [1.0.4] - 2026-03-10
 
 ### Added
@@ -80,6 +88,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Cross-browser compatibility (Chrome and Firefox)
 - esbuild-based build system
 
-[Unreleased]: https://github.com/clementbichel/AnnonceImmoLocator/compare/v1.0.4...HEAD
-[1.0.4]: https://github.com/clementbichel/AnnonceImmoLocator/compare/v1.0.0...v1.0.4
-[1.0.0]: https://github.com/clementbichel/AnnonceImmoLocator/releases/tag/v1.0.0
+[Unreleased]: https://github.com/clementbichel/immo-locator/compare/v1.0.5...HEAD
+[1.0.5]: https://github.com/clementbichel/immo-locator/compare/v1.0.4...v1.0.5
+[1.0.4]: https://github.com/clementbichel/immo-locator/compare/v1.0.0...v1.0.4
+[1.0.0]: https://github.com/clementbichel/immo-locator/releases/tag/v1.0.0

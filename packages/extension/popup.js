@@ -1,3 +1,7 @@
+/* eslint-disable */
+// Cross-browser compatibility: use 'browser' if available, otherwise 'chrome'
+globalThis.browser ??= globalThis.chrome;
+
 (() => {
   // src/utils/score-calculator.js
   function getScoreColor(score) {
@@ -319,9 +323,11 @@
             if (ad.attributes) {
               const attributes = ad.attributes;
               const findAttr = (key, labelPart) => {
-                return attributes.find(
-                  (a) => a.key === key || (a.label && a.label.toLowerCase().includes(labelPart))
-                );
+                return attributes.find((a) => {
+                  if (a.key === key) return true;
+                  const label = (a.key_label || a.label || '').toLowerCase();
+                  return label.includes(labelPart);
+                });
               };
               const surfaceAttr = findAttr('square', 'habitable');
               if (surfaceAttr)
@@ -331,21 +337,26 @@
                 data.terrain = terrainAttr.value_label || terrainAttr.value + ' m\xB2';
               const dpeAttr = findAttr('energy_rate', '\xE9nergie');
               if (dpeAttr) data.dpe = (dpeAttr.value_label || dpeAttr.value).toUpperCase();
-              const gesAttr = attributes.find(
-                (a) =>
-                  a.key === 'ges_rate' ||
-                  (a.label &&
-                    (a.label.toLowerCase() === 'ges' ||
-                      a.label.toLowerCase().includes('gaz \xE0 effet de serre')))
-              );
+              const gesAttr = attributes.find((a) => {
+                if (a.key === 'ges' || a.key === 'ges_rate') return true;
+                const label = (a.key_label || a.label || '').toLowerCase();
+                return label === 'ges' || label.includes('gaz \xE0 effet de serre');
+              });
               if (gesAttr) data.ges = (gesAttr.value_label || gesAttr.value).toUpperCase();
-              const dateAttr = attributes.find(
-                (a) => a.label && a.label.includes('Date de r\xE9alisation')
-              );
+              const dateAttr = attributes.find((a) => {
+                const label = a.key_label || a.label || '';
+                return label.includes('Date de r\xE9alisation');
+              });
               if (dateAttr) data.date_diag = dateAttr.value_label || dateAttr.value;
-              const primAttr = attributes.find((a) => a.label && a.label.includes('primaire'));
+              const primAttr = attributes.find((a) => {
+                const label = a.key_label || a.label || '';
+                return label.includes('primaire');
+              });
               if (primAttr) data.conso_prim = primAttr.value_label || primAttr.value;
-              const finAttr = attributes.find((a) => a.label && a.label.includes('finale'));
+              const finAttr = attributes.find((a) => {
+                const label = a.key_label || a.label || '';
+                return label.includes('finale');
+              });
               if (finAttr) data.conso_fin = finAttr.value_label || finAttr.value;
             }
           } else {
@@ -356,7 +367,7 @@
           debug.push('No __NEXT_DATA__ script found');
         }
       } catch (e) {
-        console.log('Error parsing __NEXT_DATA__:', e);
+        debug.push('Error parsing __NEXT_DATA__: ' + e.message);
         debug.push('Error: ' + e.message);
       }
       data.debugLog = debug;
@@ -426,7 +437,7 @@
         const locationTitle = document.querySelector('[data-test-id="location-map-title"]');
         if (locationTitle) {
           const match = locationTitle.innerText.match(
-            /([A-ZÀ-Ÿa-zà-ÿ][A-ZÀ-Ÿa-zà-ÿ\s\-]+?)\s*\((\d{5})\)/
+            /([A-ZÀ-Ÿa-zà-ÿ][A-ZÀ-Ÿa-zà-ÿ\s-]+?)\s*\((\d{5})\)/
           );
           if (match) {
             if (data.city === 'Non trouv\xE9') data.city = match[1].trim();
@@ -467,12 +478,14 @@
       }
       if (data.conso_prim === 'Non trouv\xE9') {
         const primMatch = descText.match(
-          /Consommation énergie primaire\s*:\s*([\d\s]+kWh\/m²\/an)/i
+          /Consommation énergie primaire\s*:?\s*([\d\s,.]+\s*kWh\/m²\/an)/i
         );
-        if (primMatch) data.conso_prim = primMatch[1];
+        if (primMatch) data.conso_prim = primMatch[1].trim();
       }
       if (data.conso_fin === 'Non trouv\xE9') {
-        const finMatch = descText.match(/Consommation énergie finale\s*:\s*([^.\n]+)/i);
+        const finMatch = descText.match(
+          /Consommation énergie finale\s*:?\s*([\d\s,.]+\s*kWh\/m²\/an)/i
+        );
         if (finMatch) data.conso_fin = finMatch[1].trim();
       }
       if (data.dpe === 'Non trouv\xE9') {
@@ -744,7 +757,7 @@
               reportBtn.disabled = true;
               reportBtn.textContent = 'Envoi...';
               try {
-                const { debugLog: _debug, ...extractedData } = res;
+                const { debugLog: _unusedDebug, ...extractedData } = res;
                 await sendReport(tabUrl, extractedData);
                 reportBtn.textContent = '\u2713 Rapport envoy\xE9';
                 setTimeout(() => {

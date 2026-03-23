@@ -35,13 +35,12 @@ async function build() {
     const outputPath = join(rootDir, 'popup.js');
     const content = readFileSync(outputPath, 'utf-8');
 
-    // Check if the browser compatibility line already exists
-    const browserCompatLine =
-      "// Cross-browser compatibility: use 'browser' if available, otherwise 'chrome'\nglobalThis.browser ??= globalThis.chrome;\n\n";
+    // Add eslint-disable + browser compatibility line at the top
+    const prefix =
+      "/* eslint-disable */\n// Cross-browser compatibility: use 'browser' if available, otherwise 'chrome'\nglobalThis.browser ??= globalThis.chrome;\n\n";
 
-    if (!content.includes('globalThis.browser ??= globalThis.chrome')) {
-      writeFileSync(outputPath, browserCompatLine + content);
-      console.log('Added browser compatibility line.');
+    if (!content.startsWith('/* eslint-disable */')) {
+      writeFileSync(outputPath, prefix + content);
     }
 
     // Show output stats
