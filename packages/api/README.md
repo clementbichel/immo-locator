@@ -42,11 +42,11 @@ src/
 
 ### Endpoints
 
-| Méthode | Route | Description |
-|---------|-------|-------------|
-| `POST` | `/api/location/search` | Recherche ADEME à partir des données d'une annonce |
-| `POST` | `/api/reports` | Signalement d'erreur d'extraction (crowdsourcing) |
-| `GET` | `/health` | Health check |
+| Méthode | Route                  | Description                                        |
+| ------- | ---------------------- | -------------------------------------------------- |
+| `POST`  | `/api/location/search` | Recherche ADEME à partir des données d'une annonce |
+| `POST`  | `/api/reports`         | Signalement d'erreur d'extraction (crowdsourcing)  |
+| `GET`   | `/health`              | Health check                                       |
 
 ### Sécurité
 
@@ -61,6 +61,7 @@ src/
 ### Scoring
 
 Le score de correspondance part de 100 et déduit :
+
 - **Surface** : −2 points par % d'écart
 - **Date diagnostic** : −2 points par jour d'écart
 - **Consommation énergétique** : −1 point par % d'écart

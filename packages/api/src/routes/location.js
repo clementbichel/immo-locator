@@ -10,7 +10,7 @@ const router = Router();
 router.post('/search', async (req, res) => {
   const parsed = searchSchema.safeParse(req.body);
   if (!parsed.success) {
-    const missing = parsed.error.issues.map(i => i.path.join('.'));
+    const missing = parsed.error.issues.map((i) => i.path.join('.'));
     logger.warn({ missing, issues: parsed.error.issues }, 'Validation failed');
     return res.status(400).json({
       error: 'MISSING_FIELDS',

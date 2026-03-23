@@ -158,6 +158,34 @@
         margin-bottom: 16px;
         display: none;
       }
+
+      /* Filters */
+      .table-filters {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 12px;
+      }
+      .table-filters select,
+      .table-filters button {
+        padding: 6px 12px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 13px;
+        background: #fff;
+        cursor: pointer;
+      }
+      .table-filters button.active {
+        background: #2563eb;
+        color: #fff;
+        border-color: #2563eb;
+      }
+      a.url-link {
+        color: #2563eb;
+        text-decoration: none;
+      }
+      a.url-link:hover {
+        text-decoration: underline;
+      }
     </style>
   </head>
   <body>
@@ -205,6 +233,32 @@
         </div>
 
         <div class="table-card">
+          <h2>Dernières recherches</h2>
+          <div class="table-filters">
+            <button class="active" data-status="">Toutes</button>
+            <button data-status="ok">OK</button>
+            <button data-status="no_results">Sans résultat</button>
+            <button data-status="error">Erreur</button>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Ville</th>
+                <th>CP</th>
+                <th>DPE</th>
+                <th>Surface</th>
+                <th>Conso</th>
+                <th>Résultats</th>
+                <th>Durée</th>
+                <th>Statut</th>
+              </tr>
+            </thead>
+            <tbody id="searches-body"></tbody>
+          </table>
+        </div>
+
+        <div class="table-card" style="margin-top: 20px">
           <h2>Derniers rapports</h2>
           <table>
             <thead>
@@ -277,12 +331,13 @@
         renderStatusChart(stats.searches.byStatus);
         renderCitiesChart(stats.searches.topCities);
         await renderDailyChart();
+        await renderSearches();
         await renderReports();
       }
 
       function renderMetrics(stats) {
         const container = document.getElementById('metrics');
-        container.innerHTML = '';
+        container.replaceChildren();
         const items = [
           { value: stats.searches.total, label: 'Recherches totales' },
           { value: stats.searches.today, label: "Aujourd'hui" },
@@ -395,29 +450,89 @@
         }
       }
 
-      async function renderReports() {
+      // --- Searches table with status filter ---
+      let currentStatus = '';
+
+      document.querySelector('.table-filters').addEventListener('click', (e) => {
+        const btn = e.target.closest('button[data-status]');
+        if (!btn) return;
+        currentStatus = btn.dataset.status;
+        document
+          .querySelectorAll('.table-filters button')
+          .forEach((b) => b.classList.remove('active'));
+        btn.classList.add('active');
+        renderSearches();
+      });
+
+      async function renderSearches() {
         try {
-          const res = await apiFetch('/reports?limit=20');
+          const params = currentStatus ? `?status=${currentStatus}&limit=20` : '?limit=20';
+          const res = await apiFetch('/searches' + params);
           if (!res.ok) return;
           const { data } = await res.json();
-          const tbody = document.getElementById('reports-body');
-          tbody.innerHTML = '';
+          const tbody = document.getElementById('searches-body');
+          const rows = [];
           for (const row of data) {
             const tr = document.createElement('tr');
             const cells = [
               new Date(row.ts).toLocaleString('fr-FR'),
-              row.url,
               row.city || '',
+              row.zipcode || '',
               row.dpe || '',
-              row.surface || '',
+              row.surface != null ? row.surface + ' m²' : '',
+              row.conso_prim != null ? row.conso_prim + ' kWh' : '',
+              row.results_count != null ? String(row.results_count) : '',
+              row.duration_ms != null ? row.duration_ms + ' ms' : '',
+              row.status || '',
             ];
             for (const text of cells) {
               const td = document.createElement('td');
               td.textContent = text;
               tr.appendChild(td);
             }
-            tbody.appendChild(tr);
+            rows.push(tr);
           }
+          tbody.replaceChildren(...rows);
+        } catch {
+          /* ignore */
+        }
+      }
+
+      async function renderReports() {
+        try {
+          const res = await apiFetch('/reports?limit=20');
+          if (!res.ok) return;
+          const { data } = await res.json();
+          const tbody = document.getElementById('reports-body');
+          const rows = [];
+          for (const row of data) {
+            const tr = document.createElement('tr');
+
+            const tdDate = document.createElement('td');
+            tdDate.textContent = new Date(row.ts).toLocaleString('fr-FR');
+            tr.appendChild(tdDate);
+
+            const tdUrl = document.createElement('td');
+            if (row.url) {
+              const a = document.createElement('a');
+              a.className = 'url-link';
+              a.href = row.url;
+              a.target = '_blank';
+              a.rel = 'noopener noreferrer';
+              a.textContent = row.url;
+              tdUrl.appendChild(a);
+            }
+            tr.appendChild(tdUrl);
+
+            const textCells = [row.city || '', row.dpe || '', row.surface || ''];
+            for (const text of textCells) {
+              const td = document.createElement('td');
+              td.textContent = text;
+              tr.appendChild(td);
+            }
+            rows.push(tr);
+          }
+          tbody.replaceChildren(...rows);
         } catch {
           /* ignore */
         }

@@ -36,7 +36,12 @@ describe('POST /api/reports', () => {
     expect(res.body).toEqual({ success: true });
     expect(mockRecordReport).toHaveBeenCalledOnce();
     expect(mockRecordReport).toHaveBeenCalledWith(
-      expect.objectContaining({ url: 'https://leboncoin.fr/ad/123', dpe: 'D', surface: '45', city: 'Paris' }),
+      expect.objectContaining({
+        url: 'https://leboncoin.fr/ad/123',
+        dpe: 'D',
+        surface: '45',
+        city: 'Paris',
+      })
     );
   });
 
@@ -61,14 +66,21 @@ describe('POST /api/reports', () => {
     };
 
     await request(app).post('/api/reports').send(payload);
-    await request(app).post('/api/reports').send({ ...payload, url: 'https://leboncoin.fr/ad/456' });
+    await request(app)
+      .post('/api/reports')
+      .send({ ...payload, url: 'https://leboncoin.fr/ad/456' });
 
     expect(mockRecordReport).toHaveBeenCalledTimes(2);
-    expect(mockRecordReport).toHaveBeenNthCalledWith(2, expect.objectContaining({ url: 'https://leboncoin.fr/ad/456' }));
+    expect(mockRecordReport).toHaveBeenNthCalledWith(
+      2,
+      expect.objectContaining({ url: 'https://leboncoin.fr/ad/456' })
+    );
   });
 
   it('returns 500 when recordReport throws', async () => {
-    mockRecordReport.mockImplementation(() => { throw new Error('DB write failed'); });
+    mockRecordReport.mockImplementation(() => {
+      throw new Error('DB write failed');
+    });
 
     const res = await request(app)
       .post('/api/reports')
@@ -109,5 +121,4 @@ describe('POST /api/reports', () => {
     expect(res.status).toBe(400);
     expect(res.body.error).toBe('INVALID_EXTRACTED');
   });
-
 });

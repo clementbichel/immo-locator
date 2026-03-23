@@ -69,15 +69,17 @@ describe('POST /api/location/search', () => {
 
   it('returns scored results on success', async () => {
     fetchAdeme.mockResolvedValue({
-      results: [{
-        adresse_ban: '12 Rue X',
-        nom_commune_ban: 'Paris',
-        etiquette_dpe: 'D',
-        etiquette_ges: 'E',
-        surface_habitable_logement: 44,
-        date_etablissement_dpe: '2024-03-15',
-        conso_5_usages_par_m2_ep: 225,
-      }],
+      results: [
+        {
+          adresse_ban: '12 Rue X',
+          nom_commune_ban: 'Paris',
+          etiquette_dpe: 'D',
+          etiquette_ges: 'E',
+          surface_habitable_logement: 44,
+          date_etablissement_dpe: '2024-03-15',
+          conso_5_usages_par_m2_ep: 225,
+        },
+      ],
     });
 
     const res = await fetch(`${baseUrl}/api/location/search`, {
@@ -135,7 +137,7 @@ describe('POST /api/location/search', () => {
       })
     );
     const responses = await Promise.all(requests);
-    const statuses = responses.map(r => r.status);
+    const statuses = responses.map((r) => r.status);
     expect(statuses).toContain(429);
   });
 });
