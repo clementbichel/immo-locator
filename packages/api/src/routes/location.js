@@ -28,7 +28,12 @@ router.post('/search', async (req, res) => {
     const results = ademeResponse.results ? processResults(data, ademeResponse.results) : [];
     const duration_ms = Date.now() - start;
 
-    recordSearch({ ...data, results_count: results.length, duration_ms, status: 'ok' });
+    recordSearch({
+      ...data,
+      results_count: results.length,
+      duration_ms,
+      status: results.length === 0 ? 'no_results' : 'ok',
+    });
     logger.info({ searchParams, count: results.length }, 'Search completed');
     return res.json({
       results,
