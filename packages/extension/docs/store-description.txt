@@ -1,0 +1,31 @@
+DESCRIPTION COURTE
+------------------
+L'adresse exacte d'un bien Leboncoin, retrouvée en un clic. Gratuit.
+
+
+DESCRIPTION LONGUE
+------------------
+🔍 TROUVEZ L'ADRESSE EXACTE. AVANT MÊME DE CONTACTER LE VENDEUR.
+
+Les annonces Leboncoin n'affichent pas l'adresse du bien. Résultat : vous contactez, vous attendez, vous vous déplacez — parfois pour rien. Immo Locator change ça.
+
+Ouvrez une annonce immobilière, cliquez sur l'icône, et l'extension fait le reste.
+
+⚡ CE QU'ELLE EXTRAIT INSTANTANÉMENT
+
+📍 Adresse exacte du bien + lien Google Maps direct
+📐 Surface habitable et terrain
+🏷️ Étiquettes énergie (DPE / GES) et consommations réelles
+🏙️ Ville et code postal
+
+🏠 POUR LES ACHETEURS COMME POUR LES INVESTISSEURS
+
+Que vous cherchiez votre future maison ou que vous analysiez des dizaines d'annonces, Immo Locator vous permet de vérifier l'emplacement exact, croiser les données énergétiques et éliminer les mauvaises surprises — sans perdre de temps.
+
+🔒 VIE PRIVÉE, ZÉRO COMPROMIS
+
+✅ Aucun compte requis
+✅ Aucune donnée personnelle collectée
+✅ L'extension ne lit que les pages d'annonces Leboncoin — rien d'autre
+
+🎉 100% gratuit. Instantané. Indispensable pour votre recherche immobilière.
