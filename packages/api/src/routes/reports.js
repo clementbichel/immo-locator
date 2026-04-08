@@ -61,18 +61,21 @@ router.post('/', (req, res) => {
 
   try {
     const parsed = new URL(url);
-    if (
-      !['http:', 'https:'].includes(parsed.protocol) ||
-      !parsed.hostname.endsWith('leboncoin.fr')
-    ) {
-      return res
-        .status(400)
-        .json({ error: 'INVALID_URL', message: 'url doit être une URL leboncoin.fr valide.' });
+    const ALLOWED_HOSTS = ['leboncoin.fr', 'seloger.com'];
+    const hostAllowed = ALLOWED_HOSTS.some(
+      (host) => parsed.hostname === host || parsed.hostname.endsWith('.' + host)
+    );
+    if (!['http:', 'https:'].includes(parsed.protocol) || !hostAllowed) {
+      return res.status(400).json({
+        error: 'INVALID_URL',
+        message: 'url doit être une URL leboncoin.fr ou seloger.com valide.',
+      });
     }
   } catch {
-    return res
-      .status(400)
-      .json({ error: 'INVALID_URL', message: 'url doit être une URL leboncoin.fr valide.' });
+    return res.status(400).json({
+      error: 'INVALID_URL',
+      message: 'url doit être une URL leboncoin.fr ou seloger.com valide.',
+    });
   }
 
   try {

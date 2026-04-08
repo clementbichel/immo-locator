@@ -1,0 +1,1593 @@
+{
+  "app_cldp": {
+    "data": {
+      "classified": {
+        "brand": "seloger",
+        "id": "26TPY27RR9DF",
+        "metadata": {
+          "legacyId": "265525767",
+          "creationDate": "2026-04-05T10:10:00Z",
+          "updateDate": "2026-04-05T10:15:07.516Z",
+          "status": {
+            "status": true,
+            "enrichments": {
+              "contactSettings": false,
+              "geo": false,
+              "intermediary": false,
+              "media": false,
+              "onlineId": false
+            }
+          },
+          "isNewBuildProject": false
+        },
+        "domains": {
+          "medias": {
+            "images": [
+              {
+                "id": "b6904db9-a507-44b3-9d63-700f6db197ac",
+                "key": "b6904db9-a507-44b3-9d63-700f6db197ac-0",
+                "url": "https://mms.seloger.com/b/6/9/0/b6904db9-a507-44b3-9d63-700f6db197ac.jpg?ci_seal=e5c629f509b960d6e223393058bcd0318788d02c",
+                "classification": {
+                  "name": "LIVING_ROOM",
+                  "version": "scene-classification-sagemaker-endpoint-live-1-3-10"
+                }
+              },
+              {
+                "id": "920c9ebc-86fd-4bf5-9ef7-2b07a6e98c48",
+                "key": "920c9ebc-86fd-4bf5-9ef7-2b07a6e98c48-1",
+                "url": "https://mms.seloger.com/9/2/0/c/920c9ebc-86fd-4bf5-9ef7-2b07a6e98c48.jpg?ci_seal=2ac354027dbca8f5b66aa5c97aa062c01fdaf512",
+                "classification": {
+                  "name": "KITCHEN",
+                  "version": "scene-classification-sagemaker-endpoint-live-1-3-10"
+                }
+              },
+              {
+                "id": "d070b432-3df4-474c-b40c-0ca0f9051135",
+                "key": "d070b432-3df4-474c-b40c-0ca0f9051135-2",
+                "url": "https://mms.seloger.com/d/0/7/0/d070b432-3df4-474c-b40c-0ca0f9051135.jpg?ci_seal=eaca42b3dfab9335d4b5fd23d4bba2ceea46b79b",
+                "classification": {
+                  "name": "COURTYARD",
+                  "version": "scene-classification-sagemaker-endpoint-live-1-3-10"
+                }
+              },
+              {
+                "id": "980adeef-aac7-4771-b672-7bc50a80bb15",
+                "key": "980adeef-aac7-4771-b672-7bc50a80bb15-3",
+                "url": "https://mms.seloger.com/9/8/0/a/980adeef-aac7-4771-b672-7bc50a80bb15.jpg?ci_seal=5c9551b21d9a9a45d64676ba08788a99e9309a2f",
+                "classification": {
+                  "name": "LIVING_ROOM",
+                  "version": "scene-classification-sagemaker-endpoint-live-1-3-10"
+                }
+              },
+              {
+                "id": "f52abf1b-786b-4603-bc9e-797d0437c0a7",
+                "key": "f52abf1b-786b-4603-bc9e-797d0437c0a7-4",
+                "url": "https://mms.seloger.com/f/5/2/a/f52abf1b-786b-4603-bc9e-797d0437c0a7.jpg?ci_seal=474ae151bd14d69f60664348f192148556beebde",
+                "classification": {
+                  "name": "LIVING_ROOM",
+                  "version": "scene-classification-sagemaker-endpoint-live-1-3-10"
+                }
+              },
+              {
+                "id": "41efe8b1-d973-471f-ab2f-7a5ac7369a8f",
+                "key": "41efe8b1-d973-471f-ab2f-7a5ac7369a8f-5",
+                "url": "https://mms.seloger.com/4/1/e/f/41efe8b1-d973-471f-ab2f-7a5ac7369a8f.jpg?ci_seal=42a7a6375103635906ca122cd3e35aa506731585",
+                "classification": {
+                  "name": "LIVING_ROOM",
+                  "version": "scene-classification-sagemaker-endpoint-live-1-3-10"
+                }
+              },
+              {
+                "id": "8907340c-606a-4b32-ae0b-edb7b37ed5de",
+                "key": "8907340c-606a-4b32-ae0b-edb7b37ed5de-6",
+                "url": "https://mms.seloger.com/8/9/0/7/8907340c-606a-4b32-ae0b-edb7b37ed5de.jpg?ci_seal=2a6a5ec32910ce4cb6b09f1d650d1560b273c839",
+                "classification": {
+                  "name": "BATHROOM",
+                  "version": "scene-classification-sagemaker-endpoint-live-1-3-10"
+                }
+              },
+              {
+                "id": "4dd70bfb-10e8-4dde-af4a-06aaeca389d7",
+                "key": "4dd70bfb-10e8-4dde-af4a-06aaeca389d7-7",
+                "url": "https://mms.seloger.com/4/d/d/7/4dd70bfb-10e8-4dde-af4a-06aaeca389d7.jpg?ci_seal=ed6dcf8734de3a68b22c26e83cfa754875f8dc40",
+                "classification": {
+                  "name": "HOUSE_FACADE",
+                  "version": "scene-classification-sagemaker-endpoint-live-1-3-10"
+                }
+              },
+              {
+                "id": "bf88672b-6e08-4a0c-955e-f8e96faa1149",
+                "key": "bf88672b-6e08-4a0c-955e-f8e96faa1149-8",
+                "url": "https://mms.seloger.com/b/f/8/8/bf88672b-6e08-4a0c-955e-f8e96faa1149.jpg?ci_seal=597186990a3201a2c031fd0116ea024e7dd720b6",
+                "classification": {
+                  "name": "EXTERIOR_VIEW",
+                  "version": "scene-classification-sagemaker-endpoint-live-1-3-10"
+                }
+              },
+              {
+                "id": "63e48d2f-5c09-4e8d-b596-5eb71ec25167",
+                "key": "63e48d2f-5c09-4e8d-b596-5eb71ec25167-9",
+                "url": "https://mms.seloger.com/6/3/e/4/63e48d2f-5c09-4e8d-b596-5eb71ec25167.jpg?ci_seal=8bbb29893cadb6154d1560949ce1aa8f53db3ac1",
+                "classification": {
+                  "name": "STAIRCASE",
+                  "version": "scene-classification-sagemaker-endpoint-live-1-3-10"
+                }
+              },
+              {
+                "id": "ca2c1280-4c52-4e4a-a18d-ac186fb9fff8",
+                "key": "ca2c1280-4c52-4e4a-a18d-ac186fb9fff8-10",
+                "url": "https://mms.seloger.com/c/a/2/c/ca2c1280-4c52-4e4a-a18d-ac186fb9fff8.jpg?ci_seal=d2d65cea66f440f6f8cddc79e715c55472b3e625",
+                "classification": {
+                  "name": "LIVING_ROOM",
+                  "version": "scene-classification-sagemaker-endpoint-live-1-3-10"
+                }
+              },
+              {
+                "id": "299aebdd-ddf1-4c4f-b627-4451daaedc26",
+                "key": "299aebdd-ddf1-4c4f-b627-4451daaedc26-11",
+                "url": "https://mms.seloger.com/2/9/9/a/299aebdd-ddf1-4c4f-b627-4451daaedc26.jpg?ci_seal=baf341a839aee9f47f0dc1f5752d7995a1359bd3",
+                "classification": {
+                  "name": "LIVING_ROOM",
+                  "version": "scene-classification-sagemaker-endpoint-live-1-3-10"
+                }
+              },
+              {
+                "id": "eb93097c-6f69-418b-ae2f-b6ea2b25ac74",
+                "key": "eb93097c-6f69-418b-ae2f-b6ea2b25ac74-12",
+                "url": "https://mms.seloger.com/e/b/9/3/eb93097c-6f69-418b-ae2f-b6ea2b25ac74.jpg?ci_seal=665a6de2b3561b2982ac53d2968b0a4d41b9a6e9",
+                "classification": {
+                  "name": "LIVING_ROOM",
+                  "version": "scene-classification-sagemaker-endpoint-live-1-3-10"
+                }
+              },
+              {
+                "id": "41b27b87-0a1d-4ccb-90a3-5fc3d9d4928c",
+                "key": "41b27b87-0a1d-4ccb-90a3-5fc3d9d4928c-13",
+                "url": "https://mms.seloger.com/4/1/b/2/41b27b87-0a1d-4ccb-90a3-5fc3d9d4928c.jpg?ci_seal=7e4a47cd8d0fc45e9d7df1a73ec1308e5f089590",
+                "classification": {
+                  "name": "LIVING_ROOM",
+                  "version": "scene-classification-sagemaker-endpoint-live-1-3-10"
+                }
+              },
+              {
+                "id": "73b057c3-f8eb-4819-828d-868532e72970",
+                "key": "73b057c3-f8eb-4819-828d-868532e72970-14",
+                "url": "https://mms.seloger.com/7/3/b/0/73b057c3-f8eb-4819-828d-868532e72970.jpg?ci_seal=3a4e9059c4778959a6b0df2730f8ee47a8db8da8",
+                "classification": {
+                  "name": "KITCHEN",
+                  "version": "scene-classification-sagemaker-endpoint-live-1-3-10"
+                }
+              },
+              {
+                "id": "6bdfa637-4117-4ae4-a22d-74700935e0f0",
+                "key": "6bdfa637-4117-4ae4-a22d-74700935e0f0-15",
+                "url": "https://mms.seloger.com/6/b/d/f/6bdfa637-4117-4ae4-a22d-74700935e0f0.jpg?ci_seal=5c3e022ed5618f3cf49f636acc218aa44aae0ce2",
+                "classification": {
+                  "name": "BEDROOM",
+                  "version": "scene-classification-sagemaker-endpoint-live-1-3-10"
+                }
+              },
+              {
+                "id": "1714f2bc-19dd-479a-95d6-955747939157",
+                "key": "1714f2bc-19dd-479a-95d6-955747939157-16",
+                "url": "https://mms.seloger.com/1/7/1/4/1714f2bc-19dd-479a-95d6-955747939157.jpg?ci_seal=415e7f09562be2191d2a140bb01f6c73fda9f6fb",
+                "classification": {
+                  "name": "BEDROOM",
+                  "version": "scene-classification-sagemaker-endpoint-live-1-3-10"
+                }
+              },
+              {
+                "id": "ace11bc4-aba1-45a1-a918-aab7a3b58a26",
+                "key": "ace11bc4-aba1-45a1-a918-aab7a3b58a26-17",
+                "url": "https://mms.seloger.com/a/c/e/1/ace11bc4-aba1-45a1-a918-aab7a3b58a26.jpg?ci_seal=c15cb3d5e6f50cad30541ed29d108e5bdfb86065",
+                "classification": {
+                  "name": "BATHROOM",
+                  "version": "scene-classification-sagemaker-endpoint-live-1-3-10"
+                }
+              },
+              {
+                "id": "e531608e-7d07-4cc6-ac65-92648a91f7b4",
+                "key": "e531608e-7d07-4cc6-ac65-92648a91f7b4-18",
+                "url": "https://mms.seloger.com/e/5/3/1/e531608e-7d07-4cc6-ac65-92648a91f7b4.jpg?ci_seal=579b1fde3b5916399ec20fe0caacdc5245b89342",
+                "classification": {
+                  "name": "EMPTY_ROOM",
+                  "version": "scene-classification-sagemaker-endpoint-live-1-3-10"
+                }
+              },
+              {
+                "id": "01abd0ac-6899-4008-9509-34033f17035e",
+                "key": "01abd0ac-6899-4008-9509-34033f17035e-19",
+                "url": "https://mms.seloger.com/0/1/a/b/01abd0ac-6899-4008-9509-34033f17035e.jpg?ci_seal=7e2c4dfb159a41c5f4d2eca9c2a09704161a186d",
+                "classification": {
+                  "name": "EMPTY_ROOM",
+                  "version": "scene-classification-sagemaker-endpoint-live-1-3-10"
+                }
+              }
+            ],
+            "floorplans": [],
+            "videos": [],
+            "virtualTours": []
+          }
+        },
+        "sections": {
+          "location": {
+            "address": {
+              "country": "FRA",
+              "city": "Bordeaux",
+              "zipCode": "33800",
+              "district": "Bordeaux Sud"
+            },
+            "isAddressPublished": false,
+            "geometry": {
+              "type": "MultiPolygon",
+              "coordinates": [
+                [
+                  [
+                    [-0.56581, 44.82279],
+                    [-0.56581, 44.82306],
+                    [-0.5658, 44.82359],
+                    [-0.56583, 44.82368],
+                    [-0.56486, 44.82416],
+                    [-0.56385, 44.82466],
+                    [-0.56333, 44.825],
+                    [-0.56282, 44.82537],
+                    [-0.56202, 44.82513],
+                    [-0.56166, 44.82502],
+                    [-0.56106, 44.82485],
+                    [-0.56048, 44.82529],
+                    [-0.55998, 44.8257],
+                    [-0.55948, 44.82609],
+                    [-0.55912, 44.82636],
+                    [-0.55906, 44.82644],
+                    [-0.55846, 44.82609],
+                    [-0.55827, 44.82598],
+                    [-0.55812, 44.8259],
+                    [-0.55809, 44.82589],
+                    [-0.55771, 44.82594],
+                    [-0.55738, 44.82597],
+                    [-0.5572, 44.82598],
+                    [-0.55718, 44.8259],
+                    [-0.55716, 44.82582],
+                    [-0.55714, 44.82576],
+                    [-0.55713, 44.82571],
+                    [-0.55712, 44.82565],
+                    [-0.55712, 44.82563],
+                    [-0.55712, 44.82559],
+                    [-0.55713, 44.82557],
+                    [-0.55714, 44.82554],
+                    [-0.55717, 44.8255],
+                    [-0.55719, 44.82547],
+                    [-0.55722, 44.82539],
+                    [-0.5573, 44.82512],
+                    [-0.55739, 44.82489],
+                    [-0.55753, 44.82464],
+                    [-0.55766, 44.8244],
+                    [-0.55774, 44.82427],
+                    [-0.55776, 44.82424],
+                    [-0.55778, 44.82421],
+                    [-0.55791, 44.82402],
+                    [-0.55794, 44.82402],
+                    [-0.55796, 44.82402],
+                    [-0.55799, 44.82401],
+                    [-0.55802, 44.824],
+                    [-0.55804, 44.82399],
+                    [-0.55806, 44.82397],
+                    [-0.55807, 44.82395],
+                    [-0.55808, 44.82393],
+                    [-0.55808, 44.82393],
+                    [-0.55808, 44.82391],
+                    [-0.55808, 44.82389],
+                    [-0.55807, 44.82387],
+                    [-0.55805, 44.82385],
+                    [-0.55804, 44.82384],
+                    [-0.55806, 44.82383],
+                    [-0.55821, 44.82369],
+                    [-0.55827, 44.82363],
+                    [-0.55838, 44.82351],
+                    [-0.55914, 44.82274],
+                    [-0.56015, 44.82171],
+                    [-0.56074, 44.82113],
+                    [-0.56099, 44.82137],
+                    [-0.56142, 44.82174],
+                    [-0.56182, 44.82207],
+                    [-0.56214, 44.82236],
+                    [-0.5622, 44.82242],
+                    [-0.56266, 44.82226],
+                    [-0.56358, 44.82194],
+                    [-0.56547, 44.82129],
+                    [-0.56573, 44.82178],
+                    [-0.56582, 44.82178],
+                    [-0.56581, 44.82242],
+                    [-0.56581, 44.82247],
+                    [-0.56581, 44.82279]
+                  ]
+                ]
+              ]
+            }
+          },
+          "description": {
+            "description": "Pour toute question ou demande d'information, pensez à noter et nous communiquer le numéro de référence lors de votre appel : 19887\r\n\r\nRue Francin, à quelques pas de l'église du Sacré-Cœur, de la gare SNCF et du nouveau quartier Amédée Saint-Germain, cette charmante échoppe bénéficie d'un emplacement recherché, à la fois calme, agréable et pratique.\r\n\r\nLa maison est en excellent état général.\r\nAu rez-de-chaussée, une belle entrée dessert un séjour ouvert sur le salon. Cette superbe pièce de vie séduit par sa grande hauteur sous plafond, sa luminosité et son caractère traversant.\r\nLe charme de l'ancien y est sublimé par la pierre apparente et un magnifique parquet en pointe de Hongrie.\r\nLa cuisine séparée, moderne, entièrement équipée et lumineuse, offre un espace fonctionnel et convivial.\r\n\r\nUne cour extérieure, bénéficiant d'une exposition plein sud, permet de profiter pleinement des beaux jours.\r\n\r\nUne première salle d'eau ainsi qu'un WC indépendant complètent ce niveau.\r\nAu niveau inférieur, vous découvrirez trois belles chambres ainsi qu'une seconde salle de bains, idéales pour accueillir une famille.\r\n\r\nUn bien à découvrir sans tarder !\r\n\r\nCette maison affiche une consommation énergétique exemplaire (classe C) et des émissions de gaz à effet de serre minimales (classe C).\r\n\r\nLes dépenses énergétiques annuelles estimées oscillent entre 1060 € et 1 490 €, selon les prix moyens de l'énergie.\r\nDate du diagnostic énergétique : 24/05/2023.\r\n\r\nQui est le Homker proche de chez vous ?\r\n\r\nJe suis Ludovic Lesage, agent commercial immatriculé au RSAC de 842 617 441 R.S.A.C. Bordeaux, et je serais ravi de vous le faire découvrir !\r\n\r\nQui est Homki ?\r\n\r\nHomki offre aux acquéreurs et vendeurs un service complet et transparent afin que chaque projet immobilier soit une expérience innovante vécue sereinement.\r\n\r\nNos frais d'agence sont de 6 900 € fixes à la charge du vendeur.\r\n\r\nEstimation des coûts annuels d'énergie du logement :\r\n\r\nMontant minimum : 1060.0€\r\nMontant maximum : 1490.0€\r\n\r\nInformations financières :\r\n\r\nLa taxe foncière est de 2200€\r\n\r\nLes charges sont de 0€",
+            "texts": [
+              {
+                "text": "Pour toute question ou demande d'information, pensez à noter et nous communiquer le numéro de référence lors de votre appel : 19887\r\n\r\nRue Francin, à quelques pas de l'église du Sacré-Cœur, de la gare SNCF et du nouveau quartier Amédée Saint-Germain, cette charmante échoppe bénéficie d'un emplacement recherché, à la fois calme, agréable et pratique.\r\n\r\nLa maison est en excellent état général.\r\nAu rez-de-chaussée, une belle entrée dessert un séjour ouvert sur le salon. Cette superbe pièce de vie séduit par sa grande hauteur sous plafond, sa luminosité et son caractère traversant.\r\nLe charme de l'ancien y est sublimé par la pierre apparente et un magnifique parquet en pointe de Hongrie.\r\nLa cuisine séparée, moderne, entièrement équipée et lumineuse, offre un espace fonctionnel et convivial.\r\n\r\nUne cour extérieure, bénéficiant d'une exposition plein sud, permet de profiter pleinement des beaux jours.\r\n\r\nUne première salle d'eau ainsi qu'un WC indépendant complètent ce niveau.\r\nAu niveau inférieur, vous découvrirez trois belles chambres ainsi qu'une seconde salle de bains, idéales pour accueillir une famille.\r\n\r\nUn bien à découvrir sans tarder !\r\n\r\nCette maison affiche une consommation énergétique exemplaire (classe C) et des émissions de gaz à effet de serre minimales (classe C).\r\n\r\nLes dépenses énergétiques annuelles estimées oscillent entre 1060 € et 1 490 €, selon les prix moyens de l'énergie.\r\nDate du diagnostic énergétique : 24/05/2023.\r\n\r\nQui est le Homker proche de chez vous ?\r\n\r\nJe suis Ludovic Lesage, agent commercial immatriculé au RSAC de 842 617 441 R.S.A.C. Bordeaux, et je serais ravi de vous le faire découvrir !\r\n\r\nQui est Homki ?\r\n\r\nHomki offre aux acquéreurs et vendeurs un service complet et transparent afin que chaque projet immobilier soit une expérience innovante vécue sereinement.\r\n\r\nNos frais d'agence sont de 6 900 € fixes à la charge du vendeur.\r\n\r\nEstimation des coûts annuels d'énergie du logement :\r\n\r\nMontant minimum : 1060.0€\r\nMontant maximum : 1490.0€\r\n\r\nInformations financières :\r\n\r\nLa taxe foncière est de 2200€\r\n\r\nLes charges sont de 0€"
+              }
+            ],
+            "headline": "Maison/Villa T5 de 104 m2 à Bordeaux 33800"
+          },
+          "hardFacts": {
+            "title": "Maison à vendre",
+            "keyfacts": ["5 pièces", "3 chambres", "104 m²"],
+            "facts": [
+              {
+                "type": "numberOfRooms",
+                "value": "5 pièces",
+                "splitValue": "5",
+                "label": "pièces"
+              },
+              {
+                "type": "numberOfBedrooms",
+                "value": "3 chambres",
+                "splitValue": "3",
+                "label": "chambres"
+              },
+              {
+                "type": "livingSpace",
+                "value": "104 m²",
+                "splitValue": "104",
+                "label": "m²"
+              }
+            ],
+            "price": {
+              "value": "480 000 €",
+              "formatted": "480 000 €",
+              "additionalInformation": "4 615 €/m²",
+              "addition": {
+                "value": "4 615 €/m²",
+                "ariaLabel": "4615,38 euros par mètre carré"
+              },
+              "financialLink": {
+                "href": "https://e-immobilier.credit-agricole.fr/pret/lp_acquisition.html?ORI=EDESLAT&at_medium=affiliation&at_campaign=EDE_PC_EMP_EIMMO_FR&at_presta=SeLoger&at_format=Lien_PDD",
+                "label": "Demander un financement",
+                "partnerName": "CA"
+              },
+              "ariaLabel": "480000 €"
+            }
+          },
+          "energy": {
+            "features": [
+              {
+                "type": "state",
+                "label": "État",
+                "value": "Entretenu"
+              },
+              {
+                "type": "heatingSystem",
+                "label": "Type de chauffage",
+                "value": "Chauffage individuel"
+              },
+              {
+                "type": "energySource",
+                "label": "Sources d'énergie",
+                "value": "Gaz"
+              }
+            ],
+            "certificates": [
+              {
+                "key": "7897e4c0-7d7f-4307-a14b-fb8e94029d23",
+                "features": [
+                  {
+                    "type": "minMaxEstimation",
+                    "label": "Estimation de la facture énergétique",
+                    "value": "entre 1060 et 1490 €/an"
+                  },
+                  {
+                    "type": "nameOfCertificate",
+                    "label": "Diagnostic réalisé",
+                    "value": "Après le 1er juillet 2021"
+                  },
+                  {
+                    "type": "estimationDescription",
+                    "label": "estimationDescription",
+                    "value": "Montant estimé des dépenses annuelles d'énergie pour un usage standard: entre 1060 et 1490 € par an. Date d'indexation du prix des énergies non communiquée."
+                  }
+                ],
+                "scales": [
+                  {
+                    "key": "5c6f81b1-f72d-448c-8bb8-ea15385a4aa5",
+                    "efficiencyClass": {
+                      "index": 2,
+                      "rating": "C"
+                    },
+                    "values": [
+                      {
+                        "value": "140 kWh/m².an",
+                        "label": "Consommation (énergie primaire)"
+                      },
+                      {
+                        "value": "28 kg CO₂/m².an",
+                        "label": "Émissions"
+                      }
+                    ],
+                    "name": "Diagnostic de performance énergétique (DPE)",
+                    "segments": [
+                      {
+                        "label": "A",
+                        "value": ""
+                      },
+                      {
+                        "label": "B",
+                        "value": ""
+                      },
+                      {
+                        "label": "C",
+                        "value": ""
+                      },
+                      {
+                        "label": "D",
+                        "value": ""
+                      },
+                      {
+                        "label": "E",
+                        "value": ""
+                      },
+                      {
+                        "label": "F",
+                        "value": "Passoire énergétique"
+                      },
+                      {
+                        "label": "G",
+                        "value": "Passoire énergétique"
+                      }
+                    ],
+                    "type": "FR_ENERGY_AFTER_2021",
+                    "ariaLabel": "EfficiencyClass : C avec une plage allant de A à G .La consommation d'énergie est undefined kWhEP/m².an kilowattheures par mètre carré.",
+                    "displayUnhappyHouseIcon": false
+                  },
+                  {
+                    "key": "32f55c87-efec-454c-8b7b-9cfe6307839a",
+                    "efficiencyClass": {
+                      "index": 2,
+                      "rating": "C"
+                    },
+                    "values": [
+                      {
+                        "value": "28 kg CO₂/m².an",
+                        "label": "Émissions"
+                      }
+                    ],
+                    "name": "Indice d'émission de gaz à effet de serre (GES)",
+                    "segments": [
+                      {
+                        "label": "A",
+                        "value": ""
+                      },
+                      {
+                        "label": "B",
+                        "value": ""
+                      },
+                      {
+                        "label": "C",
+                        "value": ""
+                      },
+                      {
+                        "label": "D",
+                        "value": ""
+                      },
+                      {
+                        "label": "E",
+                        "value": ""
+                      },
+                      {
+                        "label": "F",
+                        "value": ""
+                      },
+                      {
+                        "label": "G",
+                        "value": ""
+                      }
+                    ],
+                    "type": "FR_GHG_AFTER_2021",
+                    "ariaLabel": "EfficiencyClass : C avec une plage allant de A à G .La consommation d'énergie est undefined kWhEP/m².an kilowattheures par mètre carré.",
+                    "displayUnhappyHouseIcon": false
+                  }
+                ]
+              }
+            ],
+            "hasScales": true
+          },
+          "key": {
+            "keys": [
+              {
+                "label": "Identifiant",
+                "value": "26TPY27RR9DF"
+              },
+              {
+                "label": "Référence annonce",
+                "value": "Homki_bjiih_1"
+              }
+            ]
+          },
+          "price": {
+            "base": {
+              "main": {
+                "key": "ca1e43a3-23b1-47c9-9e3e-f7bdbafb022d",
+                "label": {
+                  "main": "Prix du bien"
+                },
+                "value": {
+                  "main": {
+                    "value": "480 000 €",
+                    "ariaLabel": "480000 €"
+                  },
+                  "alt": {
+                    "value": "4 615,38 €/m²",
+                    "ariaLabel": "4615,38 euros par mètre carré"
+                  }
+                }
+              },
+              "type": "SALE"
+            },
+            "components": [
+              {
+                "key": "12ba7c8f-eb3b-41fb-88f0-cea9493902eb",
+                "type": "PRIMARY",
+                "units": [
+                  {
+                    "key": "702124a3-4240-4fbf-8df1-ff81afd25ff0",
+                    "main": {
+                      "price": {
+                        "key": "7581a87e-2145-4c5f-91d5-65ad64f92730",
+                        "label": {
+                          "main": "Prix du bien"
+                        },
+                        "value": {
+                          "main": {
+                            "value": "480 000 €",
+                            "ariaLabel": "480000 €"
+                          },
+                          "alt": {
+                            "value": "4 615,38 €/m²",
+                            "ariaLabel": "4615,38 euros par mètre carré"
+                          }
+                        },
+                        "highlighted": true
+                      },
+                      "message": {
+                        "type": "SUCCESS",
+                        "value": "Les honoraires sont à la charge du vendeur"
+                      }
+                    }
+                  },
+                  {
+                    "key": "093f4799-1316-4f0c-8308-db687a091688",
+                    "main": {
+                      "price": {
+                        "key": "362f2538-b32a-410a-8bc7-c748970efd8f",
+                        "label": {
+                          "main": "Frais de notaires estimés"
+                        },
+                        "value": {
+                          "main": {
+                            "value": "38 400 €",
+                            "ariaLabel": "38400 €"
+                          }
+                        },
+                        "info": {
+                          "value": "Les frais de notaire représentent environ 8% du prix du bien dans l'ancien et 3% dans le neuf. Le montant estimé est donné à titre indicatif."
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "key": "a46a386d-b1cf-4d82-a1f3-8825e9e4d127",
+                    "main": {
+                      "price": {
+                        "key": "f758da43-fd1e-4f29-ae85-983d3a445ea4",
+                        "label": {
+                          "main": "Montant estimé du projet"
+                        },
+                        "value": {
+                          "main": {
+                            "value": "518 400 €",
+                            "ariaLabel": "518400 €"
+                          }
+                        },
+                        "highlighted": true
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "key": "cc44003e-b3e7-4fd5-bc42-46c08e3bc453",
+                "type": "SECONDARY",
+                "units": [
+                  {
+                    "key": "cbcf5700-5960-41fa-bcf4-fb57ee42cef6",
+                    "details": [
+                      {
+                        "key": "efbd2792-5f17-40ef-a0b5-59fefc4c9ec0",
+                        "prices": [
+                          {
+                            "key": "e905ee2c-c186-4db7-9b48-7f25fc031dba",
+                            "label": {
+                              "main": "Estimation de la facture énergétique"
+                            },
+                            "value": {
+                              "main": {
+                                "value": "entre 1060 et 1490 €/an"
+                              }
+                            },
+                            "highlighted": true
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ],
+            "layout": "FRENCH_SALE",
+            "breakdown": {
+              "groups": [
+                {
+                  "key": "ca4e160c-e20a-4b61-9ca3-9b6e237144cd",
+                  "label": {
+                    "main": "Prix du bien"
+                  },
+                  "value": {
+                    "main": {
+                      "value": "480 000 €",
+                      "ariaLabel": "480000 €"
+                    },
+                    "alt": {
+                      "value": "4 615,38 €/m²",
+                      "ariaLabel": "4615,38 euros par mètre carré"
+                    }
+                  },
+                  "colorType": "MAIN_PRICE",
+                  "highlighted": true
+                },
+                {
+                  "key": "c422cacc-66e8-48f5-a0fc-7eee713ffeaa",
+                  "label": {
+                    "main": "Frais de notaire estimés (8%)"
+                  },
+                  "value": {
+                    "main": {
+                      "value": "38 400 €",
+                      "ariaLabel": "38400 €"
+                    }
+                  },
+                  "colorType": "NOTARY_FEE",
+                  "infoBox": "Les frais de notaire représentent environ 8% du prix du bien dans l'ancien et 3% dans le neuf. Le montant estimé est donné à titre indicatif.",
+                  "highlighted": true
+                }
+              ],
+              "totalProjectCosts": {
+                "key": "49305332-7576-4c33-9126-231d3724a7d2",
+                "label": {
+                  "main": "Montant estimé du projet"
+                },
+                "value": {
+                  "main": {
+                    "value": "518 400 €",
+                    "ariaLabel": "518400 €"
+                  }
+                }
+              },
+              "message": {
+                "type": "SUCCESS",
+                "value": "Les honoraires sont à la charge du vendeur"
+              },
+              "bar": [
+                {
+                  "key": "ca4e160c-e20a-4b61-9ca3-9b6e237144cd",
+                  "colorType": "MAIN_PRICE",
+                  "percentage": 0.9259
+                },
+                {
+                  "key": "c422cacc-66e8-48f5-a0fc-7eee713ffeaa",
+                  "colorType": "NOTARY_FEE",
+                  "percentage": 0.0741
+                }
+              ]
+            }
+          },
+          "features": {
+            "preview": [
+              {
+                "icon": "kitchen",
+                "value": "Cuisine séparée"
+              },
+              {
+                "icon": "cellar",
+                "value": "Pas de cave"
+              },
+              {
+                "icon": "toilet-amenities",
+                "value": "2 WCs"
+              },
+              {
+                "icon": "terrace",
+                "value": "Terrasse"
+              },
+              {
+                "icon": "calm",
+                "value": "Calme"
+              },
+              {
+                "icon": "Orientation",
+                "value": "Exposition: sud"
+              },
+              {
+                "icon": "bedroom",
+                "value": "3 chambres"
+              },
+              {
+                "icon": "barrier-free",
+                "value": "Accessible aux personne à mobilité réduite"
+              }
+            ],
+            "details": {
+              "categories": [
+                {
+                  "elements": [
+                    {
+                      "icon": "calm",
+                      "value": "Calme"
+                    },
+                    {
+                      "icon": "Orientation",
+                      "value": "Exposition: sud"
+                    }
+                  ],
+                  "title": "Informations générales"
+                },
+                {
+                  "elements": [
+                    {
+                      "icon": "barrier-free",
+                      "value": "Accessible aux personne à mobilité réduite"
+                    }
+                  ],
+                  "title": "Accessibilité"
+                },
+                {
+                  "elements": [
+                    {
+                      "icon": "kitchen",
+                      "value": "Cuisine séparée"
+                    },
+                    {
+                      "icon": "bathroom-amenities",
+                      "value": "1 salle de bain; 2 salles de douches"
+                    },
+                    {
+                      "icon": "toilet-amenities",
+                      "value": "2 WCs"
+                    },
+                    {
+                      "icon": "bedroom",
+                      "value": "3 chambres"
+                    },
+                    {
+                      "icon": "cellar",
+                      "value": "Pas de cave"
+                    },
+                    {
+                      "icon": "floor-covering",
+                      "value": "Revêtement du sol: Parquet"
+                    },
+                    {
+                      "icon": "separateEntrance",
+                      "value": "Entrée séparée"
+                    }
+                  ],
+                  "title": "Intérieur"
+                },
+                {
+                  "elements": [
+                    {
+                      "icon": "terrace",
+                      "value": "Terrasse"
+                    }
+                  ],
+                  "title": "Extérieur"
+                }
+              ]
+            }
+          },
+          "gallery": {
+            "images": [
+              {
+                "key": "b6904db9-a507-44b3-9d63-700f6db197ac",
+                "url": "https://mms.seloger.com/b/6/9/0/b6904db9-a507-44b3-9d63-700f6db197ac.jpg?ci_seal=e5c629f509b960d6e223393058bcd0318788d02c",
+                "alt": "Maison à vendre 480 000 € 5 pièces 3 chambres 104 m² Bordeaux Sud Bordeaux 33800",
+                "classification": {
+                  "name": "LIVING_ROOM",
+                  "version": "scene-classification-sagemaker-endpoint-live-1-3-10"
+                }
+              },
+              {
+                "key": "920c9ebc-86fd-4bf5-9ef7-2b07a6e98c48",
+                "url": "https://mms.seloger.com/9/2/0/c/920c9ebc-86fd-4bf5-9ef7-2b07a6e98c48.jpg?ci_seal=2ac354027dbca8f5b66aa5c97aa062c01fdaf512",
+                "classification": {
+                  "name": "KITCHEN",
+                  "version": "scene-classification-sagemaker-endpoint-live-1-3-10"
+                }
+              },
+              {
+                "key": "d070b432-3df4-474c-b40c-0ca0f9051135",
+                "url": "https://mms.seloger.com/d/0/7/0/d070b432-3df4-474c-b40c-0ca0f9051135.jpg?ci_seal=eaca42b3dfab9335d4b5fd23d4bba2ceea46b79b",
+                "classification": {
+                  "name": "COURTYARD",
+                  "version": "scene-classification-sagemaker-endpoint-live-1-3-10"
+                }
+              },
+              {
+                "key": "980adeef-aac7-4771-b672-7bc50a80bb15",
+                "url": "https://mms.seloger.com/9/8/0/a/980adeef-aac7-4771-b672-7bc50a80bb15.jpg?ci_seal=5c9551b21d9a9a45d64676ba08788a99e9309a2f",
+                "classification": {
+                  "name": "LIVING_ROOM",
+                  "version": "scene-classification-sagemaker-endpoint-live-1-3-10"
+                }
+              },
+              {
+                "key": "f52abf1b-786b-4603-bc9e-797d0437c0a7",
+                "url": "https://mms.seloger.com/f/5/2/a/f52abf1b-786b-4603-bc9e-797d0437c0a7.jpg?ci_seal=474ae151bd14d69f60664348f192148556beebde",
+                "classification": {
+                  "name": "LIVING_ROOM",
+                  "version": "scene-classification-sagemaker-endpoint-live-1-3-10"
+                }
+              },
+              {
+                "key": "41efe8b1-d973-471f-ab2f-7a5ac7369a8f",
+                "url": "https://mms.seloger.com/4/1/e/f/41efe8b1-d973-471f-ab2f-7a5ac7369a8f.jpg?ci_seal=42a7a6375103635906ca122cd3e35aa506731585",
+                "classification": {
+                  "name": "LIVING_ROOM",
+                  "version": "scene-classification-sagemaker-endpoint-live-1-3-10"
+                }
+              },
+              {
+                "key": "8907340c-606a-4b32-ae0b-edb7b37ed5de",
+                "url": "https://mms.seloger.com/8/9/0/7/8907340c-606a-4b32-ae0b-edb7b37ed5de.jpg?ci_seal=2a6a5ec32910ce4cb6b09f1d650d1560b273c839",
+                "classification": {
+                  "name": "BATHROOM",
+                  "version": "scene-classification-sagemaker-endpoint-live-1-3-10"
+                }
+              },
+              {
+                "key": "4dd70bfb-10e8-4dde-af4a-06aaeca389d7",
+                "url": "https://mms.seloger.com/4/d/d/7/4dd70bfb-10e8-4dde-af4a-06aaeca389d7.jpg?ci_seal=ed6dcf8734de3a68b22c26e83cfa754875f8dc40",
+                "classification": {
+                  "name": "HOUSE_FACADE",
+                  "version": "scene-classification-sagemaker-endpoint-live-1-3-10"
+                }
+              },
+              {
+                "key": "bf88672b-6e08-4a0c-955e-f8e96faa1149",
+                "url": "https://mms.seloger.com/b/f/8/8/bf88672b-6e08-4a0c-955e-f8e96faa1149.jpg?ci_seal=597186990a3201a2c031fd0116ea024e7dd720b6",
+                "classification": {
+                  "name": "EXTERIOR_VIEW",
+                  "version": "scene-classification-sagemaker-endpoint-live-1-3-10"
+                }
+              },
+              {
+                "key": "63e48d2f-5c09-4e8d-b596-5eb71ec25167",
+                "url": "https://mms.seloger.com/6/3/e/4/63e48d2f-5c09-4e8d-b596-5eb71ec25167.jpg?ci_seal=8bbb29893cadb6154d1560949ce1aa8f53db3ac1",
+                "classification": {
+                  "name": "STAIRCASE",
+                  "version": "scene-classification-sagemaker-endpoint-live-1-3-10"
+                }
+              },
+              {
+                "key": "ca2c1280-4c52-4e4a-a18d-ac186fb9fff8",
+                "url": "https://mms.seloger.com/c/a/2/c/ca2c1280-4c52-4e4a-a18d-ac186fb9fff8.jpg?ci_seal=d2d65cea66f440f6f8cddc79e715c55472b3e625",
+                "classification": {
+                  "name": "LIVING_ROOM",
+                  "version": "scene-classification-sagemaker-endpoint-live-1-3-10"
+                }
+              },
+              {
+                "key": "299aebdd-ddf1-4c4f-b627-4451daaedc26",
+                "url": "https://mms.seloger.com/2/9/9/a/299aebdd-ddf1-4c4f-b627-4451daaedc26.jpg?ci_seal=baf341a839aee9f47f0dc1f5752d7995a1359bd3",
+                "classification": {
+                  "name": "LIVING_ROOM",
+                  "version": "scene-classification-sagemaker-endpoint-live-1-3-10"
+                }
+              },
+              {
+                "key": "eb93097c-6f69-418b-ae2f-b6ea2b25ac74",
+                "url": "https://mms.seloger.com/e/b/9/3/eb93097c-6f69-418b-ae2f-b6ea2b25ac74.jpg?ci_seal=665a6de2b3561b2982ac53d2968b0a4d41b9a6e9",
+                "classification": {
+                  "name": "LIVING_ROOM",
+                  "version": "scene-classification-sagemaker-endpoint-live-1-3-10"
+                }
+              },
+              {
+                "key": "41b27b87-0a1d-4ccb-90a3-5fc3d9d4928c",
+                "url": "https://mms.seloger.com/4/1/b/2/41b27b87-0a1d-4ccb-90a3-5fc3d9d4928c.jpg?ci_seal=7e4a47cd8d0fc45e9d7df1a73ec1308e5f089590",
+                "classification": {
+                  "name": "LIVING_ROOM",
+                  "version": "scene-classification-sagemaker-endpoint-live-1-3-10"
+                }
+              },
+              {
+                "key": "73b057c3-f8eb-4819-828d-868532e72970",
+                "url": "https://mms.seloger.com/7/3/b/0/73b057c3-f8eb-4819-828d-868532e72970.jpg?ci_seal=3a4e9059c4778959a6b0df2730f8ee47a8db8da8",
+                "classification": {
+                  "name": "KITCHEN",
+                  "version": "scene-classification-sagemaker-endpoint-live-1-3-10"
+                }
+              },
+              {
+                "key": "6bdfa637-4117-4ae4-a22d-74700935e0f0",
+                "url": "https://mms.seloger.com/6/b/d/f/6bdfa637-4117-4ae4-a22d-74700935e0f0.jpg?ci_seal=5c3e022ed5618f3cf49f636acc218aa44aae0ce2",
+                "classification": {
+                  "name": "BEDROOM",
+                  "version": "scene-classification-sagemaker-endpoint-live-1-3-10"
+                }
+              },
+              {
+                "key": "1714f2bc-19dd-479a-95d6-955747939157",
+                "url": "https://mms.seloger.com/1/7/1/4/1714f2bc-19dd-479a-95d6-955747939157.jpg?ci_seal=415e7f09562be2191d2a140bb01f6c73fda9f6fb",
+                "classification": {
+                  "name": "BEDROOM",
+                  "version": "scene-classification-sagemaker-endpoint-live-1-3-10"
+                }
+              },
+              {
+                "key": "ace11bc4-aba1-45a1-a918-aab7a3b58a26",
+                "url": "https://mms.seloger.com/a/c/e/1/ace11bc4-aba1-45a1-a918-aab7a3b58a26.jpg?ci_seal=c15cb3d5e6f50cad30541ed29d108e5bdfb86065",
+                "classification": {
+                  "name": "BATHROOM",
+                  "version": "scene-classification-sagemaker-endpoint-live-1-3-10"
+                }
+              },
+              {
+                "key": "e531608e-7d07-4cc6-ac65-92648a91f7b4",
+                "url": "https://mms.seloger.com/e/5/3/1/e531608e-7d07-4cc6-ac65-92648a91f7b4.jpg?ci_seal=579b1fde3b5916399ec20fe0caacdc5245b89342",
+                "classification": {
+                  "name": "EMPTY_ROOM",
+                  "version": "scene-classification-sagemaker-endpoint-live-1-3-10"
+                }
+              },
+              {
+                "key": "01abd0ac-6899-4008-9509-34033f17035e",
+                "url": "https://mms.seloger.com/0/1/a/b/01abd0ac-6899-4008-9509-34033f17035e.jpg?ci_seal=7e2c4dfb159a41c5f4d2eca9c2a09704161a186d",
+                "classification": {
+                  "name": "EMPTY_ROOM",
+                  "version": "scene-classification-sagemaker-endpoint-live-1-3-10"
+                }
+              }
+            ]
+          },
+          "documents": {
+            "display": false,
+            "files": []
+          },
+          "enrichedMedia": {
+            "medias": []
+          },
+          "mortgage": {
+            "brand": "seloger",
+            "id": "265525767",
+            "federalStateGeoId": "AD04FR27",
+            "zip": "33800",
+            "city": "Bordeaux",
+            "country": "FRA",
+            "subType": "RESALE",
+            "region": "Nouvelle-Aquitaine",
+            "showRentLabel": false,
+            "showMonthlyRateLabel": true,
+            "price": 480000,
+            "monthlyAmount": 2417,
+            "formattedMonthlyAmount": "2 417"
+          },
+          "partnerAd": {
+            "showPartnerAd": false
+          },
+          "sellerLeadLink": {
+            "funnel": "https://www.seloger.com/estimation-immobiliere/simulateur-prix",
+            "landing": "https://www.seloger.com/estimation-immobiliere.html"
+          },
+          "priceComparison": {
+            "data": {
+              "value": 4961,
+              "accuracy": 4,
+              "high": "8 841",
+              "low": "2 563"
+            },
+            "markerPosition": 33,
+            "hasMainPrice": true,
+            "isSale": true,
+            "pricePerSqm": "4 615,38",
+            "legalText": "Le prix au m² est automatiquement calculé par Se Loger en fonction du prix de vente et du nombre de m² du bien. La comparaison est réalisée à partir des informations relatives au prix du marché sur le même secteur dont dispose Se Loger. Cette information ne préjuge en aucun cas de l'évaluation du bien, qui dépend de son état, ses caractéristiques et de sa localisation."
+          },
+          "mainDescription": {
+            "headline": "Maison/Villa T5 de 104 m2 à Bordeaux 33800",
+            "description": "Pour toute question ou demande d'information, pensez à noter et nous communiquer le numéro de référence lors de votre appel : 19887\r\n\r\nRue Francin, à quelques pas de l'église du Sacré-Cœur, de la gare SNCF et du nouveau quartier Amédée Saint-Germain, cette charmante échoppe bénéficie d'un emplacement recherché, à la fois calme, agréable et pratique.\r\n\r\nLa maison est en excellent état général.\r\nAu rez-de-chaussée, une belle entrée dessert un séjour ouvert sur le salon. Cette superbe pièce de vie séduit par sa grande hauteur sous plafond, sa luminosité et son caractère traversant.\r\nLe charme de l'ancien y est sublimé par la pierre apparente et un magnifique parquet en pointe de Hongrie.\r\nLa cuisine séparée, moderne, entièrement équipée et lumineuse, offre un espace fonctionnel et convivial.\r\n\r\nUne cour extérieure, bénéficiant d'une exposition plein sud, permet de profiter pleinement des beaux jours.\r\n\r\nUne première salle d'eau ainsi qu'un WC indépendant complètent ce niveau.\r\nAu niveau inférieur, vous découvrirez trois belles chambres ainsi qu'une seconde salle de bains, idéales pour accueillir une famille.\r\n\r\nUn bien à découvrir sans tarder !\r\n\r\nCette maison affiche une consommation énergétique exemplaire (classe C) et des émissions de gaz à effet de serre minimales (classe C).\r\n\r\nLes dépenses énergétiques annuelles estimées oscillent entre 1060 € et 1 490 €, selon les prix moyens de l'énergie.\r\nDate du diagnostic énergétique : 24/05/2023.\r\n\r\nQui est le Homker proche de chez vous ?\r\n\r\nJe suis Ludovic Lesage, agent commercial immatriculé au RSAC de 842 617 441 R.S.A.C. Bordeaux, et je serais ravi de vous le faire découvrir !\r\n\r\nQui est Homki ?\r\n\r\nHomki offre aux acquéreurs et vendeurs un service complet et transparent afin que chaque projet immobilier soit une expérience innovante vécue sereinement.\r\n\r\nNos frais d'agence sont de 6 900 € fixes à la charge du vendeur.\r\n\r\nEstimation des coûts annuels d'énergie du logement :\r\n\r\nMontant minimum : 1060.0€\r\nMontant maximum : 1490.0€\r\n\r\nInformations financières :\r\n\r\nLa taxe foncière est de 2200€\r\n\r\nLes charges sont de 0€",
+            "metadata": {
+              "language": "fr"
+            }
+          },
+          "areaDescription": {
+            "headline": "Emplacement"
+          },
+          "extendedInfoDescription": {
+            "headline": "Informations supplémentaires"
+          }
+        },
+        "contactSections": {
+          "id": "26TPY27RR9DF",
+          "legacyId": "265525767",
+          "brand": "seloger",
+          "agencyId": "RC-004646",
+          "static": {
+            "phoneNumbers": ["04 13 68 02 02"]
+          },
+          "sticky": {
+            "phoneNumbers": ["04 13 68 02 02"]
+          },
+          "contactCard": {
+            "title": "HOMKI",
+            "subtitle": "Homki - Service Acquéreur",
+            "phoneNumbers": ["04 13 68 02 02"],
+            "isPrivateOwner": false,
+            "agencyLogo": {
+              "logoUrl": "https://mms.seloger.com/1/5/d/a/15da7256-47d7-4e50-939e-680a70fa1f9e.jpg?ci_seal=7b8e14dbc5a348b2be25124d7bad64feac20314b",
+              "display": true
+            },
+            "contactLogo": {
+              "logoUrl": null,
+              "display": false
+            },
+            "rating": 4.857142857142857
+          },
+          "contactForm": {
+            "contactCard": {
+              "title": "HOMKI",
+              "subtitle": "Homki - Service Acquéreur",
+              "phoneNumbers": ["04 13 68 02 02"],
+              "isPrivateOwner": false,
+              "logoUrl": "https://mms.seloger.com/1/5/d/a/15da7256-47d7-4e50-939e-680a70fa1f9e.jpg?ci_seal=7b8e14dbc5a348b2be25124d7bad64feac20314b"
+            },
+            "displayOwnerFlag": true,
+            "subjectLabel": "Votre message à Homki - Service Acquéreur",
+            "shouldSendLeadValue": true
+          },
+          "mobilePhones": {
+            "title": "HOMKI",
+            "subtitle": "HOMKI",
+            "phoneNumbers": ["04 13 68 02 02"],
+            "logoUrl": null,
+            "isPrivateOwner": false
+          },
+          "provider": {
+            "intermediaryCard": {
+              "title": "HOMKI",
+              "subtitle": "Agence professionnelle",
+              "display": true,
+              "logoUrl": "https://mms.seloger.com/1/5/d/a/15da7256-47d7-4e50-939e-680a70fa1f9e.jpg?ci_seal=7b8e14dbc5a348b2be25124d7bad64feac20314b",
+              "logoHref": "https://www.seloger.com/professionnels/agences-immobilieres/marseille-5eme-arrondissement-13005/agence-101209/"
+            },
+            "contactCard": {
+              "title": "Homki - Service Acquéreur",
+              "subtitle": "Votre contact",
+              "display": true,
+              "logoUrl": null
+            },
+            "website": "https://homki-immobilier.com/",
+            "isPrivateOwner": false,
+            "profileUrl": "https://www.seloger.com/professionnels/agences-immobilieres/marseille-5eme-arrondissement-13005/agence-101209/",
+            "imprintUrl": null,
+            "feeUrl": "https://homki-immobilier.com:443/",
+            "agencyLegalInformations": [
+              "SAS, société par actions simplifiée HOMKI",
+              "<b>Siège:</b> 16 Rue de locarno, 13005 Marseille",
+              "<b>RCS:</b> 838060911",
+              "<b>SIRET:</b> 83806091100032"
+            ],
+            "publisherType": "AGENCY",
+            "rating": {
+              "rating": 4.857142857142857,
+              "reviews": 7,
+              "link": "https://www.seloger.com/professionnels/agences-immobilieres/marseille-5eme-arrondissement-13005/agence-101209/#?avisImmo=true"
+            },
+            "displayLinks": true,
+            "address": "13005 Marseille 5ème arrondissement",
+            "phoneNumbers": ["04 13 68 02 02"]
+          },
+          "confirmationPage": {
+            "isFinanceOfferButtonEnabled": false
+          }
+        },
+        "tracking": {
+          "av_category": "classified",
+          "av_initiative": "wl_cdp",
+          "av_environment": "live",
+          "av_estate_type_global": "av_5",
+          "av_distribution_type_global": "2",
+          "av_client_type": "pro",
+          "av_language": "fr",
+          "av_zip_code": "33800",
+          "av_city": "Bordeaux",
+          "av_energy_certificate": "C",
+          "av_items": [
+            {
+              "index": 0,
+              "name": "classified",
+              "list_name": "classified_detail",
+              "id": "26TPY27RR9DF",
+              "price": 480000,
+              "estate_type": "av_5",
+              "distribution_type": "2",
+              "country": "France",
+              "city": "Bordeaux",
+              "region": "Nouvelle-Aquitaine",
+              "zip_code": "33800",
+              "building_state": "WELL_KEPT",
+              "legacy_id": "265525767",
+              "product_type": "standard",
+              "client_id": "RC-004646",
+              "energy_certificate": "C"
+            }
+          ]
+        },
+        "legacyTracking": {
+          "site": "SL",
+          "pagename": "detail",
+          "environment": "prod",
+          "language": "fr",
+          "temp_variable_1": "WL",
+          "products": [
+            {
+              "client_id": "26948",
+              "client_type": "pro",
+              "distribution_type": "2",
+              "energy_letter": "C",
+              "estate_postalcode": "33800",
+              "estate_type": 2,
+              "id": "265525767",
+              "id_duo": 265525767,
+              "id_solo": 265525767,
+              "list_name": "detail",
+              "media": 0,
+              "nb_bedrooms": 3,
+              "nb_rooms": 5,
+              "parent_site": "SL",
+              "photos_nb": 20,
+              "position": 0,
+              "price": 480000,
+              "product_geolocation": "localisation_city",
+              "product_type": "estate",
+              "product_variant": "classified",
+              "space": 104
+            }
+          ]
+        },
+        "advertising": {
+          "slots_config": [
+            {
+              "id": "div-gam-ad-desktop-top-banner",
+              "adUnit": "/199043128/360-seloger/achat/general/page-de-detail/leaderboard",
+              "size": [728, 90],
+              "specificTargeting": {
+                "pos": "leaderboard"
+              },
+              "device": "desktop"
+            },
+            {
+              "id": "ad-medium-rectangle-1",
+              "adUnit": "/199043128/360-seloger/achat/general/page-de-detail/pave-haut",
+              "size": [[300, 250], "fluid"],
+              "specificTargeting": {
+                "pos": "pave-haut"
+              },
+              "device": "desktop"
+            },
+            {
+              "id": "ad-medium-rectangle-2",
+              "adUnit": "/199043128/360-seloger/achat/general/page-de-detail/pave-bas",
+              "size": [[300, 250], "fluid"],
+              "specificTargeting": {
+                "pos": "pave-bas"
+              },
+              "device": "desktop"
+            },
+            {
+              "id": "ad-masonry",
+              "adUnit": "/199043128/360-seloger/achat/general/page-de-detail/image-galerie",
+              "size": [
+                [624, 468],
+                [300, 250]
+              ],
+              "specificTargeting": {
+                "pos": "image-galerie"
+              },
+              "device": "desktop"
+            },
+            {
+              "id": "ad-carousel",
+              "adUnit": "/199043128/360-seloger/achat/general/page-de-detail/pave-carrousel",
+              "size": [
+                [624, 468],
+                [300, 250]
+              ],
+              "specificTargeting": {
+                "pos": "pave-carrousel"
+              },
+              "device": "desktop"
+            },
+            {
+              "id": "ad-banner-mobile",
+              "adUnit": "/199043128/360-seloger/achat/general/page-de-detail/banniere-mobile",
+              "size": [
+                [320, 50],
+                [320, 100],
+                [320, 150]
+              ],
+              "specificTargeting": {
+                "pos": "banniere-mobile"
+              },
+              "device": "mobile"
+            },
+            {
+              "id": "ad-masonry",
+              "adUnit": "/199043128/360-seloger/achat/general/page-de-detail/image-galerie",
+              "size": [300, 250],
+              "specificTargeting": {
+                "pos": "image-galerie"
+              },
+              "device": "mobile"
+            },
+            {
+              "id": "ad-carousel",
+              "adUnit": "/199043128/360-seloger/achat/general/page-de-detail/pave-carrousel",
+              "size": [300, 250],
+              "specificTargeting": {
+                "pos": "pave-carrousel"
+              },
+              "device": "mobile"
+            },
+            {
+              "id": "partnerbox-1-commercial",
+              "adUnit": "/199043128/360-seloger/achat/general/page-de-detail/native1",
+              "size": "fluid",
+              "specificTargeting": {
+                "pos": "native1"
+              },
+              "device": "all"
+            },
+            {
+              "id": "partnerbox-2-commercial",
+              "adUnit": "/199043128/360-seloger/achat/general/page-de-detail/native2",
+              "size": "fluid",
+              "specificTargeting": {
+                "pos": "native2"
+              },
+              "device": "all"
+            },
+            {
+              "id": "partnerbox-3-tools-and-service",
+              "adUnit": "/199043128/360-seloger/achat/general/page-de-detail/native3",
+              "size": "fluid",
+              "specificTargeting": {
+                "pos": "native3"
+              },
+              "device": "all"
+            },
+            {
+              "id": "partnerbox-4-tools-and-service",
+              "adUnit": "/199043128/360-seloger/achat/general/page-de-detail/native4",
+              "size": "fluid",
+              "specificTargeting": {
+                "pos": "native4"
+              },
+              "device": "all"
+            },
+            {
+              "id": "partnerbox-5-tools-and-service",
+              "adUnit": "/199043128/360-seloger/achat/general/page-de-detail/native5",
+              "size": "fluid",
+              "specificTargeting": {
+                "pos": "native5"
+              },
+              "device": "all"
+            }
+          ],
+          "tracking_config": {
+            "cp": "33800",
+            "pays": "250",
+            "idtt": "2",
+            "idtypebien": "2",
+            "naturebien": "1",
+            "idtiers": "265525767",
+            "prix": 480000,
+            "prix_tranche": "300000-500000",
+            "nb_pieces": 5,
+            "nb_chambres": 3,
+            "surface": 104,
+            "commodites": [
+              "Chauffage-individuel",
+              "Chauffage-gaz",
+              "Cuisine-séparée",
+              "handicape",
+              "parquet",
+              "SalleDEau-douche",
+              "SalleDeBain-baignoire",
+              "sud",
+              "terrasse"
+            ],
+            "mensualitefinance": 1929,
+            "si_parking": 0,
+            "DPE": "C"
+          }
+        },
+        "seo": {
+          "breadcrumb": {
+            "type": "cdp-breadcrumb",
+            "name": "breadcrumb",
+            "title": "cdp-breadcrumb",
+            "slug": "cdp-breadcrumb",
+            "links": [
+              {
+                "order": 1,
+                "url": "https://www.seloger.com/",
+                "label": "Immobilier",
+                "hoverLabel": "Immobilier",
+                "serpKey": ""
+              },
+              {
+                "order": 2,
+                "url": "https://www.seloger.com/recherche/achat/maison/france/ad02fr1",
+                "label": "Maisons à vendre France",
+                "hoverLabel": "Maisons à vendre France",
+                "serpKey": "",
+                "title": "Maisons à vendre France"
+              },
+              {
+                "order": 3,
+                "url": "https://www.seloger.com/recherche/achat/maison/nouvelle-aquitaine/ad04fr27",
+                "label": "Maisons à vendre Nouvelle-Aquitaine",
+                "hoverLabel": "Maisons à vendre Nouvelle-Aquitaine",
+                "serpKey": "",
+                "title": "Maisons à vendre Nouvelle-Aquitaine"
+              },
+              {
+                "order": 4,
+                "url": "https://www.seloger.com/recherche/achat/maison/nouvelle-aquitaine/gironde-33/ad06fr34",
+                "label": "Maisons à vendre Gironde 33",
+                "hoverLabel": "Maisons à vendre Gironde 33",
+                "serpKey": "",
+                "title": "Maisons à vendre Gironde 33"
+              },
+              {
+                "order": 5,
+                "url": "https://www.seloger.com/recherche/achat/maison/nouvelle-aquitaine/bordeaux-33000/ad08fr13100",
+                "label": "Maisons à vendre Bordeaux 33000",
+                "hoverLabel": "Maisons à vendre Bordeaux 33000",
+                "serpKey": "",
+                "title": "Maisons à vendre Bordeaux 33000"
+              },
+              {
+                "order": 100,
+                "url": "",
+                "label": "Annonce",
+                "hoverLabel": "Annonce",
+                "serpKey": "",
+                "title": "Annonce"
+              }
+            ]
+          },
+          "headInfo": {
+            "title": "Maison à vendre T5/F5 104 m² 480000 € Bordeaux Sud Bordeaux (33800)",
+            "titleWithCount": "",
+            "description": "Maison à vendre 5 pièces 104 m² 480000 € Bordeaux Sud Bordeaux (33800)",
+            "canonical": "https://www.seloger.com/annonces/achat/maison/bordeaux-33/saint-jean-belcier-carle-vernet-albert-1er/265525767.htm",
+            "robots": "index, follow, max-snippet:-1",
+            "icons": [
+              {
+                "relation": "shortcut icon",
+                "link": "https://www.seloger.com/favicon.ico",
+                "type": "image/ico"
+              }
+            ],
+            "openGraphs": [
+              {
+                "property": "locale",
+                "content": "fr_FR"
+              },
+              {
+                "property": "url",
+                "content": "https://www.seloger.com/annonces/achat/maison/bordeaux-33/saint-jean-belcier-carle-vernet-albert-1er/265525767.htm"
+              },
+              {
+                "property": "type",
+                "content": "website"
+              },
+              {
+                "property": "site_name",
+                "content": "SeLoger"
+              },
+              {
+                "property": "title",
+                "content": "Maison à vendre T5/F5 104 m² 480000 € Bordeaux Sud Bordeaux (33800)"
+              },
+              {
+                "property": "description",
+                "content": "Maison à vendre T5/F5 104 m² 480000 € Bordeaux Sud Bordeaux (33800)"
+              },
+              {
+                "property": "image",
+                "content": "https://mms.seloger.com/b/6/9/0/b6904db9-a507-44b3-9d63-700f6db197ac.jpg?ci_seal=e5c629f509b960d6e223393058bcd0318788d02c"
+              }
+            ],
+            "socials": [
+              {
+                "name": "twitter:card",
+                "content": "Maison à vendre T5/F5 104 m² 480000 € Bordeaux Sud Bordeaux (33800)"
+              },
+              {
+                "name": "twitter:url",
+                "content": "https://www.seloger.com/annonces/achat/maison/bordeaux-33/saint-jean-belcier-carle-vernet-albert-1er/265525767.htm"
+              },
+              {
+                "name": "twitter:site",
+                "content": "@seloger"
+              },
+              {
+                "name": "twitter:title",
+                "content": "Maison à vendre T5/F5 104 m² 480000 € Bordeaux Sud Bordeaux (33800)"
+              },
+              {
+                "name": "twitter:description",
+                "content": "Maison à vendre T5/F5 104 m² 480000 € Bordeaux Sud Bordeaux (33800)"
+              },
+              {
+                "name": "twitter:image",
+                "content": "https://mms.seloger.com/b/6/9/0/b6904db9-a507-44b3-9d63-700f6db197ac.jpg?ci_seal=e5c629f509b960d6e223393058bcd0318788d02c"
+              }
+            ],
+            "structuredData": [
+              [
+                {
+                  "type": "@context",
+                  "content": "https://schema.org"
+                },
+                {
+                  "type": "@type",
+                  "content": "Organization"
+                },
+                {
+                  "type": "name",
+                  "content": "SeLoger"
+                },
+                {
+                  "type": "address",
+                  "content": "2 Rue des Italiens, 75009 Paris"
+                },
+                {
+                  "type": "telephone",
+                  "content": "01 53 38 28 00"
+                },
+                {
+                  "type": "url",
+                  "content": "https://www.seloger.com/"
+                },
+                {
+                  "type": "logo",
+                  "content": "https://static-seloger.com/commons/header/logo_header.svg"
+                }
+              ],
+              [
+                {
+                  "type": "@context",
+                  "content": "https://schema.org"
+                },
+                {
+                  "type": "@type",
+                  "content": "RealEstateListing"
+                },
+                {
+                  "type": "datePosted",
+                  "content": ""
+                },
+                {
+                  "type": "description",
+                  "content": "Maison à vendre T5/F5 104 m² 480000 € Bordeaux Sud Bordeaux (33800)"
+                },
+                {
+                  "type": "name",
+                  "content": "Maison à vendre T5/F5 104 m² 480000 € Bordeaux Sud Bordeaux (33800)"
+                }
+              ]
+            ],
+            "breadcrumb": [
+              {
+                "order": 1,
+                "url": "https://www.seloger.com/",
+                "label": "Immobilier",
+                "hoverLabel": "Immobilier",
+                "serpKey": ""
+              },
+              {
+                "order": 2,
+                "url": "https://www.seloger.com/recherche/achat/maison/france/ad02fr1",
+                "label": "Maisons à vendre France",
+                "hoverLabel": "Maisons à vendre France",
+                "serpKey": ""
+              },
+              {
+                "order": 3,
+                "url": "https://www.seloger.com/recherche/achat/maison/nouvelle-aquitaine/ad04fr27",
+                "label": "Maisons à vendre Nouvelle-Aquitaine",
+                "hoverLabel": "Maisons à vendre Nouvelle-Aquitaine",
+                "serpKey": ""
+              },
+              {
+                "order": 4,
+                "url": "https://www.seloger.com/recherche/achat/maison/nouvelle-aquitaine/gironde-33/ad06fr34",
+                "label": "Maisons à vendre Gironde 33",
+                "hoverLabel": "Maisons à vendre Gironde 33",
+                "serpKey": ""
+              },
+              {
+                "order": 5,
+                "url": "https://www.seloger.com/recherche/achat/maison/nouvelle-aquitaine/bordeaux-33000/ad08fr13100",
+                "label": "Maisons à vendre Bordeaux 33000",
+                "hoverLabel": "Maisons à vendre Bordeaux 33000",
+                "serpKey": ""
+              }
+            ],
+            "redirectUrl": "https://www.seloger.com/annonces/achat/maison/bordeaux-33/saint-jean-belcier-carle-vernet-albert-1er/265525767.htm"
+          }
+        },
+        "defaultBackToSearch": "distributionTypes=Buy&estateTypes=House&locations=AD08FR13100&priceMax=576000&priceMin=384000",
+        "tags": {
+          "isExclusive": true,
+          "has3DVisit": false,
+          "hasBrokerageFee": false,
+          "isNew": true
+        },
+        "rawData": {
+          "distributionType": "BUY",
+          "propertyType": "HOUSE",
+          "geoIdHierarchy": [
+            {
+              "id": "AD08FR13100",
+              "typeKey": "AD08"
+            },
+            {
+              "id": "AD06FR34",
+              "typeKey": "AD06"
+            },
+            {
+              "id": "AD03FR2",
+              "typeKey": "AD03"
+            },
+            {
+              "id": "AD04FR27",
+              "typeKey": "AD04"
+            },
+            {
+              "id": "NBH2FR9334",
+              "typeKey": "NBH2"
+            },
+            {
+              "id": "AD02FR1",
+              "typeKey": "AD02"
+            }
+          ],
+          "distributionSubType": {
+            "buy": "RESALE"
+          },
+          "propertyTypeLabel": "Maison"
+        },
+        "cps": "265525767"
+      },
+      "error": null
+    }
+  }
+}

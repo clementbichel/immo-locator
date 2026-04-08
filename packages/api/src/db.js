@@ -15,9 +15,7 @@ function resolveDbPath(rawPath) {
   return resolved;
 }
 
-const dbPath = resolveDbPath(
-  process.env.DB_PATH ?? path.join(process.cwd(), 'data', 'searches.db')
-);
+const dbPath = resolveDbPath(process.env.DB_PATH ?? path.join(BASE_DATA_DIR, 'searches.db'));
 
 fs.mkdirSync(path.dirname(dbPath), { recursive: true });
 

@@ -121,4 +121,25 @@ describe('POST /api/reports', () => {
     expect(res.status).toBe(400);
     expect(res.body.error).toBe('INVALID_EXTRACTED');
   });
+
+  it('accepts a seloger.com real estate URL', async () => {
+    const payload = {
+      url: 'https://www.seloger.com/annonces/achat/maison/bordeaux-33/265525767.htm',
+      extracted: { dpe: 'C', ges: 'C', city: 'Bordeaux', zipcode: '33800' },
+    };
+    const res = await request(app).post('/api/reports').send(payload);
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual({ success: true });
+    expect(mockRecordReport).toHaveBeenCalledWith(
+      expect.objectContaining({ url: payload.url, dpe: 'C', city: 'Bordeaux' })
+    );
+  });
+
+  it('still rejects unrelated domains after seloger support is added', async () => {
+    const res = await request(app)
+      .post('/api/reports')
+      .send({ url: 'https://evil.com/ad/123', extracted: { dpe: 'D' } });
+    expect(res.status).toBe(400);
+    expect(res.body.error).toBe('INVALID_URL');
+  });
 });

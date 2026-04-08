@@ -10,7 +10,7 @@ module.exports = {
   },
   extends: ['eslint:recommended'],
   rules: {
-    'no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
+    'no-unused-vars': ['error', { argsIgnorePattern: '^_', ignoreRestSiblings: true }],
     'no-undef': 'error',
     'no-console': ['warn', { allow: ['warn', 'error'] }],
     eqeqeq: ['error', 'always'],

@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "Immo Locator",
-  "version": "1.0.5",
-  "description": "L'adresse exacte d'un bien Leboncoin, retrouvée en un clic. Gratuit.",
+  "version": "1.1.0",
+  "description": "L'adresse exacte d'un bien Leboncoin ou SeLoger, retrouvée en un clic. Gratuit.",
   "permissions": ["activeTab", "scripting"],
   "host_permissions": ["https://api.immolocator.fr/*"],
   "action": {

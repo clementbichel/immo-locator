@@ -1,0 +1,1382 @@
+{
+  "app_cldp": {
+    "data": {
+      "classified": {
+        "brand": "seloger",
+        "id": "268KLI6ANBCS",
+        "metadata": {
+          "legacyId": "264540629",
+          "creationDate": "2026-03-26T05:32:00Z",
+          "updateDate": "2026-04-03T04:36:10.254Z",
+          "status": {
+            "status": true,
+            "enrichments": {
+              "contactSettings": false,
+              "geo": false,
+              "intermediary": false,
+              "media": false,
+              "onlineId": false
+            }
+          },
+          "isNewBuildProject": false
+        },
+        "domains": {
+          "medias": {
+            "images": [
+              {
+                "id": "7c247f18-9d7a-4b2f-83da-bc6cd4e526cf",
+                "key": "7c247f18-9d7a-4b2f-83da-bc6cd4e526cf-0",
+                "url": "https://mms.seloger.com/7/c/2/4/7c247f18-9d7a-4b2f-83da-bc6cd4e526cf.jpg?ci_seal=ee1340b2a1cf43c47a536b17e92c638e78bc1378",
+                "classification": {
+                  "name": "LIVING_ROOM",
+                  "version": "scene-classification-sagemaker-endpoint-live-1-3-10"
+                }
+              },
+              {
+                "id": "a3904752-a220-436c-b284-c63ea774a4c7",
+                "key": "a3904752-a220-436c-b284-c63ea774a4c7-1",
+                "url": "https://mms.seloger.com/a/3/9/0/a3904752-a220-436c-b284-c63ea774a4c7.jpg?ci_seal=57cf7a610540856b76c91daa672a84b8d5a07eb9",
+                "classification": {
+                  "name": "KITCHEN",
+                  "version": "scene-classification-sagemaker-endpoint-live-1-3-10"
+                }
+              },
+              {
+                "id": "91a643e6-ac69-430a-b582-0a64f356c892",
+                "key": "91a643e6-ac69-430a-b582-0a64f356c892-2",
+                "url": "https://mms.seloger.com/9/1/a/6/91a643e6-ac69-430a-b582-0a64f356c892.jpg?ci_seal=30e4732c403862bea6d5fe54aaafd07ae34fa4dc",
+                "classification": {
+                  "name": "LIVING_ROOM",
+                  "version": "scene-classification-sagemaker-endpoint-live-1-3-10"
+                }
+              },
+              {
+                "id": "fa2a2497-d419-42da-af77-230f21d0a4b1",
+                "key": "fa2a2497-d419-42da-af77-230f21d0a4b1-3",
+                "url": "https://mms.seloger.com/f/a/2/a/fa2a2497-d419-42da-af77-230f21d0a4b1.jpg?ci_seal=e400408621a517cd38484a412aae9605202360a0",
+                "classification": {
+                  "name": "HOME_OFFICE",
+                  "version": "scene-classification-sagemaker-endpoint-live-1-3-10"
+                }
+              },
+              {
+                "id": "ebdcb424-3c94-48b3-955b-6dbca23555f7",
+                "key": "ebdcb424-3c94-48b3-955b-6dbca23555f7-4",
+                "url": "https://mms.seloger.com/e/b/d/c/ebdcb424-3c94-48b3-955b-6dbca23555f7.jpg?ci_seal=ed6eecccf8bc0e72c6f3b6c8f32ec5d23b2220ff",
+                "classification": {
+                  "name": "BEDROOM",
+                  "version": "scene-classification-sagemaker-endpoint-live-1-3-10"
+                }
+              },
+              {
+                "id": "3b32522a-bbf2-442e-a87b-c4dd872d05f9",
+                "key": "3b32522a-bbf2-442e-a87b-c4dd872d05f9-5",
+                "url": "https://mms.seloger.com/3/b/3/2/3b32522a-bbf2-442e-a87b-c4dd872d05f9.jpg?ci_seal=ad284469975204b187679302a302d20bb1925e9a",
+                "classification": {
+                  "name": "HOME_OFFICE",
+                  "version": "scene-classification-sagemaker-endpoint-live-1-3-10"
+                }
+              },
+              {
+                "id": "f6f8cba8-0aa1-4fae-b201-5869f80e595d",
+                "key": "f6f8cba8-0aa1-4fae-b201-5869f80e595d-6",
+                "url": "https://mms.seloger.com/f/6/f/8/f6f8cba8-0aa1-4fae-b201-5869f80e595d.jpg?ci_seal=ef891fafcb39ba38c29574c4c072ac9c68b932a2",
+                "classification": {
+                  "name": "COURTYARD",
+                  "version": "scene-classification-sagemaker-endpoint-live-1-3-10"
+                }
+              },
+              {
+                "id": "feb32792-684a-4923-a9cb-51f2a81740f6",
+                "key": "feb32792-684a-4923-a9cb-51f2a81740f6-7",
+                "url": "https://mms.seloger.com/f/e/b/3/feb32792-684a-4923-a9cb-51f2a81740f6.jpg?ci_seal=5cb9f71aff38c80e8d1c8c5047cadebc229562cb",
+                "classification": {
+                  "name": "HOUSE_FACADE",
+                  "version": "scene-classification-sagemaker-endpoint-live-1-3-10"
+                }
+              },
+              {
+                "id": "5b906460-b126-48c3-ab03-d296184a8ef4",
+                "key": "5b906460-b126-48c3-ab03-d296184a8ef4-8",
+                "url": "https://mms.seloger.com/5/b/9/0/5b906460-b126-48c3-ab03-d296184a8ef4.jpg?ci_seal=6749f6e34672e26036eee0e170112aca8ec8f476",
+                "classification": {
+                  "name": "COURTYARD",
+                  "version": "scene-classification-sagemaker-endpoint-live-1-3-10"
+                }
+              }
+            ],
+            "floorplans": [],
+            "videos": [],
+            "virtualTours": []
+          }
+        },
+        "sections": {
+          "location": {
+            "address": {
+              "country": "FRA",
+              "city": "Bordeaux",
+              "zipCode": "33800"
+            },
+            "isAddressPublished": false,
+            "geometry": {
+              "type": "MultiPolygon",
+              "coordinates": [
+                [
+                  [
+                    [-0.59402, 44.82188],
+                    [-0.60297, 44.81842],
+                    [-0.6067, 44.8219],
+                    [-0.61504, 44.82307],
+                    [-0.61356, 44.83168],
+                    [-0.60687, 44.83701],
+                    [-0.62697, 44.83894],
+                    [-0.63044, 44.84551],
+                    [-0.63353, 44.84633],
+                    [-0.63214, 44.8514],
+                    [-0.63714, 44.85197],
+                    [-0.63832, 44.86073],
+                    [-0.63145, 44.86384],
+                    [-0.63419, 44.86536],
+                    [-0.63093, 44.87166],
+                    [-0.62007, 44.86397],
+                    [-0.59386, 44.85318],
+                    [-0.58786, 44.86098],
+                    [-0.57571, 44.86599],
+                    [-0.58033, 44.90901],
+                    [-0.57108, 44.90941],
+                    [-0.57015, 44.91296],
+                    [-0.55142, 44.91397],
+                    [-0.54787, 44.91669],
+                    [-0.53524, 44.88888],
+                    [-0.54112, 44.86878],
+                    [-0.53669, 44.86761],
+                    [-0.53771, 44.84767],
+                    [-0.54828, 44.83604],
+                    [-0.53333, 44.82787],
+                    [-0.53661, 44.82597],
+                    [-0.53457, 44.82434],
+                    [-0.55699, 44.81264],
+                    [-0.56441, 44.81328],
+                    [-0.57391, 44.81074],
+                    [-0.57572, 44.81677],
+                    [-0.58921, 44.82537],
+                    [-0.59402, 44.82188]
+                  ]
+                ]
+              ]
+            }
+          },
+          "description": {
+            "description": "Exclusivité CABINET BEDIN - BORDEAUX NANSOUTY. Pour Etudiant maison meublée entièrement rénovée. T2 comprenant un séjour, une cuisine aménagée et équipée une chambre, une salle d' eau wc un jardin entièrement rénovée. DIPSONIBLE ACTUELLEMENT Merci de déposer votre dossier COMPLET avant validation de la visite sur le site se loger sur le lien  plato. immo/c/9DOW Contact : Océane LEAU - oleau@cabinet-bedin. com . Les informations sur les risques auxquels ce bien est exposé sont disponibles sur le site Géorisques :  georisques. gouv. fr. Logement à consommation énergétique excessive : classe E. Montant estimé des dépenses annuelles d'énergie pour un usage standard : entre 911 et 1233 Euros/an (année de référence 2023)",
+            "texts": [
+              {
+                "text": "Exclusivité CABINET BEDIN - BORDEAUX NANSOUTY. Pour Etudiant maison meublée entièrement rénovée. T2 comprenant un séjour, une cuisine aménagée et équipée une chambre, une salle d' eau wc un jardin entièrement rénovée. DIPSONIBLE ACTUELLEMENT Merci de déposer votre dossier COMPLET avant validation de la visite sur le site se loger sur le lien  plato. immo/c/9DOW Contact : Océane LEAU - oleau@cabinet-bedin. com . Les informations sur les risques auxquels ce bien est exposé sont disponibles sur le site Géorisques :  georisques. gouv. fr. Logement à consommation énergétique excessive : classe E. Montant estimé des dépenses annuelles d'énergie pour un usage standard : entre 911 et 1233 Euros/an (année de référence 2023)"
+              }
+            ],
+            "headline": "Maison 2 pièces"
+          },
+          "hardFacts": {
+            "title": "Maison à louer - logement étudiant",
+            "keyfacts": ["2 pièces", "1 chambre", "28 m²", "dès le 19/04/2026"],
+            "facts": [
+              {
+                "type": "numberOfRooms",
+                "value": "2 pièces",
+                "splitValue": "2",
+                "label": "pièces"
+              },
+              {
+                "type": "numberOfBedrooms",
+                "value": "1 chambre",
+                "splitValue": "1",
+                "label": "chambre"
+              },
+              {
+                "type": "livingSpace",
+                "value": "28 m²",
+                "splitValue": "28",
+                "label": "m²"
+              },
+              {
+                "type": "availability",
+                "value": "dès le 19/04/2026",
+                "splitValue": "dès",
+                "label": "le 19/04/2026"
+              }
+            ],
+            "price": {
+              "value": "585 €",
+              "formatted": "585 €/mois",
+              "modifiers": "/mois",
+              "unitPostfix": {
+                "unitTime": "/mois"
+              },
+              "additionalInformation": "charges comprises",
+              "addition": {
+                "value": "cc",
+                "priceLabelDesc": "charges comprises"
+              },
+              "financialLink": {
+                "href": "https://www.nextories.com/partner/landing/seloger?utm_source=seloger&utm_medium=lienprix-loc-1&utm_campaign=lienprix-seloger-location1",
+                "label": "Demander un financement",
+                "partnerName": "NEXTORIES_RESERVEZ"
+              },
+              "ariaLabel": "584.6 €",
+              "chargesLabel": "cc"
+            }
+          },
+          "energy": {
+            "features": [
+              {
+                "type": "state",
+                "label": "État",
+                "value": "Entièrement rénové",
+                "enrichment": "ai"
+              },
+              {
+                "type": "energySource",
+                "label": "Sources d'énergie",
+                "value": "Électrique"
+              }
+            ],
+            "certificates": [
+              {
+                "key": "7345d945-58e0-4b1f-bb7b-3a1c333e9878",
+                "features": [
+                  {
+                    "type": "minMaxEstimation",
+                    "label": "Estimation de la facture énergétique",
+                    "value": "entre 911 et 1233 €/an"
+                  },
+                  {
+                    "type": "nameOfCertificate",
+                    "label": "Diagnostic réalisé",
+                    "value": "Après le 1er juillet 2021"
+                  },
+                  {
+                    "type": "estimationDescription",
+                    "label": "estimationDescription",
+                    "value": "Montant estimé des dépenses annuelles d'énergie pour un usage standard: entre 911 et 1233 € par an. Prix moyens des énergies indexés au 31/12/2022 (abonnement compris)."
+                  }
+                ],
+                "scales": [
+                  {
+                    "key": "faf0e01e-7932-4464-bf11-a33e92cc96e9",
+                    "efficiencyClass": {
+                      "index": 4,
+                      "rating": "E"
+                    },
+                    "values": [
+                      {
+                        "value": "331 kWh/m².an",
+                        "label": "Consommation (énergie primaire)"
+                      },
+                      {
+                        "value": "13 kg CO₂/m².an",
+                        "label": "Émissions"
+                      }
+                    ],
+                    "name": "Diagnostic de performance énergétique (DPE)",
+                    "segments": [
+                      {
+                        "label": "A",
+                        "value": ""
+                      },
+                      {
+                        "label": "B",
+                        "value": ""
+                      },
+                      {
+                        "label": "C",
+                        "value": ""
+                      },
+                      {
+                        "label": "D",
+                        "value": ""
+                      },
+                      {
+                        "label": "E",
+                        "value": ""
+                      },
+                      {
+                        "label": "F",
+                        "value": "Passoire énergétique"
+                      },
+                      {
+                        "label": "G",
+                        "value": "Passoire énergétique"
+                      }
+                    ],
+                    "type": "FR_ENERGY_AFTER_2021",
+                    "ariaLabel": "EfficiencyClass : E avec une plage allant de A à G .La consommation d'énergie est undefined kWhEP/m².an kilowattheures par mètre carré.",
+                    "displayUnhappyHouseIcon": false
+                  },
+                  {
+                    "key": "adc4b909-4551-41eb-9ffe-ef6be48bef9f",
+                    "efficiencyClass": {
+                      "index": 2,
+                      "rating": "C"
+                    },
+                    "values": [
+                      {
+                        "value": "13 kg CO₂/m².an",
+                        "label": "Émissions"
+                      }
+                    ],
+                    "name": "Indice d'émission de gaz à effet de serre (GES)",
+                    "segments": [
+                      {
+                        "label": "A",
+                        "value": ""
+                      },
+                      {
+                        "label": "B",
+                        "value": ""
+                      },
+                      {
+                        "label": "C",
+                        "value": ""
+                      },
+                      {
+                        "label": "D",
+                        "value": ""
+                      },
+                      {
+                        "label": "E",
+                        "value": ""
+                      },
+                      {
+                        "label": "F",
+                        "value": ""
+                      },
+                      {
+                        "label": "G",
+                        "value": ""
+                      }
+                    ],
+                    "type": "FR_GHG_AFTER_2021",
+                    "ariaLabel": "EfficiencyClass : C avec une plage allant de A à G .La consommation d'énergie est undefined kWhEP/m².an kilowattheures par mètre carré.",
+                    "displayUnhappyHouseIcon": false
+                  }
+                ]
+              }
+            ],
+            "hasScales": true
+          },
+          "key": {
+            "keys": [
+              {
+                "label": "Identifiant",
+                "value": "268KLI6ANBCS"
+              },
+              {
+                "label": "Référence annonce",
+                "value": "SLG-G32-191389"
+              }
+            ]
+          },
+          "price": {
+            "base": {
+              "details": [
+                {
+                  "key": "27bfcbc3-b8bd-443d-859d-5e77cfc0ba91",
+                  "label": {
+                    "main": "Coûts supplémentaires"
+                  },
+                  "value": {
+                    "main": {
+                      "value": "5 €/mois",
+                      "ariaLabel": "5 €"
+                    }
+                  }
+                }
+              ],
+              "main": {
+                "key": "705d9865-cee4-43c4-8867-45c3c45f8677",
+                "label": {
+                  "main": "Loyer charges comprises"
+                },
+                "value": {
+                  "main": {
+                    "value": "584,60 €/mois",
+                    "ariaLabel": "584.6 €"
+                  },
+                  "alt": {
+                    "value": "20,88 €/mois/m²",
+                    "ariaLabel": "20,88 euros par mètre carré"
+                  }
+                }
+              },
+              "type": "RENT"
+            },
+            "components": [
+              {
+                "key": "0e944a18-7808-45b2-b177-8923b58e5f20",
+                "type": "PRIMARY",
+                "units": [
+                  {
+                    "key": "08b214d1-7fab-4b06-921d-1087c912cb95",
+                    "main": {
+                      "price": {
+                        "key": "5cd21b59-c7e0-4fb8-9f00-e460a3555aa7",
+                        "label": {
+                          "main": "Loyer charges comprises"
+                        },
+                        "value": {
+                          "main": {
+                            "value": "584,60 €/mois",
+                            "ariaLabel": "584.6 €"
+                          },
+                          "alt": {
+                            "value": "20,88 €/m²",
+                            "ariaLabel": "20,88 euros par mètre carré"
+                          }
+                        },
+                        "highlighted": true
+                      }
+                    },
+                    "details": [
+                      {
+                        "key": "9d496f66-d5af-4842-b5ca-cc5b444a41df",
+                        "label": "dont",
+                        "prices": [
+                          {
+                            "key": "46e3d698-e9d4-45e8-995f-97f8e1e9c6ba",
+                            "label": {
+                              "main": "Charges forfaitaires"
+                            },
+                            "value": {
+                              "main": {
+                                "value": "5 €/mois",
+                                "ariaLabel": "5 €"
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "key": "89e5eda1-ef3d-44ce-9183-bfa3e7735ae8",
+                "type": "SECONDARY",
+                "units": [
+                  {
+                    "key": "ba545f66-9c03-45c5-90b8-f7851fe0e3ef",
+                    "main": {
+                      "price": {
+                        "key": "82d4f794-6760-4d4b-85f3-4da6d41cb8bf",
+                        "label": {
+                          "main": "Honoraires TTC à la charge du locataire"
+                        },
+                        "value": {
+                          "main": {
+                            "value": "358,80 €",
+                            "ariaLabel": "358.8 €"
+                          }
+                        },
+                        "highlighted": true
+                      }
+                    },
+                    "details": [
+                      {
+                        "key": "f554c948-b813-4fe0-890d-79eee5b8f649",
+                        "label": "dont",
+                        "prices": [
+                          {
+                            "key": "65e52a77-626f-4e9f-a59b-4b19ae4e2415",
+                            "label": {
+                              "main": "réalisation état des lieux"
+                            },
+                            "value": {
+                              "main": {
+                                "value": "82,80 €",
+                                "ariaLabel": "82.8 €"
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "key": "f94ce17d-13e9-4c46-823c-4623e8d49651",
+                    "main": {
+                      "price": {
+                        "key": "082173c5-3020-4b70-b4cc-c55ad6c9c28e",
+                        "label": {
+                          "main": "Estimation de la facture énergétique"
+                        },
+                        "value": {
+                          "main": {
+                            "value": "entre 911 et 1233 €/an"
+                          }
+                        },
+                        "highlighted": true
+                      }
+                    }
+                  },
+                  {
+                    "key": "c0d12803-c2da-4602-aefe-892a96386628",
+                    "label": "Dépôt de garantie",
+                    "text": {
+                      "value": "non communiqué"
+                    }
+                  }
+                ]
+              }
+            ],
+            "layout": "DEFAULT"
+          },
+          "features": {
+            "preview": [
+              {
+                "icon": "availability",
+                "value": "disponible à partir du 19/04/2026"
+              },
+              {
+                "icon": "floors",
+                "value": "1 étage"
+              },
+              {
+                "icon": "kitchen",
+                "value": "Cuisine équipée",
+                "enrichment": "ai"
+              },
+              {
+                "icon": "cellar",
+                "value": "Pas de cave"
+              },
+              {
+                "icon": "toilet-amenities",
+                "value": "1 WC"
+              },
+              {
+                "icon": "balcony",
+                "value": "Pas de balcon"
+              },
+              {
+                "icon": "garden",
+                "value": "Jardin"
+              },
+              {
+                "icon": "furnished",
+                "value": "Meublé"
+              }
+            ],
+            "details": {
+              "categories": [
+                {
+                  "elements": [
+                    {
+                      "icon": "availability",
+                      "value": "disponible à partir du 19/04/2026"
+                    },
+                    {
+                      "icon": "furnished",
+                      "value": "Meublé"
+                    },
+                    {
+                      "icon": "floors",
+                      "value": "1 étage"
+                    }
+                  ],
+                  "title": "Informations générales"
+                },
+                {
+                  "elements": [
+                    {
+                      "icon": "kitchen",
+                      "value": "Cuisine équipée",
+                      "enrichment": "ai"
+                    },
+                    {
+                      "icon": "bathroom-amenities",
+                      "value": "1 salle de douches"
+                    },
+                    {
+                      "icon": "toilet-amenities",
+                      "value": "1 WC"
+                    },
+                    {
+                      "icon": "livingRoom",
+                      "value": "Salon (total 10 m²)"
+                    },
+                    {
+                      "icon": "bedroom",
+                      "value": "1 chambre"
+                    },
+                    {
+                      "icon": "cellar",
+                      "value": "Pas de cave"
+                    }
+                  ],
+                  "title": "Intérieur"
+                },
+                {
+                  "elements": [
+                    {
+                      "icon": "balcony",
+                      "value": "Pas de balcon"
+                    },
+                    {
+                      "icon": "garden",
+                      "value": "Jardin"
+                    }
+                  ],
+                  "title": "Extérieur"
+                }
+              ]
+            }
+          },
+          "gallery": {
+            "images": [
+              {
+                "key": "7c247f18-9d7a-4b2f-83da-bc6cd4e526cf",
+                "url": "https://mms.seloger.com/7/c/2/4/7c247f18-9d7a-4b2f-83da-bc6cd4e526cf.jpg?ci_seal=ee1340b2a1cf43c47a536b17e92c638e78bc1378",
+                "alt": "Maison à louer - logement étudiant 585 € 2 pièces 1 chambre 28 m² dès le 19/04/2026 Bordeaux 33800",
+                "classification": {
+                  "name": "LIVING_ROOM",
+                  "version": "scene-classification-sagemaker-endpoint-live-1-3-10"
+                }
+              },
+              {
+                "key": "a3904752-a220-436c-b284-c63ea774a4c7",
+                "url": "https://mms.seloger.com/a/3/9/0/a3904752-a220-436c-b284-c63ea774a4c7.jpg?ci_seal=57cf7a610540856b76c91daa672a84b8d5a07eb9",
+                "classification": {
+                  "name": "KITCHEN",
+                  "version": "scene-classification-sagemaker-endpoint-live-1-3-10"
+                }
+              },
+              {
+                "key": "91a643e6-ac69-430a-b582-0a64f356c892",
+                "url": "https://mms.seloger.com/9/1/a/6/91a643e6-ac69-430a-b582-0a64f356c892.jpg?ci_seal=30e4732c403862bea6d5fe54aaafd07ae34fa4dc",
+                "classification": {
+                  "name": "LIVING_ROOM",
+                  "version": "scene-classification-sagemaker-endpoint-live-1-3-10"
+                }
+              },
+              {
+                "key": "fa2a2497-d419-42da-af77-230f21d0a4b1",
+                "url": "https://mms.seloger.com/f/a/2/a/fa2a2497-d419-42da-af77-230f21d0a4b1.jpg?ci_seal=e400408621a517cd38484a412aae9605202360a0",
+                "classification": {
+                  "name": "HOME_OFFICE",
+                  "version": "scene-classification-sagemaker-endpoint-live-1-3-10"
+                }
+              },
+              {
+                "key": "ebdcb424-3c94-48b3-955b-6dbca23555f7",
+                "url": "https://mms.seloger.com/e/b/d/c/ebdcb424-3c94-48b3-955b-6dbca23555f7.jpg?ci_seal=ed6eecccf8bc0e72c6f3b6c8f32ec5d23b2220ff",
+                "classification": {
+                  "name": "BEDROOM",
+                  "version": "scene-classification-sagemaker-endpoint-live-1-3-10"
+                }
+              },
+              {
+                "key": "3b32522a-bbf2-442e-a87b-c4dd872d05f9",
+                "url": "https://mms.seloger.com/3/b/3/2/3b32522a-bbf2-442e-a87b-c4dd872d05f9.jpg?ci_seal=ad284469975204b187679302a302d20bb1925e9a",
+                "classification": {
+                  "name": "HOME_OFFICE",
+                  "version": "scene-classification-sagemaker-endpoint-live-1-3-10"
+                }
+              },
+              {
+                "key": "f6f8cba8-0aa1-4fae-b201-5869f80e595d",
+                "url": "https://mms.seloger.com/f/6/f/8/f6f8cba8-0aa1-4fae-b201-5869f80e595d.jpg?ci_seal=ef891fafcb39ba38c29574c4c072ac9c68b932a2",
+                "classification": {
+                  "name": "COURTYARD",
+                  "version": "scene-classification-sagemaker-endpoint-live-1-3-10"
+                }
+              },
+              {
+                "key": "feb32792-684a-4923-a9cb-51f2a81740f6",
+                "url": "https://mms.seloger.com/f/e/b/3/feb32792-684a-4923-a9cb-51f2a81740f6.jpg?ci_seal=5cb9f71aff38c80e8d1c8c5047cadebc229562cb",
+                "classification": {
+                  "name": "HOUSE_FACADE",
+                  "version": "scene-classification-sagemaker-endpoint-live-1-3-10"
+                }
+              },
+              {
+                "key": "5b906460-b126-48c3-ab03-d296184a8ef4",
+                "url": "https://mms.seloger.com/5/b/9/0/5b906460-b126-48c3-ab03-d296184a8ef4.jpg?ci_seal=6749f6e34672e26036eee0e170112aca8ec8f476",
+                "classification": {
+                  "name": "COURTYARD",
+                  "version": "scene-classification-sagemaker-endpoint-live-1-3-10"
+                }
+              }
+            ]
+          },
+          "documents": {
+            "display": false,
+            "files": []
+          },
+          "enrichedMedia": {
+            "medias": []
+          },
+          "mortgage": {
+            "brand": "seloger",
+            "id": "264540629",
+            "federalStateGeoId": "AD04FR27",
+            "zip": "33800",
+            "city": "Bordeaux",
+            "country": "FRA",
+            "region": "Nouvelle-Aquitaine",
+            "showRentLabel": true,
+            "showMonthlyRateLabel": false,
+            "price": 0,
+            "prov": 0,
+            "monthlyAmount": 0,
+            "formattedMonthlyAmount": "0"
+          },
+          "partnerAd": {
+            "showPartnerAd": false
+          },
+          "sellerLeadLink": {},
+          "priceComparison": {
+            "data": {
+              "value": 15.74,
+              "accuracy": 2,
+              "high": "20",
+              "low": "11,89"
+            },
+            "markerPosition": 100,
+            "hasMainPrice": true,
+            "isSale": false,
+            "pricePerSqm": "20,88",
+            "legalText": "Le prix au m² est automatiquement calculé par Se Loger en fonction du prix de vente et du nombre de m² du bien. La comparaison est réalisée à partir des informations relatives au prix du marché sur le même secteur dont dispose Se Loger. Cette information ne préjuge en aucun cas de l'évaluation du bien, qui dépend de son état, ses caractéristiques et de sa localisation."
+          },
+          "mainDescription": {
+            "headline": "Maison 2 pièces",
+            "description": "Exclusivité CABINET BEDIN - BORDEAUX NANSOUTY. Pour Etudiant maison meublée entièrement rénovée. T2 comprenant un séjour, une cuisine aménagée et équipée une chambre, une salle d' eau wc un jardin entièrement rénovée. DIPSONIBLE ACTUELLEMENT Merci de déposer votre dossier COMPLET avant validation de la visite sur le site se loger sur le lien  plato. immo/c/9DOW Contact : Océane LEAU - oleau@cabinet-bedin. com . Les informations sur les risques auxquels ce bien est exposé sont disponibles sur le site Géorisques :  georisques. gouv. fr. Logement à consommation énergétique excessive : classe E. Montant estimé des dépenses annuelles d'énergie pour un usage standard : entre 911 et 1233 Euros/an (année de référence 2023)",
+            "metadata": {
+              "language": "fr"
+            }
+          },
+          "areaDescription": {
+            "headline": "Emplacement"
+          },
+          "extendedInfoDescription": {
+            "headline": "Informations supplémentaires"
+          }
+        },
+        "contactSections": {
+          "id": "268KLI6ANBCS",
+          "legacyId": "264540629",
+          "brand": "seloger",
+          "agencyId": "RC-011834",
+          "static": {
+            "phoneNumbers": ["0556124084 / 0649237939"]
+          },
+          "sticky": {
+            "phoneNumbers": ["0556124084 / 0649237939"]
+          },
+          "contactCard": {
+            "title": "CABINET BEDIN MERIGNAC",
+            "subtitle": "Cabinet Bedin - Merignac",
+            "phoneNumbers": ["0556124084 / 0649237939"],
+            "isPrivateOwner": false,
+            "agencyLogo": {
+              "logoUrl": "https://mms.seloger.com/9/d/9/5/9d957eeb-2698-4257-b2d8-cc09a6d6f345.jpg?ci_seal=1dd6a8b388524b3e094f02563f7ba7d506387901",
+              "display": true
+            },
+            "contactLogo": {
+              "logoUrl": null,
+              "display": false
+            }
+          },
+          "contactForm": {
+            "contactCard": {
+              "title": "CABINET BEDIN MERIGNAC",
+              "subtitle": "Cabinet Bedin - Merignac",
+              "phoneNumbers": ["0556124084 / 0649237939"],
+              "isPrivateOwner": false,
+              "logoUrl": "https://mms.seloger.com/9/d/9/5/9d957eeb-2698-4257-b2d8-cc09a6d6f345.jpg?ci_seal=1dd6a8b388524b3e094f02563f7ba7d506387901"
+            },
+            "displayOwnerFlag": true,
+            "subjectLabel": "Votre message à Cabinet Bedin - Merignac",
+            "shouldSendLeadValue": true
+          },
+          "mobilePhones": {
+            "title": "CABINET BEDIN MERIGNAC",
+            "subtitle": "CABINET BEDIN MERIGNAC",
+            "phoneNumbers": ["0556124084 / 0649237939"],
+            "logoUrl": null,
+            "isPrivateOwner": false
+          },
+          "provider": {
+            "intermediaryCard": {
+              "title": "CABINET BEDIN MERIGNAC",
+              "subtitle": "Agence professionnelle",
+              "display": true,
+              "logoUrl": "https://mms.seloger.com/9/d/9/5/9d957eeb-2698-4257-b2d8-cc09a6d6f345.jpg?ci_seal=1dd6a8b388524b3e094f02563f7ba7d506387901",
+              "logoHref": "https://www.seloger.com/professionnels-immobilier/Fyiovod5YNLkfp3wPHQ1iy"
+            },
+            "contactCard": {
+              "title": "Cabinet Bedin - Merignac",
+              "subtitle": "Votre contact",
+              "display": true,
+              "logoUrl": null
+            },
+            "website": "https://www.cabinet-bedin.com/",
+            "isPrivateOwner": false,
+            "profileUrl": "https://www.seloger.com/professionnels-immobilier/Fyiovod5YNLkfp3wPHQ1iy",
+            "imprintUrl": null,
+            "feeUrl": "https://www.cabinet-bedin.com/tarifs",
+            "agencyLegalInformations": [
+              "SAS CABINET BEDIN au capital de 260 000 €",
+              "Carte professionnelle 33318-473 délivrée par la Préfecture de Bordeaux",
+              "Garantie financière CGAIM pour un montant de 380 000 €",
+              "<b>Siège:</b> 13 avenue Pasteur, 33600 PESSAC",
+              "<b>RCS:</b> BORDEAUX 327843546",
+              "<b>SIRET:</b> 32784354600240"
+            ],
+            "publisherType": "AGENCY",
+            "displayLinks": true,
+            "address": "484 avenue de Verdun, 33700 Merignac",
+            "phoneNumbers": ["0556124084 / 0649237939"]
+          },
+          "confirmationPage": {
+            "isFinanceOfferButtonEnabled": false
+          }
+        },
+        "tracking": {
+          "av_category": "classified",
+          "av_initiative": "wl_cdp",
+          "av_environment": "live",
+          "av_estate_type_global": "av_5",
+          "av_distribution_type_global": "1",
+          "av_client_type": "pro",
+          "av_language": "fr",
+          "av_zip_code": "33800",
+          "av_city": "Bordeaux",
+          "av_energy_certificate": "E",
+          "av_items": [
+            {
+              "index": 0,
+              "name": "classified",
+              "list_name": "classified_detail",
+              "id": "268KLI6ANBCS",
+              "price": 584.6,
+              "estate_type": "av_5",
+              "distribution_type": "1",
+              "country": "France",
+              "city": "Bordeaux",
+              "region": "Nouvelle-Aquitaine",
+              "zip_code": "33800",
+              "legacy_id": "264540629",
+              "product_type": "standard",
+              "client_id": "RC-011834",
+              "energy_certificate": "E"
+            }
+          ]
+        },
+        "legacyTracking": {
+          "site": "SL",
+          "pagename": "detail",
+          "environment": "prod",
+          "language": "fr",
+          "temp_variable_1": "WL",
+          "products": [
+            {
+              "client_id": "43384",
+              "client_type": "pro",
+              "distribution_type": "1",
+              "energy_letter": "E",
+              "estate_postalcode": "33800",
+              "estate_type": 2,
+              "id": "264540629",
+              "id_duo": 264540629,
+              "id_solo": 264540629,
+              "list_name": "detail",
+              "media": 0,
+              "nb_bedrooms": 1,
+              "nb_rooms": 2,
+              "parent_site": "SL",
+              "photos_nb": 9,
+              "position": 0,
+              "price": 584.6,
+              "product_geolocation": "localisation_city",
+              "product_type": "estate",
+              "product_variant": "classified",
+              "space": 28
+            }
+          ]
+        },
+        "advertising": {
+          "slots_config": [
+            {
+              "id": "div-gam-ad-desktop-top-banner",
+              "adUnit": "/199043128/360-seloger/location/general/page-de-detail/leaderboard",
+              "size": [728, 90],
+              "specificTargeting": {
+                "pos": "leaderboard"
+              },
+              "device": "desktop"
+            },
+            {
+              "id": "ad-medium-rectangle-1",
+              "adUnit": "/199043128/360-seloger/location/general/page-de-detail/pave-haut",
+              "size": [[300, 250], "fluid"],
+              "specificTargeting": {
+                "pos": "pave-haut"
+              },
+              "device": "desktop"
+            },
+            {
+              "id": "ad-medium-rectangle-2",
+              "adUnit": "/199043128/360-seloger/location/general/page-de-detail/pave-bas",
+              "size": [[300, 250], "fluid"],
+              "specificTargeting": {
+                "pos": "pave-bas"
+              },
+              "device": "desktop"
+            },
+            {
+              "id": "ad-masonry",
+              "adUnit": "/199043128/360-seloger/location/general/page-de-detail/image-galerie",
+              "size": [
+                [624, 468],
+                [300, 250]
+              ],
+              "specificTargeting": {
+                "pos": "image-galerie"
+              },
+              "device": "desktop"
+            },
+            {
+              "id": "ad-carousel",
+              "adUnit": "/199043128/360-seloger/location/general/page-de-detail/pave-carrousel",
+              "size": [
+                [624, 468],
+                [300, 250]
+              ],
+              "specificTargeting": {
+                "pos": "pave-carrousel"
+              },
+              "device": "desktop"
+            },
+            {
+              "id": "ad-banner-mobile",
+              "adUnit": "/199043128/360-seloger/location/general/page-de-detail/banniere-mobile",
+              "size": [
+                [320, 50],
+                [320, 100],
+                [320, 150]
+              ],
+              "specificTargeting": {
+                "pos": "banniere-mobile"
+              },
+              "device": "mobile"
+            },
+            {
+              "id": "ad-masonry",
+              "adUnit": "/199043128/360-seloger/location/general/page-de-detail/image-galerie",
+              "size": [300, 250],
+              "specificTargeting": {
+                "pos": "image-galerie"
+              },
+              "device": "mobile"
+            },
+            {
+              "id": "ad-carousel",
+              "adUnit": "/199043128/360-seloger/location/general/page-de-detail/pave-carrousel",
+              "size": [300, 250],
+              "specificTargeting": {
+                "pos": "pave-carrousel"
+              },
+              "device": "mobile"
+            },
+            {
+              "id": "rental-link",
+              "adUnit": "/199043128/360-seloger/location/general/page-de-detail/lien",
+              "size": "fluid",
+              "specificTargeting": {
+                "pos": "Lien"
+              },
+              "device": "all"
+            },
+            {
+              "id": "partnerbox-1-commercial",
+              "adUnit": "/199043128/360-seloger/location/general/page-de-detail/native1",
+              "size": "fluid",
+              "specificTargeting": {
+                "pos": "native1"
+              },
+              "device": "all"
+            },
+            {
+              "id": "partnerbox-2-commercial",
+              "adUnit": "/199043128/360-seloger/location/general/page-de-detail/native2",
+              "size": "fluid",
+              "specificTargeting": {
+                "pos": "native2"
+              },
+              "device": "all"
+            },
+            {
+              "id": "partnerbox-3-tools-and-service",
+              "adUnit": "/199043128/360-seloger/location/general/page-de-detail/native3",
+              "size": "fluid",
+              "specificTargeting": {
+                "pos": "native3"
+              },
+              "device": "all"
+            },
+            {
+              "id": "partnerbox-4-tools-and-service",
+              "adUnit": "/199043128/360-seloger/location/general/page-de-detail/native4",
+              "size": "fluid",
+              "specificTargeting": {
+                "pos": "native4"
+              },
+              "device": "all"
+            },
+            {
+              "id": "partnerbox-5-tools-and-service",
+              "adUnit": "/199043128/360-seloger/location/general/page-de-detail/native5",
+              "size": "fluid",
+              "specificTargeting": {
+                "pos": "native5"
+              },
+              "device": "all"
+            }
+          ],
+          "tracking_config": {
+            "cp": "33800",
+            "pays": "250",
+            "idtt": "1",
+            "idtypebien": "2",
+            "naturebien": "1",
+            "idtiers": "264540629",
+            "prix": 600,
+            "prix_tranche": "500-1000",
+            "nb_pieces": 2,
+            "nb_chambres": 1,
+            "surface": 28,
+            "etage": 1,
+            "commodites": ["Chauffage-electrique", "SalleDEau-douche", "Sejour"],
+            "mensualitefinance": 0,
+            "si_parking": 0,
+            "DPE": "E"
+          }
+        },
+        "seo": {
+          "breadcrumb": {
+            "type": "cdp-breadcrumb",
+            "name": "breadcrumb",
+            "title": "cdp-breadcrumb",
+            "slug": "cdp-breadcrumb",
+            "links": [
+              {
+                "order": 1,
+                "url": "https://www.seloger.com/",
+                "label": "Immobilier",
+                "hoverLabel": "Immobilier",
+                "serpKey": ""
+              },
+              {
+                "order": 2,
+                "url": "https://www.seloger.com/recherche/location/maison/france/ad02fr1",
+                "label": "Maisons à louer France",
+                "hoverLabel": "Maisons à louer France",
+                "serpKey": "",
+                "title": "Maisons à louer France"
+              },
+              {
+                "order": 3,
+                "url": "https://www.seloger.com/recherche/location/maison/nouvelle-aquitaine/ad04fr27",
+                "label": "Maisons à louer Nouvelle-Aquitaine",
+                "hoverLabel": "Maisons à louer Nouvelle-Aquitaine",
+                "serpKey": "",
+                "title": "Maisons à louer Nouvelle-Aquitaine"
+              },
+              {
+                "order": 4,
+                "url": "https://www.seloger.com/recherche/location/maison/nouvelle-aquitaine/gironde-33/ad06fr34",
+                "label": "Maisons à louer Gironde 33",
+                "hoverLabel": "Maisons à louer Gironde 33",
+                "serpKey": "",
+                "title": "Maisons à louer Gironde 33"
+              },
+              {
+                "order": 5,
+                "url": "https://www.seloger.com/recherche/location/maison/nouvelle-aquitaine/bordeaux-33000/ad08fr13100",
+                "label": "Maisons à louer Bordeaux 33000",
+                "hoverLabel": "Maisons à louer Bordeaux 33000",
+                "serpKey": "",
+                "title": "Maisons à louer Bordeaux 33000"
+              },
+              {
+                "order": 100,
+                "url": "",
+                "label": "Annonce",
+                "hoverLabel": "Annonce",
+                "serpKey": "",
+                "title": "Annonce"
+              }
+            ]
+          },
+          "headInfo": {
+            "title": "Maison à louer T2/F2 28 m² 584.6 € Bordeaux (33800)",
+            "titleWithCount": "",
+            "description": "Maison à louer 2 pièces 28 m² 584.6 € Bordeaux (33800)",
+            "canonical": "https://www.seloger.com/annonces/locations/maison/bordeaux-33/264540629.htm",
+            "robots": "index, follow, max-snippet:-1",
+            "icons": [
+              {
+                "relation": "shortcut icon",
+                "link": "https://www.seloger.com/favicon.ico",
+                "type": "image/ico"
+              }
+            ],
+            "openGraphs": [
+              {
+                "property": "locale",
+                "content": "fr_FR"
+              },
+              {
+                "property": "url",
+                "content": "https://www.seloger.com/annonces/locations/maison/bordeaux-33/264540629.htm"
+              },
+              {
+                "property": "type",
+                "content": "website"
+              },
+              {
+                "property": "site_name",
+                "content": "SeLoger"
+              },
+              {
+                "property": "title",
+                "content": "Maison à louer T2/F2 28 m² 584.6 € Bordeaux (33800)"
+              },
+              {
+                "property": "description",
+                "content": "Maison à louer T2/F2 28 m² 584.6 € Bordeaux (33800)"
+              },
+              {
+                "property": "image",
+                "content": "https://mms.seloger.com/7/c/2/4/7c247f18-9d7a-4b2f-83da-bc6cd4e526cf.jpg?ci_seal=ee1340b2a1cf43c47a536b17e92c638e78bc1378"
+              }
+            ],
+            "socials": [
+              {
+                "name": "twitter:card",
+                "content": "Maison à louer T2/F2 28 m² 584.6 € Bordeaux (33800)"
+              },
+              {
+                "name": "twitter:url",
+                "content": "https://www.seloger.com/annonces/locations/maison/bordeaux-33/264540629.htm"
+              },
+              {
+                "name": "twitter:site",
+                "content": "@seloger"
+              },
+              {
+                "name": "twitter:title",
+                "content": "Maison à louer T2/F2 28 m² 584.6 € Bordeaux (33800)"
+              },
+              {
+                "name": "twitter:description",
+                "content": "Maison à louer T2/F2 28 m² 584.6 € Bordeaux (33800)"
+              },
+              {
+                "name": "twitter:image",
+                "content": "https://mms.seloger.com/7/c/2/4/7c247f18-9d7a-4b2f-83da-bc6cd4e526cf.jpg?ci_seal=ee1340b2a1cf43c47a536b17e92c638e78bc1378"
+              }
+            ],
+            "structuredData": [
+              [
+                {
+                  "type": "@context",
+                  "content": "https://schema.org"
+                },
+                {
+                  "type": "@type",
+                  "content": "Organization"
+                },
+                {
+                  "type": "name",
+                  "content": "SeLoger"
+                },
+                {
+                  "type": "address",
+                  "content": "2 Rue des Italiens, 75009 Paris"
+                },
+                {
+                  "type": "telephone",
+                  "content": "01 53 38 28 00"
+                },
+                {
+                  "type": "url",
+                  "content": "https://www.seloger.com/"
+                },
+                {
+                  "type": "logo",
+                  "content": "https://static-seloger.com/commons/header/logo_header.svg"
+                }
+              ],
+              [
+                {
+                  "type": "@context",
+                  "content": "https://schema.org"
+                },
+                {
+                  "type": "@type",
+                  "content": "RealEstateListing"
+                },
+                {
+                  "type": "datePosted",
+                  "content": ""
+                },
+                {
+                  "type": "description",
+                  "content": "Maison à louer T2/F2 28 m² 584.6 € Bordeaux (33800)"
+                },
+                {
+                  "type": "name",
+                  "content": "Maison à louer T2/F2 28 m² 584.6 € Bordeaux (33800)"
+                }
+              ]
+            ],
+            "breadcrumb": [
+              {
+                "order": 1,
+                "url": "https://www.seloger.com/",
+                "label": "Immobilier",
+                "hoverLabel": "Immobilier",
+                "serpKey": ""
+              },
+              {
+                "order": 2,
+                "url": "https://www.seloger.com/recherche/location/maison/france/ad02fr1",
+                "label": "Maisons à louer France",
+                "hoverLabel": "Maisons à louer France",
+                "serpKey": ""
+              },
+              {
+                "order": 3,
+                "url": "https://www.seloger.com/recherche/location/maison/nouvelle-aquitaine/ad04fr27",
+                "label": "Maisons à louer Nouvelle-Aquitaine",
+                "hoverLabel": "Maisons à louer Nouvelle-Aquitaine",
+                "serpKey": ""
+              },
+              {
+                "order": 4,
+                "url": "https://www.seloger.com/recherche/location/maison/nouvelle-aquitaine/gironde-33/ad06fr34",
+                "label": "Maisons à louer Gironde 33",
+                "hoverLabel": "Maisons à louer Gironde 33",
+                "serpKey": ""
+              },
+              {
+                "order": 5,
+                "url": "https://www.seloger.com/recherche/location/maison/nouvelle-aquitaine/bordeaux-33000/ad08fr13100",
+                "label": "Maisons à louer Bordeaux 33000",
+                "hoverLabel": "Maisons à louer Bordeaux 33000",
+                "serpKey": ""
+              }
+            ],
+            "redirectUrl": "https://www.seloger.com/annonces/locations/maison/bordeaux-33/264540629.htm"
+          }
+        },
+        "farbwelt": {
+          "color": "#D91747",
+          "textColor": "light",
+          "providerName": "CABINET BEDIN MERIGNAC",
+          "logo": {
+            "src": "https://mms.seloger.com/9/d/9/5/9d957eeb-2698-4257-b2d8-cc09a6d6f345.jpg?ci_seal=1dd6a8b388524b3e094f02563f7ba7d506387901",
+            "alt": "logo-RC-011834",
+            "extension": ""
+          },
+          "teasers": [
+            {
+              "type": "MediumRectangleTop",
+              "image": {
+                "src": "https://cdnihddipa.cloudimg.io/2/b/7/1/2b710c72-ea89-4801-929a-abede0af422f.png?ci_eqs=&ci_seal=2fa8d5f539282757aaa9ebaad6c98ea4b861b4bd",
+                "alt": "MediumRectangleTop"
+              },
+              "linkTarget": {
+                "href": "https://www.seloger.com/professionnels-immobilier/Fyiovod5YNLkfp3wPHQ1iy",
+                "isExternal": false
+              }
+            },
+            {
+              "type": "MediumRectangleBottom",
+              "image": {
+                "src": "https://cdnihddipa.cloudimg.io/2/b/7/1/2b710c72-ea89-4801-929a-abede0af422f.png?ci_eqs=&ci_seal=2fa8d5f539282757aaa9ebaad6c98ea4b861b4bd",
+                "alt": "MediumRectangleBottom"
+              },
+              "linkTarget": {
+                "href": "https://www.seloger.com/professionnels-immobilier/Fyiovod5YNLkfp3wPHQ1iy",
+                "isExternal": false
+              }
+            },
+            {
+              "type": "MobileBanner",
+              "image": {
+                "src": "https://cdnihddipa.cloudimg.io/9/d/a/1/9da1477d-1b7d-4b3e-9f2d-ac899f7e59c2.png?ci_eqs=&ci_seal=c0d445b8ee03d2b1c57c4c3017e1dbfb00a201bd",
+                "alt": "MediumRectangleTop"
+              },
+              "linkTarget": {
+                "href": "https://www.seloger.com/professionnels-immobilier/Fyiovod5YNLkfp3wPHQ1iy",
+                "isExternal": false
+              }
+            }
+          ]
+        },
+        "defaultBackToSearch": "distributionTypes=Rent&estateTypes=House&locations=AD08FR13100&priceMax=701.52&priceMin=467.68",
+        "tags": {
+          "isExclusive": true,
+          "has3DVisit": false,
+          "hasBrokerageFee": false,
+          "isNew": false
+        },
+        "rawData": {
+          "distributionType": "RENT",
+          "propertyType": "HOUSE",
+          "geoIdHierarchy": [
+            {
+              "id": "AD08FR13100",
+              "typeKey": "AD08"
+            },
+            {
+              "id": "AD06FR34",
+              "typeKey": "AD06"
+            },
+            {
+              "id": "AD03FR2",
+              "typeKey": "AD03"
+            },
+            {
+              "id": "AD04FR27",
+              "typeKey": "AD04"
+            },
+            {
+              "id": "AD02FR1",
+              "typeKey": "AD02"
+            }
+          ],
+          "distributionSubType": {
+            "rent": "CLASSIC"
+          },
+          "propertyTypeLabel": "Maison"
+        },
+        "cps": "264540629",
+        "aiEnrichments": [
+          {
+            "icon": "state",
+            "value": "Entièrement rénové",
+            "rawValue": "isRenovated"
+          },
+          {
+            "icon": "kitchen",
+            "value": "Cuisine équipée",
+            "rawValue": "hasBuiltInKitchen"
+          }
+        ]
+      },
+      "error": null
+    }
+  }
+}

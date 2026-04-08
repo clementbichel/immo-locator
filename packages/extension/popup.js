@@ -256,6 +256,50 @@ globalThis.browser ??= globalThis.chrome;
     return ERROR_MESSAGES[code] || fallback;
   }
 
+  // src/utils/url-validator.js
+  var LEBONCOIN_HOSTNAMES = ['www.leboncoin.fr', 'leboncoin.fr'];
+  var SELOGER_HOSTNAMES = ['www.seloger.com', 'seloger.com'];
+  function parseLeboncoinUrl(url) {
+    if (!url || typeof url !== 'string') return null;
+    try {
+      const parsed = new URL(url);
+      if (!LEBONCOIN_HOSTNAMES.includes(parsed.hostname)) return null;
+      return parsed;
+    } catch {
+      return null;
+    }
+  }
+  function parseSelogerUrl(url) {
+    if (!url || typeof url !== 'string') return null;
+    try {
+      const parsed = new URL(url);
+      if (!SELOGER_HOSTNAMES.includes(parsed.hostname)) return null;
+      return parsed;
+    } catch {
+      return null;
+    }
+  }
+  var LEBONCOIN_SALE_RE = /^\/(?:ad\/)?ventes_immobilieres\//;
+  var LEBONCOIN_RENTAL_RE = /^\/(?:ad\/)?locations\//;
+  function isValidLeboncoinRealEstateUrl(url) {
+    const parsed = parseLeboncoinUrl(url);
+    if (!parsed) return false;
+    return LEBONCOIN_SALE_RE.test(parsed.pathname) || LEBONCOIN_RENTAL_RE.test(parsed.pathname);
+  }
+  function isValidSelogerRealEstateUrl(url) {
+    const parsed = parseSelogerUrl(url);
+    if (!parsed) return false;
+    return (
+      parsed.pathname.startsWith('/annonces/achat/') ||
+      parsed.pathname.startsWith('/annonces/locations/')
+    );
+  }
+  function getSite(url) {
+    if (isValidLeboncoinRealEstateUrl(url)) return 'leboncoin';
+    if (isValidSelogerRealEstateUrl(url)) return 'seloger';
+    return null;
+  }
+
   // src/popup.js
   globalThis.browser ??= globalThis.chrome;
   document.addEventListener('DOMContentLoaded', () => {
@@ -422,8 +466,9 @@ globalThis.browser ??= globalThis.chrome;
                   : _f.location;
               if (location) {
                 if (location.city && data.city === 'Non trouv\xE9') data.city = location.city;
-                if (location.zipcode && data.zipcode === 'Non trouv\xE9')
+                if (location.zipcode && data.zipcode === 'Non trouv\xE9') {
                   data.zipcode = location.zipcode;
+                }
                 debug.push('Location from Next.js router cache');
                 break;
               }
@@ -595,6 +640,110 @@ globalThis.browser ??= globalThis.chrome;
       }
       return data;
     }
+    function extractSelogerData() {
+      var _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k;
+      const url = window.location.href;
+      if (!url.includes('/annonces/achat/') && !url.includes('/annonces/locations/')) {
+        return {
+          error:
+            'Cette extension ne fonctionne que sur les pages d\u2019annonces SeLoger (achat ou location).',
+        };
+      }
+      const data = {
+        surface: 'Non trouv\xE9',
+        terrain: 'Non trouv\xE9',
+        dpe: 'Non trouv\xE9',
+        ges: 'Non trouv\xE9',
+        date_diag: 'Non trouv\xE9',
+        conso_prim: 'Non trouv\xE9',
+        conso_fin: 'Non trouv\xE9',
+        city: 'Non trouv\xE9',
+        zipcode: 'Non trouv\xE9',
+      };
+      const debug = [];
+      try {
+        const el = document.getElementById('__UFRN_LIFECYCLE_SERVERREQUEST__');
+        if (!el) {
+          debug.push('No __UFRN_LIFECYCLE_SERVERREQUEST__ script found');
+          data.debugLog = debug;
+          return data;
+        }
+        const m = el.textContent.match(/JSON\.parse\((".+")\);?\s*$/s);
+        if (!m) {
+          debug.push('UFRN script regex did not match');
+          data.debugLog = debug;
+          return data;
+        }
+        const inner = JSON.parse(m[1]);
+        const state = JSON.parse(inner);
+        const classified =
+          (_b = (_a = state == null ? void 0 : state.app_cldp) == null ? void 0 : _a.data) == null
+            ? void 0
+            : _b.classified;
+        if (!classified) {
+          debug.push('No classified in UFRN state');
+          data.debugLog = debug;
+          return data;
+        }
+        debug.push('Found classified');
+        const sections = classified.sections || {};
+        const address = (_c = sections.location) == null ? void 0 : _c.address;
+        if (address) {
+          if (address.city) data.city = address.city;
+          if (address.zipCode) data.zipcode = address.zipCode;
+        }
+        const product =
+          (_e = (_d = classified.legacyTracking) == null ? void 0 : _d.products) == null
+            ? void 0
+            : _e[0];
+        if (product && typeof product.space === 'number') {
+          data.surface = product.space + ' m\xB2';
+        }
+        const scales =
+          (_h =
+            (_g = (_f = sections.energy) == null ? void 0 : _f.certificates) == null
+              ? void 0
+              : _g[0]) == null
+            ? void 0
+            : _h.scales;
+        if (Array.isArray(scales)) {
+          const energyScale = scales.find((s) =>
+            /^FR_ENERGY/.test((s == null ? void 0 : s.type) || '')
+          );
+          const ghgScale = scales.find((s) => /^FR_GHG/.test((s == null ? void 0 : s.type) || ''));
+          if (
+            (_i = energyScale == null ? void 0 : energyScale.efficiencyClass) == null
+              ? void 0
+              : _i.rating
+          ) {
+            data.dpe = String(energyScale.efficiencyClass.rating).toUpperCase();
+          }
+          if (
+            (_j = ghgScale == null ? void 0 : ghgScale.efficiencyClass) == null ? void 0 : _j.rating
+          ) {
+            data.ges = String(ghgScale.efficiencyClass.rating).toUpperCase();
+          }
+          if (Array.isArray(energyScale == null ? void 0 : energyScale.values)) {
+            const consoEntry = energyScale.values.find((v) =>
+              /consommation/i.test((v == null ? void 0 : v.label) || '')
+            );
+            if (consoEntry == null ? void 0 : consoEntry.value) data.conso_prim = consoEntry.value;
+          }
+        }
+        const description = (_k = sections.mainDescription) == null ? void 0 : _k.description;
+        if (typeof description === 'string') {
+          const dateMatch = description.match(
+            /Date\s+du\s+diagnostic(?:\s+énergétique)?\s*:\s*(\d{1,2}\/\d{1,2}\/\d{4})/i
+          );
+          if (dateMatch) data.date_diag = dateMatch[1];
+        }
+        debug.push('Extraction OK');
+      } catch (e) {
+        debug.push('SeLoger extractor error: ' + e.message);
+      }
+      data.debugLog = debug;
+      return data;
+    }
     function prepareLocationSearch(data) {
       const searchBtn = document.getElementById('search-location-btn');
       const locationResults = document.getElementById('location-results');
@@ -665,21 +814,23 @@ globalThis.browser ??= globalThis.chrome;
         return;
       }
       const tabUrl = tabs[0].url || '';
-      if (!tabUrl.includes('leboncoin.fr')) {
+      const site = getSite(tabUrl);
+      if (!site) {
         showErrorPage(
-          "Cette extension fonctionne uniquement sur Leboncoin. Rendez-vous sur une annonce de vente ou de location pour l'utiliser."
+          "Cette extension fonctionne sur Leboncoin et SeLoger. Rendez-vous sur une annonce de vente ou de location pour l'utiliser."
         );
         return;
       }
+      const extractFn = site === 'seloger' ? extractSelogerData : extractRealEstateData;
       browser.scripting.executeScript(
         {
           target: { tabId: tabs[0].id },
-          func: extractRealEstateData,
+          func: extractFn,
         },
         (results) => {
           if (browser.runtime.lastError) {
             showErrorPage(
-              "Impossible d'acc\xE9der \xE0 cette page. V\xE9rifiez que vous \xEAtes sur une annonce Leboncoin."
+              "Impossible d'acc\xE9der \xE0 cette page. V\xE9rifiez que vous \xEAtes sur une annonce immobili\xE8re Leboncoin ou SeLoger."
             );
             return;
           }

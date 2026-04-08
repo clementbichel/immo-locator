@@ -10,6 +10,7 @@ import {
 } from './api/location-client.js';
 import { clearElement, createMessage, createLocationResultsList } from './utils/dom-helpers.js';
 import { getErrorMessage, ERROR_CODES } from './utils/error-messages.js';
+import { getSite } from './utils/url-validator.js';
 
 document.addEventListener('DOMContentLoaded', () => {
   const errorMsg = document.getElementById('error-msg');
@@ -437,6 +438,108 @@ document.addEventListener('DOMContentLoaded', () => {
     return data;
   }
 
+  // SeLoger extractor — runs in the page context via executeScript.
+  // Mirrors packages/extension/src/extractors/seloger-extractor.js
+  // (kept inline because executeScript injects the function as a string and cannot resolve imports).
+  function extractSelogerData() {
+    const url = window.location.href;
+    if (!url.includes('/annonces/achat/') && !url.includes('/annonces/locations/')) {
+      return {
+        error:
+          'Cette extension ne fonctionne que sur les pages d’annonces SeLoger (achat ou location).',
+      };
+    }
+
+    const data = {
+      surface: 'Non trouvé',
+      terrain: 'Non trouvé',
+      dpe: 'Non trouvé',
+      ges: 'Non trouvé',
+      date_diag: 'Non trouvé',
+      conso_prim: 'Non trouvé',
+      conso_fin: 'Non trouvé',
+      city: 'Non trouvé',
+      zipcode: 'Non trouvé',
+    };
+    const debug = [];
+
+    try {
+      const el = document.getElementById('__UFRN_LIFECYCLE_SERVERREQUEST__');
+      if (!el) {
+        debug.push('No __UFRN_LIFECYCLE_SERVERREQUEST__ script found');
+        data.debugLog = debug;
+        return data;
+      }
+      // The script body looks like:
+      //   window["__UFRN_LIFECYCLE_SERVERREQUEST__"]=JSON.parse("...stringified json...");
+      const m = el.textContent.match(/JSON\.parse\((".+")\);?\s*$/s);
+      if (!m) {
+        debug.push('UFRN script regex did not match');
+        data.debugLog = debug;
+        return data;
+      }
+      const inner = JSON.parse(m[1]); // unescape backslashes
+      const state = JSON.parse(inner);
+      const classified = state?.app_cldp?.data?.classified;
+      if (!classified) {
+        debug.push('No classified in UFRN state');
+        data.debugLog = debug;
+        return data;
+      }
+      debug.push('Found classified');
+
+      const sections = classified.sections || {};
+
+      // Location
+      const address = sections.location?.address;
+      if (address) {
+        if (address.city) data.city = address.city;
+        if (address.zipCode) data.zipcode = address.zipCode;
+      }
+
+      // Surface (legacyTracking — pre-parsed numeric)
+      const product = classified.legacyTracking?.products?.[0];
+      if (product && typeof product.space === 'number') {
+        data.surface = product.space + ' m²';
+      }
+
+      // Energy: filter scales by `type` (order is not guaranteed)
+      const scales = sections.energy?.certificates?.[0]?.scales;
+      if (Array.isArray(scales)) {
+        const energyScale = scales.find((s) => /^FR_ENERGY/.test(s?.type || ''));
+        const ghgScale = scales.find((s) => /^FR_GHG/.test(s?.type || ''));
+
+        if (energyScale?.efficiencyClass?.rating) {
+          data.dpe = String(energyScale.efficiencyClass.rating).toUpperCase();
+        }
+        if (ghgScale?.efficiencyClass?.rating) {
+          data.ges = String(ghgScale.efficiencyClass.rating).toUpperCase();
+        }
+
+        if (Array.isArray(energyScale?.values)) {
+          const consoEntry = energyScale.values.find((v) => /consommation/i.test(v?.label || ''));
+          if (consoEntry?.value) data.conso_prim = consoEntry.value;
+        }
+      }
+
+      // date_diag — best-effort regex on free-text description (SeLoger has no structured field)
+      const description = sections.mainDescription?.description;
+      if (typeof description === 'string') {
+        const dateMatch = description.match(
+          /Date\s+du\s+diagnostic(?:\s+énergétique)?\s*:\s*(\d{1,2}\/\d{1,2}\/\d{4})/i
+        );
+        if (dateMatch) data.date_diag = dateMatch[1];
+      }
+
+      debug.push('Extraction OK');
+    } catch (e) {
+      debug.push('SeLoger extractor error: ' + e.message);
+    }
+
+    data.debugLog = debug;
+    return data;
+  }
+
   // Function to prepare Location Search (Manual Trigger)
   function prepareLocationSearch(data) {
     const searchBtn = document.getElementById('search-location-btn');
@@ -524,23 +627,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const tabUrl = tabs[0].url || '';
 
-    // Check if we're on a Leboncoin page before trying to inject
-    if (!tabUrl.includes('leboncoin.fr')) {
+    // Dispatch the right page-context extractor based on the host site
+    const site = getSite(tabUrl);
+    if (!site) {
       showErrorPage(
-        "Cette extension fonctionne uniquement sur Leboncoin. Rendez-vous sur une annonce de vente ou de location pour l'utiliser."
+        "Cette extension fonctionne sur Leboncoin et SeLoger. Rendez-vous sur une annonce de vente ou de location pour l'utiliser."
       );
       return;
     }
 
+    const extractFn = site === 'seloger' ? extractSelogerData : extractRealEstateData;
+
     browser.scripting.executeScript(
       {
         target: { tabId: tabs[0].id },
-        func: extractRealEstateData,
+        func: extractFn,
       },
       (results) => {
         if (browser.runtime.lastError) {
           showErrorPage(
-            "Impossible d'accéder à cette page. Vérifiez que vous êtes sur une annonce Leboncoin."
+            "Impossible d'accéder à cette page. Vérifiez que vous êtes sur une annonce immobilière Leboncoin ou SeLoger."
           );
           return;
         }
