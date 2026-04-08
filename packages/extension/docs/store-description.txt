@@ -1,13 +1,13 @@
 DESCRIPTION COURTE
 ------------------
-L'adresse exacte d'un bien Leboncoin, retrouvée en un clic. Gratuit.
+L'adresse exacte d'un bien Leboncoin ou SeLoger, retrouvée en un clic. Gratuit.
 
 
 DESCRIPTION LONGUE
 ------------------
 🔍 TROUVEZ L'ADRESSE EXACTE. AVANT MÊME DE CONTACTER LE VENDEUR.
 
-Les annonces Leboncoin n'affichent pas l'adresse du bien. Résultat : vous contactez, vous attendez, vous vous déplacez — parfois pour rien. Immo Locator change ça.
+Les annonces Leboncoin et SeLoger n'affichent pas l'adresse du bien. Résultat : vous contactez, vous attendez, vous vous déplacez — parfois pour rien. Immo Locator change ça.
 
 Ouvrez une annonce immobilière, cliquez sur l'icône, et l'extension fait le reste.
 
@@ -26,6 +26,6 @@ Que vous cherchiez votre future maison ou que vous analysiez des dizaines d'anno
 
 ✅ Aucun compte requis
 ✅ Aucune donnée personnelle collectée
-✅ L'extension ne lit que les pages d'annonces Leboncoin — rien d'autre
+✅ L'extension ne lit que les pages d'annonces Leboncoin et SeLoger — rien d'autre
 
 🎉 100% gratuit. Instantané. Indispensable pour votre recherche immobilière.
