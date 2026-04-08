@@ -5,3 +5,4 @@ coverage/
 logs/
 data/
 *.zip
+.superpowers/
