@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-04-08
+
+### Added
+
+- **SeLoger support** — second supported real estate site alongside Leboncoin
+  - New extractor (`src/extractors/seloger-extractor.js`) reading the UFRN SSR state injected into SeLoger pages
+  - `getSite()` helper in `url-validator.js` dispatches the right extractor based on URL
+  - API `/api/reports` now accepts `seloger.com` URLs (with exact-match anti-spoofing)
+  - Integration test suite with real buy + rent fixtures
+
+### Fixed
+
+- **Leboncoin `/ad/` URL format** — listings served under the new `/ad/ventes_immobilieres/<id>` and `/ad/locations/<id>` routes (no `.htm`) are no longer detected as "Page non compatible". Both the legacy and current shapes are now accepted.
+
 ## [1.0.5] - 2026-03-13
 
 ### Fixed
@@ -88,7 +102,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Cross-browser compatibility (Chrome and Firefox)
 - esbuild-based build system
 
-[Unreleased]: https://github.com/clementbichel/immo-locator/compare/v1.0.5...HEAD
+[Unreleased]: https://github.com/clementbichel/immo-locator/compare/v1.1.0...HEAD
+[1.1.0]: https://github.com/clementbichel/immo-locator/compare/v1.0.5...v1.1.0
 [1.0.5]: https://github.com/clementbichel/immo-locator/compare/v1.0.4...v1.0.5
 [1.0.4]: https://github.com/clementbichel/immo-locator/compare/v1.0.0...v1.0.4
 [1.0.0]: https://github.com/clementbichel/immo-locator/releases/tag/v1.0.0
