@@ -1,24 +1,16 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
-  <!-- Shadow for depth -->
-  <ellipse cx="64" cy="118" rx="20" ry="6" fill="#64748b" opacity="0.2"/>
+  <!-- Rounded square background -->
+  <rect x="0" y="0" width="128" height="128" rx="28" fill="#b91c1c"/>
 
-  <!-- Pin body - refined teardrop shape -->
-  <path d="M64 6 C32 6 8 30 8 58 C8 78 24 98 64 118 C104 98 120 78 120 58 C120 30 96 6 64 6 Z" fill="#64748b"/>
+  <!-- House silhouette (white) -->
+  <path d="M64 24 L20 60 L27 60 L27 104 L101 104 L101 60 L108 60 Z" fill="#ffffff"/>
 
-  <!-- Inner circle - crisp white -->
-  <circle cx="64" cy="52" r="34" fill="#ffffff"/>
+  <!-- Door -->
+  <rect x="55" y="70" width="18" height="34" rx="1.5" fill="#b91c1c"/>
 
-  <!-- House - refined geometric -->
-  <g fill="#64748b">
-    <!-- Roof -->
-    <path d="M64 28 L40 48 L42 50 L64 32 L86 50 L88 48 Z"/>
-    <!-- House body -->
-    <rect x="44" y="50" width="40" height="28" rx="2"/>
-    <!-- Door -->
-    <rect x="58" y="58" width="12" height="20" rx="1" fill="#ffffff"/>
-    <!-- Window left -->
-    <rect x="48" y="56" width="8" height="8" rx="1" fill="#ffffff"/>
-    <!-- Window right -->
-    <rect x="72" y="56" width="8" height="8" rx="1" fill="#ffffff"/>
-  </g>
+  <!-- Window left -->
+  <rect x="35" y="68" width="14" height="14" rx="1.5" fill="#b91c1c"/>
+
+  <!-- Window right -->
+  <rect x="79" y="68" width="14" height="14" rx="1.5" fill="#b91c1c"/>
 </svg>
