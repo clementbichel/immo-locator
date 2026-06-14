@@ -4,6 +4,7 @@ node_modules/
 coverage/
 logs/
 data/
+tmp/
 *.zip
 dist/
 .superpowers/
