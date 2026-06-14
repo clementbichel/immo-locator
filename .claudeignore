@@ -1,0 +1,25 @@
+# Dependencies
+node_modules/
+
+# Lock files (large, generated)
+package-lock.json
+
+# Build output
+packages/extension/dist/
+
+# Data & logs
+data/
+logs/
+tmp/
+
+# Archives
+*.zip
+
+# OS files
+.DS_Store
+
+# Git
+.git/
+
+# Coverage
+coverage/
