@@ -5,7 +5,7 @@ import {
   getGoogleMapsLink,
 } from '../../src/api/location-client.js';
 
-describe('location-client (backend proxy)', () => {
+describe('location-client (direct ADEME)', () => {
   describe('validateSearchData', () => {
     it('should return valid for complete data', () => {
       const data = {
@@ -148,36 +148,39 @@ describe('location-client (backend proxy)', () => {
       date_diag: '15/03/2024',
     };
 
-    it('returns result when response is valid', async () => {
-      const mockResult = { results: [{ address: '12 rue de la Paix', score: 80 }] };
-      vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: true, json: async () => mockResult }));
+    // A near-perfect ADEME candidate for validData (surface + date match).
+    const ademeMatch = {
+      adresse_ban: '12 rue de la Paix 75001 Paris',
+      nom_commune_ban: 'Paris',
+      etiquette_dpe: 'D',
+      etiquette_ges: 'E',
+      surface_habitable_logement: 45,
+      date_etablissement_dpe: '2024-03-15',
+      conso_5_usages_par_m2_ep: 230,
+      conso_5_usages_par_m2_ef: 180,
+    };
+
+    it('queries the ADEME API directly and returns scored results', async () => {
+      const mockFetch = vi.fn().mockResolvedValue({
+        ok: true,
+        json: async () => ({ total: 1, results: [ademeMatch] }),
+      });
+      vi.stubGlobal('fetch', mockFetch);
 
       const { searchLocation } = await import('../../src/api/location-client.js');
       const result = await searchLocation(validData);
-      expect(result).toEqual(mockResult);
+
+      expect(result.count).toBe(1);
+      expect(result.results).toHaveLength(1);
+      expect(result.results[0].address).toBe('12 rue de la Paix 75001 Paris');
+      expect(result.results[0].score).toBeGreaterThanOrEqual(95);
+
+      const [url] = mockFetch.mock.calls[0];
+      expect(url).toContain('data.ademe.fr');
+      expect(url).toContain('code_postal_ban_eq=75001');
     });
 
-    it('throws when response has invalid shape', async () => {
-      vi.stubGlobal(
-        'fetch',
-        vi.fn().mockResolvedValue({ ok: true, json: async () => ({ unexpected: true }) })
-      );
-
-      const { searchLocation } = await import('../../src/api/location-client.js');
-      await expect(searchLocation(validData)).rejects.toThrow('Réponse inattendue');
-    });
-
-    it('throws when results contains items without address', async () => {
-      vi.stubGlobal(
-        'fetch',
-        vi.fn().mockResolvedValue({ ok: true, json: async () => ({ results: [{ score: 80 }] }) })
-      );
-
-      const { searchLocation } = await import('../../src/api/location-client.js');
-      await expect(searchLocation(validData)).rejects.toThrow('Réponse inattendue');
-    });
-
-    it('sends request with timeout signal', async () => {
+    it('issues a GET request with a timeout signal (no backend POST)', async () => {
       const mockFetch = vi
         .fn()
         .mockResolvedValue({ ok: true, json: async () => ({ results: [] }) });
@@ -186,42 +189,37 @@ describe('location-client (backend proxy)', () => {
       const { searchLocation } = await import('../../src/api/location-client.js');
       await searchLocation(validData);
 
-      const [, options] = mockFetch.mock.calls[0];
-      expect(options.signal).toBeDefined();
-    });
-  });
-
-  describe('sendReport', () => {
-    beforeEach(() => vi.resetModules());
-    afterEach(() => {
-      vi.restoreAllMocks();
-      vi.unstubAllGlobals();
-    });
-
-    it('should POST to /api/reports with url and extracted data', async () => {
-      const mockFetch = vi
-        .fn()
-        .mockResolvedValue({ ok: true, json: async () => ({ success: true }) });
-      vi.stubGlobal('fetch', mockFetch);
-
-      const { sendReport } = await import('../../src/api/location-client.js');
-      await sendReport('https://leboncoin.fr/ad/123', { dpe: 'D', surface: '45' });
-
-      expect(mockFetch).toHaveBeenCalledOnce();
       const [url, options] = mockFetch.mock.calls[0];
-      expect(url).toBe('https://api.immolocator.fr/api/reports');
-      expect(options.method).toBe('POST');
-      const body = JSON.parse(options.body);
-      expect(body.url).toBe('https://leboncoin.fr/ad/123');
-      expect(body.extracted).toEqual({ dpe: 'D', surface: '45' });
+      expect(url).not.toContain('immolocator.fr');
+      expect(options.signal).toBeDefined();
+      // GET is the default: no explicit method/body
+      expect(options.method).toBeUndefined();
+      expect(options.body).toBeUndefined();
     });
 
-    it('should throw on non-200 response', async () => {
-      const mockFetch = vi.fn().mockResolvedValue({ ok: false });
-      vi.stubGlobal('fetch', mockFetch);
+    it('returns an empty list when ADEME has no match', async () => {
+      vi.stubGlobal(
+        'fetch',
+        vi.fn().mockResolvedValue({ ok: true, json: async () => ({ results: [] }) })
+      );
 
-      const { sendReport } = await import('../../src/api/location-client.js');
-      await expect(sendReport('https://leboncoin.fr/ad/123', {})).rejects.toThrow();
+      const { searchLocation } = await import('../../src/api/location-client.js');
+      const result = await searchLocation(validData);
+      expect(result).toEqual({ results: [], count: 0 });
+    });
+
+    it('throws an API error on a non-ok response', async () => {
+      vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: false, status: 500 }));
+
+      const { searchLocation } = await import('../../src/api/location-client.js');
+      await expect(searchLocation(validData)).rejects.toMatchObject({ code: 'API_ERROR' });
+    });
+
+    it('throws a network error when fetch rejects', async () => {
+      vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new Error('boom')));
+
+      const { searchLocation } = await import('../../src/api/location-client.js');
+      await expect(searchLocation(validData)).rejects.toMatchObject({ code: 'NETWORK_ERROR' });
     });
   });
 });

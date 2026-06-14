@@ -1,10 +1,10 @@
 {
   "manifest_version": 3,
   "name": "Immo Locator",
-  "version": "1.1.0",
+  "version": "2.0.0",
   "description": "L'adresse exacte d'un bien Leboncoin ou SeLoger, retrouvée en un clic. Gratuit.",
   "permissions": ["activeTab", "scripting"],
-  "host_permissions": ["https://api.immolocator.fr/*"],
+  "host_permissions": ["https://data.ademe.fr/*"],
   "action": {
     "default_popup": "popup.html",
     "default_icon": {
@@ -30,6 +30,6 @@
     }
   },
   "content_security_policy": {
-    "extension_pages": "script-src 'self'; object-src 'self'; connect-src https://api.immolocator.fr"
+    "extension_pages": "script-src 'self'; object-src 'self'; connect-src https://data.ademe.fr"
   }
 }

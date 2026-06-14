@@ -1,4 +1,6 @@
-const API_BASE_URL = 'https://api.immolocator.fr';
+import { buildAdemeUrl } from './ademe-client.js';
+import { processResults } from '../services/dpe-service.js';
+import { ERROR_CODES } from '../utils/error-messages.js';
 
 /**
  * Validate data required for search
@@ -57,28 +59,35 @@ function validateSearchResponse(data) {
 }
 
 /**
- * Search the backend API
+ * Search matching addresses by querying the public ADEME DPE API directly,
+ * then scoring the candidates client-side. No backend server involved.
  */
 export async function searchLocation(data) {
   const payload = buildSearchPayload(data);
-  const response = await fetch(`${API_BASE_URL}/api/location/search`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload),
-    signal: AbortSignal.timeout(10_000),
-  });
+  const url = buildAdemeUrl(payload);
 
-  if (!response.ok) {
-    const errorBody = await response.json().catch(() => ({}));
-    const err = new Error(errorBody.message || 'Erreur lors de la recherche.');
-    err.code = errorBody.error;
-    err.missing = errorBody.missing;
+  let response;
+  try {
+    response = await fetch(url, { signal: AbortSignal.timeout(10_000) });
+  } catch (e) {
+    const err = new Error('Erreur de connexion à la base ADEME.');
+    err.code = e?.name === 'TimeoutError' ? ERROR_CODES.NETWORK_TIMEOUT : ERROR_CODES.NETWORK_ERROR;
     throw err;
   }
 
-  const result = await response.json();
+  if (!response.ok) {
+    const err = new Error(`Erreur ADEME (${response.status}).`);
+    err.code = ERROR_CODES.API_ERROR;
+    throw err;
+  }
+
+  const body = await response.json().catch(() => ({}));
+  const ademeResults = Array.isArray(body.results) ? body.results : [];
+  const results = processResults(payload, ademeResults);
+  const result = { results, count: results.length };
+
   if (!validateSearchResponse(result)) {
-    throw new Error('Réponse inattendue du serveur.');
+    throw new Error('Réponse inattendue de la base ADEME.');
   }
   return result;
 }
@@ -88,37 +97,4 @@ export async function searchLocation(data) {
  */
 export function getGoogleMapsLink(address) {
   return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
-}
-
-/**
- * Send an error report to the backend
- * @param {string} tabUrl - URL of the current Leboncoin tab
- * @param {object} extracted - Raw extracted data object
- */
-export async function sendReport(tabUrl, extracted) {
-  const NUMERIC_FIELDS = ['surface', 'terrain', 'conso_prim', 'conso_fin'];
-  const cleaned = Object.fromEntries(
-    Object.entries(extracted)
-      .filter(([, v]) => v !== null && v !== undefined && v !== 'Non trouvé')
-      .map(([k, v]) => {
-        if (NUMERIC_FIELDS.includes(k)) {
-          const match = String(v).match(/(\d+(?:[.,]\d+)?)/);
-          return match ? [k, match[1].replace(',', '.')] : [k, v];
-        }
-        return [k, v];
-      })
-  );
-  const payload = {
-    url: tabUrl,
-    extracted: cleaned,
-  };
-  const response = await fetch(`${API_BASE_URL}/api/reports`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload),
-    signal: AbortSignal.timeout(10_000),
-  });
-  if (!response.ok) {
-    throw new Error("Erreur lors de l'envoi du rapport.");
-  }
 }

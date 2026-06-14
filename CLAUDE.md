@@ -1,6 +1,12 @@
 # Immo-Locator
 
-Monorepo: Chrome Extension + Node.js API to enrich Leboncoin listings with ADEME DPE/GES data.
+Chrome Extension that enriches Leboncoin/SeLoger listings with ADEME DPE/GES data.
+
+Since v2.0 the extension is **serverless**: the popup queries the public ADEME API
+(`data.ademe.fr`) directly and scores candidates client-side. The Node.js API in
+`packages/api/` is **legacy/frozen** — kept online only to serve already-installed
+older versions (≤ v1.1.0) until their store auto-update propagates, then it will be
+decommissioned. Do not point the extension back at it.
 
 ## Commands
 
@@ -29,7 +35,7 @@ npm run build:ext        # Build extension (packages/extension/scripts/build.js)
 
 ```
 packages/
-  api/               Express 5 API (Node.js, ESM)
+  api/               Express 5 API (Node.js, ESM) — LEGACY/FROZEN (sunset, old clients only)
     src/
       index.js         Entry point
       db.js            SQLite (better-sqlite3) — tables: searches, reports
@@ -38,16 +44,22 @@ packages/
       routes/          location.js, reports.js
       schemas/         search.js (Zod validation)
       services/        dpe-service.js (scoring logic)
-  extension/          Chrome Extension (Manifest V3)
+  extension/          Chrome Extension (Manifest V3) — calls ADEME directly
     src/
       index.js         Content script entry
-      popup.js         Popup UI logic
-      api/             location-client.js
-      extractors/      next-data-extractor.js (parses __NEXT_DATA__)
+      popup.js         Popup UI logic (runs the ADEME search + scoring)
+      api/             location-client.js (searchLocation → ADEME), ademe-client.js (query builder)
+      services/        dpe-service.js (client-side scoring — mirror of the API's)
+      extractors/      next-data-extractor.js (parses __NEXT_DATA__), seloger-extractor.js
       utils/           DOM helpers, parsers, score calculator, validation
     popup.html         Extension popup
-    manifest.json
+    manifest.json      host_permissions/CSP → https://data.ademe.fr
 ```
+
+The extension's `services/dpe-service.js` and `api/ademe-client.js` are pure ports of
+the API's equivalents. Keep them in sync as long as the legacy server is alive; the
+popup is bundled by esbuild so it `import`s them normally (unlike the injected
+extractors, which must stay inlined in `popup.js`).
 
 ## Code style
 

@@ -11,8 +11,10 @@ Extension navigateur (Chrome/Firefox) qui enrichit les annonces immobilières [L
    - Parsing du JSON `__NEXT_DATA__` embarqué par Next.js
    - Scraping DOM en fallback
    - Analyse visuelle des badges DPE/GES par comparaison de styles CSS
-3. Ces données sont envoyées à l'API backend qui interroge la base ADEME des diagnostics énergétiques
+3. L'extension interroge **directement** l'API publique ADEME (`data.ademe.fr`) avec ces critères, puis score les candidats côté client — **aucun serveur intermédiaire**
 4. Les résultats sont affichés avec un score de correspondance et un lien Google Maps vers l'adresse trouvée
+
+> **Vie privée :** depuis la v2.0, l'extension n'envoie plus aucune donnée à un backend privé. Les critères de recherche partent uniquement vers l'API publique ADEME (un service de l'État) ; rien n'est collecté ni stocké de manière centralisée (cohérent avec `data_collection_permissions: none`).
 
 ## Structure du projet
 
@@ -24,10 +26,10 @@ packages/
 └── api/         # API backend Node.js (Express 5)
 ```
 
-| Package                          | Stack                        | Description                                                        |
-| -------------------------------- | ---------------------------- | ------------------------------------------------------------------ |
-| [extension](packages/extension/) | Manifest V3, esbuild, Vitest | Extraction des données Leboncoin, UI popup, communication API      |
-| [api](packages/api/)             | Express 5, SQLite, Zod, Pino | Proxy ADEME avec cache LRU, circuit breaker, scoring des résultats |
+| Package                          | Stack                        | Description                                                                        |
+| -------------------------------- | ---------------------------- | ---------------------------------------------------------------------------------- |
+| [extension](packages/extension/) | Manifest V3, esbuild, Vitest | Extraction des données Leboncoin/SeLoger, requête ADEME directe, scoring, UI popup |
+| [api](packages/api/)             | Express 5, SQLite, Zod, Pino | **Legacy/gelé** — proxy ADEME conservé pour les anciennes versions (sunset)        |
 
 ## Installation
 

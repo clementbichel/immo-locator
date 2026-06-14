@@ -188,12 +188,15 @@
 
       <div class="hero">
         <h1>Politique de confidentialité</h1>
-        <p class="meta">Dernière mise à jour : février 2026</p>
+        <p class="meta">Dernière mise à jour : juin 2026</p>
       </div>
 
       <div class="section">
         <h2>1. Qui sommes-nous</h2>
-        <p>Immo Locator est une extension Chrome développée et maintenue à titre personnel.</p>
+        <p>
+          Immo Locator est une extension de navigateur (Chrome et Firefox) développée et maintenue à
+          titre personnel.
+        </p>
         <p>
           Contact :
           <a href="mailto:admin@immolocator.fr" class="contact-link">admin@immolocator.fr</a>
@@ -204,7 +207,7 @@
         <h2>2. Données accédées</h2>
         <p>
           L'extension lit le contenu de la page active uniquement lorsque vous vous trouvez sur une
-          annonce immobilière Leboncoin et que vous cliquez sur l'icône.
+          annonce immobilière Leboncoin ou SeLoger et que vous cliquez sur l'icône.
         </p>
         <p>Les données extraites de la page sont :</p>
         <ul class="data-list">
@@ -223,12 +226,15 @@
       <div class="section">
         <h2>3. Données transmises</h2>
         <p>
-          Les données extraites sont envoyées à notre serveur (<strong>api.immolocator.fr</strong>)
-          afin de rechercher les biens correspondants dans la base de données publique.
+          Les critères de recherche extraits sont envoyés directement, depuis votre navigateur, à la
+          base de données publique de l'ADEME (<strong>data.ademe.fr</strong>) afin de retrouver les
+          biens correspondants. La requête ne transite par
+          <strong>aucun serveur intermédiaire</strong>.
         </p>
         <div class="highlight">
           Aucune donnée personnelle (nom, email, adresse IP identifiante, identifiant utilisateur)
-          n'est associée à ces requêtes.
+          n'est associée à ces requêtes. L'usage des données par l'ADEME relève de la politique de
+          confidentialité de ce service public.
         </div>
       </div>
 
@@ -239,9 +245,8 @@
           localStorage, pas de base de données locale.
         </p>
         <p>
-          Notre serveur conserve les paramètres de recherche (surface, ville, étiquettes énergie) à
-          des fins statistiques anonymes pour améliorer le service. Ces données ne sont pas
-          associées à un utilisateur ou à un appareil.
+          Aucune donnée n'est collectée ni conservée de manière centralisée : il n'existe aucun
+          serveur intermédiaire susceptible d'enregistrer vos recherches.
         </p>
       </div>
 
@@ -256,8 +261,8 @@
       <div class="section">
         <h2>6. Périmètre d'activation</h2>
         <p>
-          L'extension ne s'active que sur les pages d'annonces individuelles du site leboncoin.fr.
-          Elle ne lit pas d'autres sites et ne fonctionne pas en arrière-plan.
+          L'extension ne s'active que sur les pages d'annonces individuelles des sites leboncoin.fr
+          et seloger.com. Elle ne lit pas d'autres sites et ne fonctionne pas en arrière-plan.
         </p>
       </div>
 
@@ -271,7 +276,7 @@
 
       <footer class="footer">
         <span>© 2026 Immo Locator</span>
-        <span>Extension Chrome — Manifest V3</span>
+        <span>Extension navigateur — Manifest V3</span>
       </footer>
     </div>
   </body>

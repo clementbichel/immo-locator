@@ -11,8 +11,228 @@ globalThis.browser ??= globalThis.chrome;
     return 'red';
   }
 
+  // src/utils/parsers.js
+  function parseFrenchDate(dateStr) {
+    if (!dateStr || typeof dateStr !== 'string') {
+      return null;
+    }
+    const match = dateStr.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+    if (!match) {
+      return null;
+    }
+    const [, day, month, year] = match;
+    const date = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+    if (isNaN(date.getTime())) {
+      return null;
+    }
+    return date;
+  }
+  function formatDateISO(date) {
+    if (!(date instanceof Date) || isNaN(date.getTime())) {
+      return null;
+    }
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, '0');
+    const d = String(date.getDate()).padStart(2, '0');
+    return `${y}-${m}-${d}`;
+  }
+
+  // src/services/dpe-service.js
+  function parseISODateLocal(dateStr) {
+    if (!dateStr || typeof dateStr !== 'string') return null;
+    const match = dateStr.match(/^(\d{4})-(\d{2})-(\d{2})/);
+    if (!match) return null;
+    const [, year, month, day] = match;
+    const date = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+    return isNaN(date.getTime()) ? null : date;
+  }
+  var MATCH_CONFIG = {
+    surface: { weight: 4, maxDeviation: 0.15 },
+    date: { weight: 3, maxDays: 14 },
+    conso_fin: { weight: 2, maxDeviation: 0.15 },
+    conso_prim: { weight: 1, maxDeviation: 0.3 },
+  };
+  var MIN_SCORE_THRESHOLD = 50;
+  var MAX_RESULTS = 5;
+  function percentFieldMatch(actual, expected, maxDeviation) {
+    if (expected === 0) return actual === 0 ? 1 : 0;
+    const diff = Math.abs(actual - expected) / Math.abs(expected);
+    return Math.max(0, 1 - (diff / maxDeviation) ** 2);
+  }
+  function dateFieldMatch(diffDays, maxDays) {
+    return Math.max(0, 1 - (diffDays / maxDays) ** 2);
+  }
+  function calculateMatchScore(adData, ademeItem) {
+    let totalWeight = 0;
+    let weightedSum = 0;
+    if (
+      adData.surface !== null &&
+      adData.surface !== void 0 &&
+      ademeItem.surface_habitable_logement !== null &&
+      ademeItem.surface_habitable_logement !== void 0
+    ) {
+      const { weight, maxDeviation } = MATCH_CONFIG.surface;
+      totalWeight += weight;
+      weightedSum +=
+        weight *
+        percentFieldMatch(ademeItem.surface_habitable_logement, adData.surface, maxDeviation);
+    }
+    const dateAd = parseFrenchDate(adData.date_diag);
+    const dateItem = parseISODateLocal(ademeItem.date_etablissement_dpe);
+    if (dateAd && dateItem) {
+      const diffDays = Math.round(
+        Math.abs(dateAd.getTime() - dateItem.getTime()) / (1e3 * 60 * 60 * 24)
+      );
+      const { weight, maxDays } = MATCH_CONFIG.date;
+      totalWeight += weight;
+      weightedSum += weight * dateFieldMatch(diffDays, maxDays);
+    }
+    if (
+      adData.conso_fin !== null &&
+      adData.conso_fin !== void 0 &&
+      ademeItem.conso_5_usages_par_m2_ef !== null &&
+      ademeItem.conso_5_usages_par_m2_ef !== void 0
+    ) {
+      const { weight, maxDeviation } = MATCH_CONFIG.conso_fin;
+      totalWeight += weight;
+      weightedSum +=
+        weight *
+        percentFieldMatch(ademeItem.conso_5_usages_par_m2_ef, adData.conso_fin, maxDeviation);
+    }
+    if (
+      adData.conso_prim !== null &&
+      adData.conso_prim !== void 0 &&
+      ademeItem.conso_5_usages_par_m2_ep !== null &&
+      ademeItem.conso_5_usages_par_m2_ep !== void 0
+    ) {
+      const { weight, maxDeviation } = MATCH_CONFIG.conso_prim;
+      totalWeight += weight;
+      weightedSum +=
+        weight *
+        percentFieldMatch(ademeItem.conso_5_usages_par_m2_ep, adData.conso_prim, maxDeviation);
+    }
+    if (totalWeight === 0) return 0;
+    return Math.round((weightedSum / totalWeight) * 100);
+  }
+  function processResults(adData, ademeResults) {
+    const scored = ademeResults
+      .map((item) => ({
+        address: item.adresse_ban || item.nom_commune_ban || 'Adresse inconnue',
+        city: item.nom_commune_ban || '',
+        dpe: item.etiquette_dpe || '',
+        ges: item.etiquette_ges || '',
+        surface: item.surface_habitable_logement,
+        diagnosis_date: item.date_etablissement_dpe || '',
+        primary_energy: item.conso_5_usages_par_m2_ep,
+        final_energy: item.conso_5_usages_par_m2_ef,
+        score: calculateMatchScore(adData, item),
+      }))
+      .sort((a, b) => b.score - a.score);
+    if (scored.length === 0) return scored;
+    const filtered = scored.filter((r) => r.score >= MIN_SCORE_THRESHOLD);
+    const kept = filtered.length > 0 ? filtered : [scored[0]];
+    return kept.slice(0, MAX_RESULTS);
+  }
+
+  // src/api/ademe-client.js
+  var ADEME_API_URL = 'https://data.ademe.fr/data-fair/api/v1/datasets/dpe03existant/lines';
+  function buildAdemeParams(data) {
+    const params = new URLSearchParams();
+    if (data.zipcode) {
+      params.append('code_postal_ban_eq', data.zipcode);
+    } else if (data.city) {
+      params.append('nom_commune_ban_eq', data.city);
+    }
+    if (data.dpe) params.append('etiquette_dpe_eq', data.dpe);
+    if (data.ges) params.append('etiquette_ges_eq', data.ges);
+    if (data.surface !== null && data.surface !== void 0) {
+      const dev = MATCH_CONFIG.surface.maxDeviation;
+      params.append('surface_habitable_logement_gte', String(Math.floor(data.surface * (1 - dev))));
+      params.append('surface_habitable_logement_lte', String(Math.ceil(data.surface * (1 + dev))));
+    }
+    const diagDate = parseFrenchDate(data.date_diag);
+    if (diagDate) {
+      const days = MATCH_CONFIG.date.maxDays;
+      const minDate = new Date(diagDate);
+      minDate.setDate(diagDate.getDate() - days);
+      const maxDate = new Date(diagDate);
+      maxDate.setDate(diagDate.getDate() + days);
+      params.append('date_etablissement_dpe_gte', formatDateISO(minDate));
+      params.append('date_etablissement_dpe_lte', formatDateISO(maxDate));
+    }
+    if (data.conso_prim !== null && data.conso_prim !== void 0) {
+      const dev = MATCH_CONFIG.conso_prim.maxDeviation;
+      params.append(
+        'conso_5_usages_par_m2_ep_gte',
+        String(Math.round(data.conso_prim * (1 - dev)))
+      );
+      params.append(
+        'conso_5_usages_par_m2_ep_lte',
+        String(Math.round(data.conso_prim * (1 + dev)))
+      );
+    }
+    if (data.conso_fin !== null && data.conso_fin !== void 0) {
+      const dev = MATCH_CONFIG.conso_fin.maxDeviation;
+      params.append('conso_5_usages_par_m2_ef_gte', String(Math.round(data.conso_fin * (1 - dev))));
+      params.append('conso_5_usages_par_m2_ef_lte', String(Math.round(data.conso_fin * (1 + dev))));
+    }
+    params.append(
+      'select',
+      'adresse_ban,etiquette_dpe,etiquette_ges,date_etablissement_dpe,surface_habitable_logement,nom_commune_ban,conso_5_usages_par_m2_ep,conso_5_usages_par_m2_ef'
+    );
+    return params;
+  }
+  function buildAdemeUrl(data) {
+    const params = buildAdemeParams(data);
+    return `${ADEME_API_URL}?${params.toString()}`;
+  }
+
+  // src/utils/error-messages.js
+  var ERROR_CODES = {
+    // Network errors
+    NETWORK_TIMEOUT: 'NETWORK_TIMEOUT',
+    NETWORK_ERROR: 'NETWORK_ERROR',
+    API_ERROR: 'API_ERROR',
+    // Data extraction errors
+    INVALID_PAGE: 'INVALID_PAGE',
+    DATA_NOT_FOUND: 'DATA_NOT_FOUND',
+    MISSING_FIELDS: 'MISSING_FIELDS',
+    // Extension errors
+    TAB_ACCESS_ERROR: 'TAB_ACCESS_ERROR',
+    SCRIPT_INJECTION_ERROR: 'SCRIPT_INJECTION_ERROR',
+    // Validation errors
+    INVALID_ZIPCODE: 'INVALID_ZIPCODE',
+    INVALID_DPE: 'INVALID_DPE',
+    INVALID_GES: 'INVALID_GES',
+    INVALID_SURFACE: 'INVALID_SURFACE',
+    INVALID_DATE: 'INVALID_DATE',
+  };
+  var ERROR_MESSAGES = {
+    // Network errors
+    [ERROR_CODES.NETWORK_TIMEOUT]:
+      'La connexion a expir\xE9. V\xE9rifiez votre connexion internet et r\xE9essayez.',
+    [ERROR_CODES.NETWORK_ERROR]: 'Erreur de connexion. V\xE9rifiez votre connexion internet.',
+    [ERROR_CODES.API_ERROR]: "Erreur lors de la communication avec l'API.",
+    // Data extraction errors
+    [ERROR_CODES.INVALID_PAGE]:
+      'Cette extension ne fonctionne que pour les ventes immobili\xE8res et les locations.',
+    [ERROR_CODES.DATA_NOT_FOUND]: 'Donn\xE9es non trouv\xE9es sur cette page.',
+    [ERROR_CODES.MISSING_FIELDS]: 'Informations manquantes pour effectuer la recherche.',
+    // Extension errors
+    [ERROR_CODES.TAB_ACCESS_ERROR]: "Impossible d'acc\xE9der \xE0 l'onglet actif.",
+    [ERROR_CODES.SCRIPT_INJECTION_ERROR]: "Erreur lors de l'injection du script.",
+    // Validation errors
+    [ERROR_CODES.INVALID_ZIPCODE]: 'Code postal invalide.',
+    [ERROR_CODES.INVALID_DPE]: 'Classe DPE invalide (doit \xEAtre entre A et G).',
+    [ERROR_CODES.INVALID_GES]: 'Classe GES invalide (doit \xEAtre entre A et G).',
+    [ERROR_CODES.INVALID_SURFACE]: 'Surface invalide.',
+    [ERROR_CODES.INVALID_DATE]: 'Date de diagnostic invalide.',
+  };
+  function getErrorMessage(code, fallback = 'Une erreur inattendue est survenue.') {
+    return ERROR_MESSAGES[code] || fallback;
+  }
+
   // src/api/location-client.js
-  var API_BASE_URL = 'https://api.immolocator.fr';
   function validateSearchData(data) {
     const missing = [];
     const warnings = [];
@@ -56,54 +276,34 @@ globalThis.browser ??= globalThis.chrome;
   }
   async function searchLocation(data) {
     const payload = buildSearchPayload(data);
-    const response = await fetch(`${API_BASE_URL}/api/location/search`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
-      signal: AbortSignal.timeout(1e4),
-    });
-    if (!response.ok) {
-      const errorBody = await response.json().catch(() => ({}));
-      const err = new Error(errorBody.message || 'Erreur lors de la recherche.');
-      err.code = errorBody.error;
-      err.missing = errorBody.missing;
+    const url = buildAdemeUrl(payload);
+    let response;
+    try {
+      response = await fetch(url, { signal: AbortSignal.timeout(1e4) });
+    } catch (e) {
+      const err = new Error('Erreur de connexion \xE0 la base ADEME.');
+      err.code =
+        (e == null ? void 0 : e.name) === 'TimeoutError'
+          ? ERROR_CODES.NETWORK_TIMEOUT
+          : ERROR_CODES.NETWORK_ERROR;
       throw err;
     }
-    const result = await response.json();
+    if (!response.ok) {
+      const err = new Error(`Erreur ADEME (${response.status}).`);
+      err.code = ERROR_CODES.API_ERROR;
+      throw err;
+    }
+    const body = await response.json().catch(() => ({}));
+    const ademeResults = Array.isArray(body.results) ? body.results : [];
+    const results = processResults(payload, ademeResults);
+    const result = { results, count: results.length };
     if (!validateSearchResponse(result)) {
-      throw new Error('R\xE9ponse inattendue du serveur.');
+      throw new Error('R\xE9ponse inattendue de la base ADEME.');
     }
     return result;
   }
   function getGoogleMapsLink(address) {
     return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
-  }
-  async function sendReport(tabUrl, extracted) {
-    const NUMERIC_FIELDS = ['surface', 'terrain', 'conso_prim', 'conso_fin'];
-    const cleaned = Object.fromEntries(
-      Object.entries(extracted)
-        .filter(([, v]) => v !== null && v !== void 0 && v !== 'Non trouv\xE9')
-        .map(([k, v]) => {
-          if (NUMERIC_FIELDS.includes(k)) {
-            const match = String(v).match(/(\d+(?:[.,]\d+)?)/);
-            return match ? [k, match[1].replace(',', '.')] : [k, v];
-          }
-          return [k, v];
-        })
-    );
-    const payload = {
-      url: tabUrl,
-      extracted: cleaned,
-    };
-    const response = await fetch(`${API_BASE_URL}/api/reports`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
-      signal: AbortSignal.timeout(1e4),
-    });
-    if (!response.ok) {
-      throw new Error("Erreur lors de l'envoi du rapport.");
-    }
   }
 
   // src/utils/dom-helpers.js
@@ -211,51 +411,6 @@ globalThis.browser ??= globalThis.chrome;
     return container;
   }
 
-  // src/utils/error-messages.js
-  var ERROR_CODES = {
-    // Network errors
-    NETWORK_TIMEOUT: 'NETWORK_TIMEOUT',
-    NETWORK_ERROR: 'NETWORK_ERROR',
-    API_ERROR: 'API_ERROR',
-    // Data extraction errors
-    INVALID_PAGE: 'INVALID_PAGE',
-    DATA_NOT_FOUND: 'DATA_NOT_FOUND',
-    MISSING_FIELDS: 'MISSING_FIELDS',
-    // Extension errors
-    TAB_ACCESS_ERROR: 'TAB_ACCESS_ERROR',
-    SCRIPT_INJECTION_ERROR: 'SCRIPT_INJECTION_ERROR',
-    // Validation errors
-    INVALID_ZIPCODE: 'INVALID_ZIPCODE',
-    INVALID_DPE: 'INVALID_DPE',
-    INVALID_GES: 'INVALID_GES',
-    INVALID_SURFACE: 'INVALID_SURFACE',
-    INVALID_DATE: 'INVALID_DATE',
-  };
-  var ERROR_MESSAGES = {
-    // Network errors
-    [ERROR_CODES.NETWORK_TIMEOUT]:
-      'La connexion a expir\xE9. V\xE9rifiez votre connexion internet et r\xE9essayez.',
-    [ERROR_CODES.NETWORK_ERROR]: 'Erreur de connexion. V\xE9rifiez votre connexion internet.',
-    [ERROR_CODES.API_ERROR]: "Erreur lors de la communication avec l'API.",
-    // Data extraction errors
-    [ERROR_CODES.INVALID_PAGE]:
-      'Cette extension ne fonctionne que pour les ventes immobili\xE8res et les locations.',
-    [ERROR_CODES.DATA_NOT_FOUND]: 'Donn\xE9es non trouv\xE9es sur cette page.',
-    [ERROR_CODES.MISSING_FIELDS]: 'Informations manquantes pour effectuer la recherche.',
-    // Extension errors
-    [ERROR_CODES.TAB_ACCESS_ERROR]: "Impossible d'acc\xE9der \xE0 l'onglet actif.",
-    [ERROR_CODES.SCRIPT_INJECTION_ERROR]: "Erreur lors de l'injection du script.",
-    // Validation errors
-    [ERROR_CODES.INVALID_ZIPCODE]: 'Code postal invalide.',
-    [ERROR_CODES.INVALID_DPE]: 'Classe DPE invalide (doit \xEAtre entre A et G).',
-    [ERROR_CODES.INVALID_GES]: 'Classe GES invalide (doit \xEAtre entre A et G).',
-    [ERROR_CODES.INVALID_SURFACE]: 'Surface invalide.',
-    [ERROR_CODES.INVALID_DATE]: 'Date de diagnostic invalide.',
-  };
-  function getErrorMessage(code, fallback = 'Une erreur inattendue est survenue.') {
-    return ERROR_MESSAGES[code] || fallback;
-  }
-
   // src/utils/url-validator.js
   var LEBONCOIN_HOSTNAMES = ['www.leboncoin.fr', 'leboncoin.fr'];
   var SELOGER_HOSTNAMES = ['www.seloger.com', 'seloger.com'];
@@ -303,10 +458,8 @@ globalThis.browser ??= globalThis.chrome;
   // src/popup.js
   globalThis.browser ??= globalThis.chrome;
   document.addEventListener('DOMContentLoaded', () => {
-    const errorMsg = document.getElementById('error-msg');
     const errorPage = document.getElementById('error-page');
     const errorCta = document.getElementById('error-cta');
-    const reportBtn = document.getElementById('report-btn');
     function showErrorPage(message) {
       document.body.classList.add('show-error-page');
       const detailEl = document.getElementById('error-page-detail');
@@ -903,28 +1056,6 @@ globalThis.browser ??= globalThis.chrome;
               }
               dataStatusEl.style.display = 'inline-block';
             }
-            reportBtn.style.display = 'block';
-            reportBtn.onclick = async () => {
-              reportBtn.disabled = true;
-              reportBtn.textContent = 'Envoi...';
-              try {
-                const { debugLog: _unusedDebug, ...extractedData } = res;
-                await sendReport(tabUrl, extractedData);
-                reportBtn.textContent = '\u2713 Rapport envoy\xE9';
-                setTimeout(() => {
-                  reportBtn.textContent = 'Signaler une erreur';
-                  reportBtn.disabled = false;
-                }, 2e3);
-              } catch {
-                reportBtn.textContent = 'Signaler une erreur';
-                reportBtn.disabled = false;
-                errorMsg.textContent = "Impossible d'envoyer le rapport.";
-                errorMsg.style.display = 'block';
-                setTimeout(() => {
-                  errorMsg.style.display = 'none';
-                }, 3e3);
-              }
-            };
             prepareLocationSearch(res);
           } else {
             showErrorPage(

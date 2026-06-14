@@ -18,14 +18,24 @@ Ouvrez une annonce immobilière, cliquez sur l'icône, et l'extension fait le re
 🏷️ Étiquettes énergie (DPE / GES) et consommations réelles
 🏙️ Ville et code postal
 
+L'adresse est retrouvée en croisant les données de l'annonce avec la base publique officielle des diagnostics énergétiques de l'ADEME (ministère de la Transition écologique).
+
 🏠 POUR LES ACHETEURS COMME POUR LES INVESTISSEURS
 
 Que vous cherchiez votre future maison ou que vous analysiez des dizaines d'annonces, Immo Locator vous permet de vérifier l'emplacement exact, croiser les données énergétiques et éliminer les mauvaises surprises — sans perdre de temps.
 
-🔒 VIE PRIVÉE, ZÉRO COMPROMIS
+🔒 VIE PRIVÉE PAR CONCEPTION
 
 ✅ Aucun compte requis
 ✅ Aucune donnée personnelle collectée
+✅ Aucun serveur intermédiaire : l'extension interroge directement la base publique de l'ADEME. Vos recherches ne transitent par aucun serveur tiers.
 ✅ L'extension ne lit que les pages d'annonces Leboncoin et SeLoger — rien d'autre
 
 🎉 100% gratuit. Instantané. Indispensable pour votre recherche immobilière.
+
+
+NOUVEAUTÉS — v2.0
+-----------------
+🔒 Immo Locator fonctionne désormais 100% sans serveur : vos recherches sont envoyées directement à la base publique de l'ADEME, et plus à aucun serveur intermédiaire. Encore plus rapide, encore plus respectueux de votre vie privée.
+
+ℹ️ Cette mise à jour modifie les autorisations de l'extension (accès à data.ademe.fr) : votre navigateur vous demandera de confirmer la nouvelle autorisation pour réactiver l'extension.
