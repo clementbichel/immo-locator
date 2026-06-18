@@ -20,6 +20,7 @@ async function build() {
       target: ['chrome90', 'firefox90'],
       minify: false, // Keep readable for debugging
       sourcemap: false,
+      metafile: true,
       // Chrome extensions don't support ES modules in content scripts
       // so we bundle everything into an IIFE
     });
@@ -43,16 +44,8 @@ async function build() {
       writeFileSync(outputPath, prefix + content);
     }
 
-    // Show output stats
-    const stats = await esbuild.build({
-      entryPoints: [join(rootDir, 'src/popup.js')],
-      bundle: true,
-      format: 'iife',
-      write: false,
-      metafile: true,
-    });
-
-    const text = await esbuild.analyzeMetafile(stats.metafile);
+    // Show output stats (reuse the metafile from the build above)
+    const text = await esbuild.analyzeMetafile(result.metafile);
     console.log('\nBundle analysis:');
     console.log(text);
   } catch (error) {

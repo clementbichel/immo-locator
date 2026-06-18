@@ -1,10 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import {
-  ERROR_CODES,
-  ERROR_MESSAGES,
-  getErrorMessage,
-  createError,
-} from '../../src/utils/error-messages.js';
+import { ERROR_CODES, ERROR_MESSAGES, getErrorMessage } from '../../src/utils/error-messages.js';
 
 describe('error-messages', () => {
   describe('ERROR_CODES', () => {
@@ -57,32 +52,6 @@ describe('error-messages', () => {
       const customFallback = 'Custom error message';
       const message = getErrorMessage('UNKNOWN_CODE', customFallback);
       expect(message).toBe(customFallback);
-    });
-  });
-
-  describe('createError', () => {
-    it('should create an error with correct message', () => {
-      const error = createError(ERROR_CODES.API_ERROR);
-      expect(error).toBeInstanceOf(Error);
-      expect(error.message).toBe(ERROR_MESSAGES[ERROR_CODES.API_ERROR]);
-      expect(error.code).toBe(ERROR_CODES.API_ERROR);
-    });
-
-    it('should include details when provided', () => {
-      const details = 'Status 500';
-      const error = createError(ERROR_CODES.API_ERROR, details);
-      expect(error.details).toBe(details);
-    });
-
-    it('should not include details property when not provided', () => {
-      const error = createError(ERROR_CODES.API_ERROR);
-      expect(error.details).toBeUndefined();
-    });
-
-    it('should work with unknown code (uses fallback)', () => {
-      const error = createError('UNKNOWN');
-      expect(error.message).toBe('Une erreur inattendue est survenue.');
-      expect(error.code).toBe('UNKNOWN');
     });
   });
 });

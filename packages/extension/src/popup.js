@@ -435,8 +435,12 @@ document.addEventListener('DOMContentLoaded', () => {
   // Mirrors packages/extension/src/extractors/seloger-extractor.js
   // (kept inline because executeScript injects the function as a string and cannot resolve imports).
   function extractSelogerData() {
-    const url = window.location.href;
-    if (!url.includes('/annonces/achat/') && !url.includes('/annonces/locations/')) {
+    const path = window.location.pathname;
+    const isSelogerAd =
+      path.startsWith('/annonces/achat/') ||
+      path.startsWith('/annonces/locations/') ||
+      /^\/\d+\/detail\.htm$/.test(path);
+    if (!isSelogerAd) {
       return {
         error:
           'Cette extension ne fonctionne que sur les pages d’annonces SeLoger (achat ou location).',
@@ -483,17 +487,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const sections = classified.sections || {};
 
-      // Location
-      const address = sections.location?.address;
-      if (address) {
-        if (address.city) data.city = address.city;
-        if (address.zipCode) data.zipcode = address.zipCode;
+      // Location — current pages expose city/zipCode directly;
+      // older /annonces/ pages nested them under location.address.
+      const location = sections.location?.address || sections.location;
+      if (location) {
+        if (location.city) data.city = location.city;
+        if (location.zipCode) data.zipcode = location.zipCode;
       }
 
-      // Surface (legacyTracking — pre-parsed numeric)
-      const product = classified.legacyTracking?.products?.[0];
-      if (product && typeof product.space === 'number') {
-        data.surface = product.space + ' m²';
+      // Surface / terrain — from hardFacts.facts[], keyed by `type`.
+      const facts = sections.hardFacts?.facts;
+      if (Array.isArray(facts)) {
+        const living = facts.find((f) => /^(livingSpace|surface)$/i.test(f?.type || ''));
+        const plot = facts.find((f) => f?.type === 'plotSpace');
+        if (living?.splitValue) data.surface = living.splitValue + ' m²';
+        if (plot?.splitValue) data.terrain = plot.splitValue + ' m²';
+      } else {
+        const space = classified.legacyTracking?.products?.[0]?.space;
+        if (typeof space === 'number') data.surface = space + ' m²';
       }
 
       // Energy: filter scales by `type` (order is not guaranteed)

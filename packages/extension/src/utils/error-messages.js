@@ -59,18 +59,3 @@ export const ERROR_MESSAGES = {
 export function getErrorMessage(code, fallback = 'Une erreur inattendue est survenue.') {
   return ERROR_MESSAGES[code] || fallback;
 }
-
-/**
- * Create a structured error with code and message
- * @param {string} code - Error code from ERROR_CODES
- * @param {string} [details] - Additional details for debugging
- * @returns {Error} Error object with code property
- */
-export function createError(code, details = null) {
-  const error = new Error(getErrorMessage(code));
-  error.code = code;
-  if (details) {
-    error.details = details;
-  }
-  return error;
-}

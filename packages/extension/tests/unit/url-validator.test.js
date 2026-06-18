@@ -1,7 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import {
   isValidLeboncoinRealEstateUrl,
-  getRealEstateType,
   isValidSelogerRealEstateUrl,
   getSite,
 } from '../../src/utils/url-validator.js';
@@ -81,45 +80,6 @@ describe('url-validator', () => {
     });
   });
 
-  describe('getRealEstateType', () => {
-    it('should return "sale" for sales URL', () => {
-      const url = 'https://www.leboncoin.fr/ventes_immobilieres/1234567890.htm';
-      expect(getRealEstateType(url)).toBe('sale');
-    });
-
-    it('should return "rental" for rental URL', () => {
-      const url = 'https://www.leboncoin.fr/locations/9876543210.htm';
-      expect(getRealEstateType(url)).toBe('rental');
-    });
-
-    it('should return "sale" for new /ad/ventes_immobilieres/ format', () => {
-      const url = 'https://www.leboncoin.fr/ad/ventes_immobilieres/3143073465';
-      expect(getRealEstateType(url)).toBe('sale');
-    });
-
-    it('should return "rental" for new /ad/locations/ format', () => {
-      const url = 'https://www.leboncoin.fr/ad/locations/1234567890';
-      expect(getRealEstateType(url)).toBe('rental');
-    });
-
-    it('should return null for non-real-estate URL', () => {
-      const url = 'https://www.leboncoin.fr/voitures/1234567890.htm';
-      expect(getRealEstateType(url)).toBeNull();
-    });
-
-    it('should return null for empty string', () => {
-      expect(getRealEstateType('')).toBeNull();
-    });
-
-    it('should return null for null', () => {
-      expect(getRealEstateType(null)).toBeNull();
-    });
-
-    it('should return null for undefined', () => {
-      expect(getRealEstateType(undefined)).toBeNull();
-    });
-  });
-
   describe('isValidSelogerRealEstateUrl', () => {
     it('should return true for a valid achat URL', () => {
       const url =
@@ -129,6 +89,12 @@ describe('url-validator', () => {
 
     it('should return true for a valid locations URL', () => {
       const url = 'https://www.seloger.com/annonces/locations/maison/bordeaux-33/264540629.htm';
+      expect(isValidSelogerRealEstateUrl(url)).toBe(true);
+    });
+
+    it('should return true for the current /<id>/detail.htm URL', () => {
+      const url =
+        'https://www.seloger.com/262005253/detail.htm?search=distributionTypes%3DRent#ln=classified_search_results';
       expect(isValidSelogerRealEstateUrl(url)).toBe(true);
     });
 

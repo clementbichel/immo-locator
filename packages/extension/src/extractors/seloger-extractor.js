@@ -30,25 +30,31 @@ export function extractFromSelogerState(state) {
 
   const sections = classified.sections || {};
 
-  // Location
-  const address = sections.location?.address;
-  if (address) {
-    if (address.city) data.city = address.city;
-    if (address.zipCode) data.zipcode = address.zipCode;
+  // Location — current pages put city/zipCode directly on location;
+  // older /annonces/ pages nested them under location.address.
+  const location = sections.location?.address || sections.location;
+  if (location) {
+    if (location.city) data.city = location.city;
+    if (location.zipCode) data.zipcode = location.zipCode;
     debug.push('Extracted location');
   } else {
-    debug.push('No address in sections.location');
+    debug.push('No sections.location');
   }
 
-  // Surface (from legacyTracking — pre-parsed numeric)
-  const product = classified.legacyTracking?.products?.[0];
-  if (product) {
-    if (typeof product.space === 'number') {
-      data.surface = `${product.space} m²`;
-    }
-    debug.push('Extracted product tracking');
+  // Surface / terrain — from hardFacts.facts[], keyed by `type`.
+  // splitValue is the pre-parsed number; we re-append the unit.
+  const facts = sections.hardFacts?.facts;
+  if (Array.isArray(facts)) {
+    const living = facts.find((f) => /^(livingSpace|surface)$/i.test(f?.type || ''));
+    const plot = facts.find((f) => f?.type === 'plotSpace');
+    if (living?.splitValue) data.surface = `${living.splitValue} m²`;
+    if (plot?.splitValue) data.terrain = `${plot.splitValue} m²`;
+    debug.push('Extracted hardFacts');
   } else {
-    debug.push('No legacyTracking.products[0]');
+    // Fallback: legacyTracking pre-parsed numeric (older pages)
+    const space = classified.legacyTracking?.products?.[0]?.space;
+    if (typeof space === 'number') data.surface = `${space} m²`;
+    debug.push('No hardFacts.facts');
   }
 
   // Energy (DPE + GES from certificates[0].scales[])

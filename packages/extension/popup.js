@@ -441,12 +441,14 @@ globalThis.browser ??= globalThis.chrome;
     if (!parsed) return false;
     return LEBONCOIN_SALE_RE.test(parsed.pathname) || LEBONCOIN_RENTAL_RE.test(parsed.pathname);
   }
+  var SELOGER_DETAIL_RE = /^\/\d+\/detail\.htm$/;
   function isValidSelogerRealEstateUrl(url) {
     const parsed = parseSelogerUrl(url);
     if (!parsed) return false;
     return (
       parsed.pathname.startsWith('/annonces/achat/') ||
-      parsed.pathname.startsWith('/annonces/locations/')
+      parsed.pathname.startsWith('/annonces/locations/') ||
+      SELOGER_DETAIL_RE.test(parsed.pathname)
     );
   }
   function getSite(url) {
@@ -794,9 +796,13 @@ globalThis.browser ??= globalThis.chrome;
       return data;
     }
     function extractSelogerData() {
-      var _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k;
-      const url = window.location.href;
-      if (!url.includes('/annonces/achat/') && !url.includes('/annonces/locations/')) {
+      var _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l, _m;
+      const path = window.location.pathname;
+      const isSelogerAd =
+        path.startsWith('/annonces/achat/') ||
+        path.startsWith('/annonces/locations/') ||
+        /^\/\d+\/detail\.htm$/.test(path);
+      if (!isSelogerAd) {
         return {
           error:
             'Cette extension ne fonctionne que sur les pages d\u2019annonces SeLoger (achat ou location).',
@@ -840,39 +846,52 @@ globalThis.browser ??= globalThis.chrome;
         }
         debug.push('Found classified');
         const sections = classified.sections || {};
-        const address = (_c = sections.location) == null ? void 0 : _c.address;
-        if (address) {
-          if (address.city) data.city = address.city;
-          if (address.zipCode) data.zipcode = address.zipCode;
+        const location =
+          ((_c = sections.location) == null ? void 0 : _c.address) || sections.location;
+        if (location) {
+          if (location.city) data.city = location.city;
+          if (location.zipCode) data.zipcode = location.zipCode;
         }
-        const product =
-          (_e = (_d = classified.legacyTracking) == null ? void 0 : _d.products) == null
-            ? void 0
-            : _e[0];
-        if (product && typeof product.space === 'number') {
-          data.surface = product.space + ' m\xB2';
+        const facts = (_d = sections.hardFacts) == null ? void 0 : _d.facts;
+        if (Array.isArray(facts)) {
+          const living = facts.find((f) =>
+            /^(livingSpace|surface)$/i.test((f == null ? void 0 : f.type) || '')
+          );
+          const plot = facts.find((f) => (f == null ? void 0 : f.type) === 'plotSpace');
+          if (living == null ? void 0 : living.splitValue)
+            data.surface = living.splitValue + ' m\xB2';
+          if (plot == null ? void 0 : plot.splitValue) data.terrain = plot.splitValue + ' m\xB2';
+        } else {
+          const space =
+            (_g =
+              (_f = (_e = classified.legacyTracking) == null ? void 0 : _e.products) == null
+                ? void 0
+                : _f[0]) == null
+              ? void 0
+              : _g.space;
+          if (typeof space === 'number') data.surface = space + ' m\xB2';
         }
         const scales =
-          (_h =
-            (_g = (_f = sections.energy) == null ? void 0 : _f.certificates) == null
+          (_j =
+            (_i = (_h = sections.energy) == null ? void 0 : _h.certificates) == null
               ? void 0
-              : _g[0]) == null
+              : _i[0]) == null
             ? void 0
-            : _h.scales;
+            : _j.scales;
         if (Array.isArray(scales)) {
           const energyScale = scales.find((s) =>
             /^FR_ENERGY/.test((s == null ? void 0 : s.type) || '')
           );
           const ghgScale = scales.find((s) => /^FR_GHG/.test((s == null ? void 0 : s.type) || ''));
           if (
-            (_i = energyScale == null ? void 0 : energyScale.efficiencyClass) == null
+            (_k = energyScale == null ? void 0 : energyScale.efficiencyClass) == null
               ? void 0
-              : _i.rating
+              : _k.rating
           ) {
             data.dpe = String(energyScale.efficiencyClass.rating).toUpperCase();
           }
           if (
-            (_j = ghgScale == null ? void 0 : ghgScale.efficiencyClass) == null ? void 0 : _j.rating
+            (_l = ghgScale == null ? void 0 : ghgScale.efficiencyClass) == null ? void 0 : _l.rating
           ) {
             data.ges = String(ghgScale.efficiencyClass.rating).toUpperCase();
           }
@@ -883,7 +902,7 @@ globalThis.browser ??= globalThis.chrome;
             if (consoEntry == null ? void 0 : consoEntry.value) data.conso_prim = consoEntry.value;
           }
         }
-        const description = (_k = sections.mainDescription) == null ? void 0 : _k.description;
+        const description = (_m = sections.mainDescription) == null ? void 0 : _m.description;
         if (typeof description === 'string') {
           const dateMatch = description.match(
             /Date\s+du\s+diagnostic(?:\s+énergétique)?\s*:\s*(\d{1,2}\/\d{1,2}\/\d{4})/i

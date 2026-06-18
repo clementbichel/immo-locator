@@ -40,22 +40,13 @@ export function isValidLeboncoinRealEstateUrl(url) {
   return LEBONCOIN_SALE_RE.test(parsed.pathname) || LEBONCOIN_RENTAL_RE.test(parsed.pathname);
 }
 
-/**
- * Get the type of real estate listing from URL
- * @param {string} url - The URL to check
- * @returns {'sale' | 'rental' | null} - The type of listing
- */
-export function getRealEstateType(url) {
-  const parsed = parseLeboncoinUrl(url);
-  if (!parsed) return null;
-  if (LEBONCOIN_SALE_RE.test(parsed.pathname)) return 'sale';
-  if (LEBONCOIN_RENTAL_RE.test(parsed.pathname)) return 'rental';
-  return null;
-}
+// SeLoger ad pages come in two shapes:
+//   - legacy: /annonces/achat/..., /annonces/locations/...
+//   - current: /<id>/detail.htm
+const SELOGER_DETAIL_RE = /^\/\d+\/detail\.htm$/;
 
 /**
  * Check if a URL is a valid SeLoger real estate page
- * SeLoger ad pages live under /annonces/achat/... and /annonces/locations/...
  * @param {string} url - The URL to validate
  * @returns {boolean} - True if valid SeLoger real estate URL
  */
@@ -64,7 +55,8 @@ export function isValidSelogerRealEstateUrl(url) {
   if (!parsed) return false;
   return (
     parsed.pathname.startsWith('/annonces/achat/') ||
-    parsed.pathname.startsWith('/annonces/locations/')
+    parsed.pathname.startsWith('/annonces/locations/') ||
+    SELOGER_DETAIL_RE.test(parsed.pathname)
   );
 }
 
