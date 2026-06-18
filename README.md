@@ -119,7 +119,7 @@ npm run test:watch      # Mode watch
 ## Liens
 
 - [Chrome Web Store](https://chromewebstore.google.com/detail/immo-locator/okglkdgbdbnikojffmjpodmakgjmlpda)
-- [Politique de confidentialité](packages/extension/docs/privacy.html)
+- [Politique de confidentialité](https://clementbichel.fr/immo-locator/privacy.html) (source : `packages/extension/docs/privacy.html`)
 - [API ADEME — Dataset DPE](https://data.ademe.fr/datasets/dpe03existant)
 
 ## Licence

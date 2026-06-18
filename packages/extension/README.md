@@ -70,7 +70,7 @@ npm run test:e2e
 ## Liens
 
 - [API backend](https://github.com/clementbichel/immo-locator-api)
-- [Politique de confidentialité](docs/privacy.html)
+- [Politique de confidentialité](https://clementbichel.fr/immo-locator/privacy.html) (source : `docs/privacy.html`)
 - [Chrome Web Store](https://chromewebstore.google.com/detail/immo-locator/okglkdgbdbnikojffmjpodmakgjmlpda)
 
 ## Licence
