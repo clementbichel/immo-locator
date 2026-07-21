@@ -68,11 +68,29 @@ function main() {
   // 6. Remove staging, keep only the zip.
   rmSync(stageDir, { recursive: true, force: true });
 
-  // 7. Report size.
-  const { size } = statSync(zipPath);
-  const kb = (size / 1024).toFixed(1);
-  console.log(`\n✓ ${zipName} — ${kb} KB`);
-  console.log(`  ${zipPath}`);
+  // 7. Source archive for AMO (bundled code must ship with reproducible sources).
+  // ponytail: git archive plutôt qu'une whitelist à maintenir — .gitignore fait déjà
+  // le tri (node_modules, dist). Contrepartie : l'archive reflète HEAD, pas le
+  // working tree, d'où l'avertissement si le dépôt est sale.
+  const sourceName = `immo-locator-${version}-source.zip`;
+  const sourcePath = join(distDir, sourceName);
+  console.log(`\nCreating ${sourceName}...`);
+  const dirty = execSync('git status --porcelain -- .', { cwd: rootDir }).toString().trim();
+  if (dirty) {
+    console.warn("  ⚠ Modifications non commitées : l'archive source reflète HEAD, pas le disque.");
+  }
+  // Depuis la racine du dépôt : git archive filtre sur le répertoire courant,
+  // lancé depuis packages/extension il produirait une archive vide.
+  run(`git archive HEAD:packages/extension -o "${sourcePath}"`, join(rootDir, '..', '..'));
+
+  // 8. Report sizes.
+  const report = (name, path) => {
+    const kb = (statSync(path).size / 1024).toFixed(1);
+    console.log(`\n✓ ${name} — ${kb} KB`);
+    console.log(`  ${path}`);
+  };
+  report(zipName, zipPath);
+  report(sourceName, sourcePath);
 }
 
 main();
