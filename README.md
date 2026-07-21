@@ -18,18 +18,15 @@ Extension navigateur (Chrome/Firefox) qui enrichit les annonces immobilières [L
 
 ## Structure du projet
 
-Monorepo npm workspaces :
-
 ```
 packages/
-├── extension/   # Extension Chrome/Firefox (Manifest V3)
-└── api/         # API backend Node.js (Express 5)
+└── extension/   # Extension Chrome/Firefox (Manifest V3)
 ```
 
-| Package                          | Stack                        | Description                                                                        |
-| -------------------------------- | ---------------------------- | ---------------------------------------------------------------------------------- |
-| [extension](packages/extension/) | Manifest V3, esbuild, Vitest | Extraction des données Leboncoin/SeLoger, requête ADEME directe, scoring, UI popup |
-| [api](packages/api/)             | Express 5, SQLite, Zod, Pino | **Legacy/gelé** — proxy ADEME conservé pour les anciennes versions (sunset)        |
+Tout le code vit dans [`packages/extension/`](packages/extension/) : extraction des
+données Leboncoin/SeLoger, requête ADEME directe, scoring et UI popup. Le backend
+Express qui servait d'intermédiaire jusqu'à la v1.1.0 a été décommissionné en
+juillet 2026 et son code supprimé.
 
 ## Installation
 
@@ -57,27 +54,17 @@ Puis charger l'extension en mode développeur :
 - **Chrome :** `chrome://extensions/` → Mode développeur → Charger l'extension non empaquetée → sélectionner `packages/extension/`
 - **Firefox :** `about:debugging#/runtime/this-firefox` → Charger un module temporaire → sélectionner `packages/extension/manifest.json`
 
-### API
+### Packaging
 
 ```bash
-cp packages/api/.env.example packages/api/.env   # Remplir les variables
-npm run dev:api                                    # Démarrage avec hot reload
+npm run package:ext              # Zip du store + archive source AMO dans dist/
 ```
-
-Variables d'environnement requises :
-
-| Variable             | Description                                             |
-| -------------------- | ------------------------------------------------------- |
-| `ADEME_API_URL`      | URL de l'API ADEME Data Fair                            |
-| `CORS_CHROME_ORIGIN` | Origin de l'extension Chrome (`chrome-extension://...`) |
-| `PORT`               | Port du serveur (défaut : 3000)                         |
 
 ## Tests
 
 ```bash
-npm test                # Tous les tests (extension + API)
-npm run test:ext        # Tests extension uniquement
-npm run test:api        # Tests API uniquement
+npm test                # Tous les tests
+npm run test:ext        # Idem, via le workspace
 npm run test:watch      # Mode watch
 ```
 
@@ -90,31 +77,15 @@ npm run test:watch      # Mode watch
 - Vitest — tests unitaires, intégration, E2E
 - ESLint + Prettier
 
-**API :**
-
-- Express 5 — framework HTTP
-- SQLite (better-sqlite3) — analytics et rapports d'erreur
-- Zod — validation stricte des entrées
-- Pino — logging structuré JSON
-- lru-cache — cache réponses ADEME (500 entrées, TTL 1h)
-- Circuit breaker — résilience API ADEME (3 échecs → 30s cooldown)
-- Helmet + rate limiting — sécurité
-
-**Déploiement :**
-
-- PM2 + Nginx reverse proxy + Let's Encrypt
-- fail2ban sur Nginx
+Aucune dépendance runtime : le code livré n'utilise que les API du navigateur et
+`fetch` vers `data.ademe.fr`.
 
 ## Sécurité
 
 - Pas de `innerHTML` — manipulation DOM via `textContent` et `createElement`
-- CSP stricte dans le manifest
-- CORS explicite (pas de wildcard)
-- Validation Zod `.strict()` sur tous les endpoints
-- Prepared statements SQL
-- Rate limiting : 30 req/min global, 20 req/min sur la recherche
-- Payload limité à 10 KB
-- Rétention des données : 90 jours, purge automatique
+- CSP stricte dans le manifest, `connect-src` limité à `data.ademe.fr`
+- Permissions minimales : `activeTab` + `scripting`, aucun accès au stockage
+- Aucune donnée envoyée à un serveur tiers, aucune collecte
 
 ## Liens
 

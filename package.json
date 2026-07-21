@@ -8,12 +8,10 @@
     "packages/*"
   ],
   "scripts": {
-    "dev:api": "npm -w packages/api run dev",
     "build:ext": "npm -w packages/extension run build",
     "package:ext": "npm -w packages/extension run package",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:api": "npm -w packages/api run test",
     "test:ext": "npm -w packages/extension run test",
     "lint": "eslint packages/",
     "lint:fix": "eslint packages/ --fix",

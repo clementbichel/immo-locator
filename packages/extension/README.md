@@ -8,7 +8,7 @@ Extension Chrome/Firefox qui enrichit les annonces immobilières Leboncoin avec 
 
 1. L'utilisateur ouvre une annonce Leboncoin et clique sur l'extension
 2. L'extension extrait les données du bien (surface, DPE, GES, localisation, consommation énergétique)
-3. Ces données sont envoyées à l'[API backend](https://github.com/clementbichel/immo-locator-api) qui interroge la base ADEME
+3. Le popup interroge **directement** l'API publique ADEME (`data.ademe.fr`) et score les candidats côté client — aucun serveur intermédiaire
 4. Les résultats sont affichés avec un score de correspondance et un lien Google Maps
 
 ## Stack technique
@@ -69,7 +69,8 @@ npm run test:e2e
 
 ## Liens
 
-- [API backend](https://github.com/clementbichel/immo-locator-api)
+- [API ADEME — Dataset DPE](https://data.ademe.fr/datasets/dpe03existant)
+- [Firefox Add-ons (AMO)](https://addons.mozilla.org/fr/firefox/addon/immo-locator/)
 - [Politique de confidentialité](https://clementbichel.fr/immo-locator/privacy.html) (source : `docs/privacy.html`)
 - [Chrome Web Store](https://chromewebstore.google.com/detail/immo-locator/okglkdgbdbnikojffmjpodmakgjmlpda)
 

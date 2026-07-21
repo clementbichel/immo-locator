@@ -2,21 +2,16 @@
 
 Chrome Extension that enriches Leboncoin/SeLoger listings with ADEME DPE/GES data.
 
-Since v2.0 the extension is **serverless**: the popup queries the public ADEME API
-(`data.ademe.fr`) directly and scores candidates client-side. The Node.js API in
-`packages/api/` is **legacy/frozen** — kept online only to serve already-installed
-older versions (≤ v1.1.0) until their store auto-update propagates, then it will be
-decommissioned. Do not point the extension back at it.
+The extension is **serverless**: the popup queries the public ADEME API
+(`data.ademe.fr`) directly and scores candidates client-side. There is no backend —
+the Express server that fronted ADEME until v1.1.0 was decommissioned in July 2026
+and its code deleted. Do not reintroduce one.
 
 ## Commands
 
 ```bash
-# Dev
-npm run dev:api          # Start API with --watch + pino-pretty (port 3000)
-
 # Test
-npm test                 # Run all tests (vitest, both packages)
-npm run test:api         # API tests only
+npm test                 # Run all tests (vitest)
 npm run test:ext         # Extension tests only
 npm -w packages/extension run test:unit         # Unit only
 npm -w packages/extension run test:integration  # Integration only
@@ -35,15 +30,6 @@ npm run build:ext        # Build extension (packages/extension/scripts/build.js)
 
 ```
 packages/
-  api/               Express 5 API (Node.js, ESM) — LEGACY/FROZEN (sunset, old clients only)
-    src/
-      index.js         Entry point
-      db.js            SQLite (better-sqlite3) — tables: searches, reports
-      logger.js        Pino logger
-      clients/         ademe-client.js — ADEME data API
-      routes/          location.js, reports.js
-      schemas/         search.js (Zod validation)
-      services/        dpe-service.js (scoring logic)
   extension/          Chrome Extension (Manifest V3) — calls ADEME directly
     src/
       index.js         Content script entry
@@ -56,24 +42,18 @@ packages/
     manifest.json      host_permissions/CSP → https://data.ademe.fr
 ```
 
-The extension's `services/dpe-service.js` and `api/ademe-client.js` are pure ports of
-the API's equivalents. Keep them in sync as long as the legacy server is alive; the
-popup is bundled by esbuild so it `import`s them normally (unlike the injected
-extractors, which must stay inlined in `popup.js`).
+`services/dpe-service.js` (scoring) and `api/ademe-client.js` (query builder) started
+as ports of the old server's logic; they are now the only implementation. The popup is
+bundled by esbuild so it `import`s them normally — unlike the injected extractors,
+which must stay inlined in `popup.js` because `chrome.scripting.executeScript({ func })`
+cannot resolve imports.
 
 ## Code style
 
 - ESM (`"type": "module"`) — use `import`/`export`, not `require`
 - Husky + lint-staged: ESLint + Prettier run on pre-commit
-- Zod for API request validation
-
-## Environment
-
-API requires `.env` (see `.env.example`):
-
-- `PORT` — server port (default 3000)
-- `ADEME_API_URL` — ADEME dataset endpoint
-- `CORS_CHROME_ORIGIN` / `CORS_FIREFOX_ORIGIN` — extension origin URLs
+- `packages/extension/popup.js` is the esbuild bundle, committed as-is and excluded
+  from Prettier via the root `.prettierignore`. Never edit it by hand.
 
 ## Gotchas
 
