@@ -457,6 +457,68 @@ globalThis.browser ??= globalThis.chrome;
     return null;
   }
 
+  // src/utils/rate-prompt.js
+  var COUNT_KEY = 'il_search_count';
+  var DONE_KEY = 'il_rate_done';
+  var TRIGGER_AT = 6;
+  var STORE_URLS = {
+    chrome:
+      'https://chromewebstore.google.com/detail/immo-locator/okglkdgbdbnikojffmjpodmakgjmlpda/reviews',
+    firefox: 'https://addons.mozilla.org/fr/firefox/addon/immo-locator/reviews/',
+  };
+  function getStoreReviewUrl() {
+    var _a;
+    const browserApi = globalThis.browser || globalThis.chrome;
+    const isFirefox =
+      (_a = browserApi == null ? void 0 : browserApi.runtime) == null
+        ? void 0
+        : _a.getURL('').startsWith('moz-extension://');
+    return isFirefox ? STORE_URLS.firefox : STORE_URLS.chrome;
+  }
+  function shouldAskForRating() {
+    try {
+      if (localStorage.getItem(DONE_KEY)) return false;
+      const count = Number(localStorage.getItem(COUNT_KEY) || 0) + 1;
+      localStorage.setItem(COUNT_KEY, String(count));
+      return count >= TRIGGER_AT;
+    } catch {
+      return false;
+    }
+  }
+  function dismiss() {
+    try {
+      localStorage.setItem(DONE_KEY, '1');
+    } catch {}
+  }
+  function createRatePrompt() {
+    const box = document.createElement('div');
+    box.className = 'rate-prompt';
+    const text = document.createElement('span');
+    text.textContent = 'Vous aimez notre extension ? Donnez-nous 5 \xE9toiles \u2B50';
+    const link = document.createElement('a');
+    link.href = getStoreReviewUrl();
+    link.textContent = 'Noter';
+    link.rel = 'noopener noreferrer';
+    link.addEventListener('click', (e) => {
+      e.preventDefault();
+      dismiss();
+      const browserApi = globalThis.browser || globalThis.chrome;
+      browserApi.tabs.create({ url: link.href });
+      window.close();
+    });
+    const close = document.createElement('button');
+    close.className = 'rate-prompt-close';
+    close.type = 'button';
+    close.textContent = '\u2715';
+    close.setAttribute('aria-label', 'Ne plus afficher');
+    close.addEventListener('click', () => {
+      dismiss();
+      box.remove();
+    });
+    box.append(text, link, close);
+    return box;
+  }
+
   // src/popup.js
   globalThis.browser ??= globalThis.chrome;
   document.addEventListener('DOMContentLoaded', () => {
@@ -962,6 +1024,9 @@ globalThis.browser ??= globalThis.chrome;
             getScoreColor
           );
           locationResults.appendChild(resultsList);
+          if (shouldAskForRating()) {
+            locationResults.appendChild(createRatePrompt());
+          }
         } else {
           locationResults.appendChild(
             createMessage('Aucune adresse trouv\xE9e avec ces crit\xE8res stricts.')

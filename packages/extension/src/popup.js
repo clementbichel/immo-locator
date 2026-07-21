@@ -6,6 +6,7 @@ import { validateSearchData, searchLocation, getGoogleMapsLink } from './api/loc
 import { clearElement, createMessage, createLocationResultsList } from './utils/dom-helpers.js';
 import { getErrorMessage, ERROR_CODES } from './utils/error-messages.js';
 import { getSite } from './utils/url-validator.js';
+import { shouldAskForRating, createRatePrompt } from './utils/rate-prompt.js';
 
 document.addEventListener('DOMContentLoaded', () => {
   const errorPage = document.getElementById('error-page'); // eslint-disable-line no-unused-vars
@@ -604,6 +605,9 @@ document.addEventListener('DOMContentLoaded', () => {
           getScoreColor
         );
         locationResults.appendChild(resultsList);
+        if (shouldAskForRating()) {
+          locationResults.appendChild(createRatePrompt());
+        }
       } else {
         locationResults.appendChild(
           createMessage('Aucune adresse trouvée avec ces critères stricts.')
