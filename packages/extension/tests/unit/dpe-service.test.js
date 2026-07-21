@@ -200,7 +200,7 @@ describe('processResults', () => {
     expect(results[0].address).toBe('Good');
   });
 
-  it('always keeps at least the best result even if below threshold', () => {
+  it('returns nothing when every result is below threshold', () => {
     const adData = { surface: 45, date_diag: '15/03/2024', conso_prim: 230, conso_fin: 180 };
     const ademeResults = [
       {
@@ -218,9 +218,7 @@ describe('processResults', () => {
         conso_5_usages_par_m2_ef: 500,
       },
     ];
-    const results = processResults(adData, ademeResults);
-    expect(results).toHaveLength(1);
-    expect(results[0].address).toBe('Bad1'); // best of the bad
+    expect(processResults(adData, ademeResults)).toEqual([]);
   });
 
   it('returns empty array for empty input', () => {

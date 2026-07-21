@@ -59,16 +59,17 @@ function validateSearchResponse(data) {
 }
 
 /**
- * Search matching addresses by querying the public ADEME DPE API directly,
- * then scoring the candidates client-side. No backend server involved.
+ * Critères retirés lors de la 2e passe : le GES est souvent désynchronisé de
+ * l'annonce, et les consos Leboncoin divergent d'environ 20 % de l'ADEME, donc
+ * leurs bornes éliminent des candidats légitimes avant même le scoring.
+ * Les candidats restants sont toujours scorés sur ces champs.
  */
-export async function searchLocation(data) {
-  const payload = buildSearchPayload(data);
-  const url = buildAdemeUrl(payload);
+const BROADEN = { ges: null, conso_prim: null, conso_fin: null };
 
+async function fetchAdeme(payload) {
   let response;
   try {
-    response = await fetch(url, { signal: AbortSignal.timeout(10_000) });
+    response = await fetch(buildAdemeUrl(payload), { signal: AbortSignal.timeout(10_000) });
   } catch (e) {
     const err = new Error('Erreur de connexion à la base ADEME.');
     err.code = e?.name === 'TimeoutError' ? ERROR_CODES.NETWORK_TIMEOUT : ERROR_CODES.NETWORK_ERROR;
@@ -82,9 +83,27 @@ export async function searchLocation(data) {
   }
 
   const body = await response.json().catch(() => ({}));
-  const ademeResults = Array.isArray(body.results) ? body.results : [];
-  const results = processResults(payload, ademeResults);
-  const result = { results, count: results.length };
+  return Array.isArray(body.results) ? body.results : [];
+}
+
+/**
+ * Search matching addresses by querying the public ADEME DPE API directly,
+ * then scoring the candidates client-side. No backend server involved.
+ * @returns {Promise<{results: Array, count: number, broadened: boolean}>}
+ */
+export async function searchLocation(data) {
+  const payload = buildSearchPayload(data);
+
+  let results = processResults(payload, await fetchAdeme(payload));
+  let broadened = false;
+
+  // ponytail: une seule 2e passe, jamais plus — plafond à 2 appels réseau
+  if (results.length === 0) {
+    broadened = true;
+    results = processResults(payload, await fetchAdeme({ ...payload, ...BROADEN }));
+  }
+
+  const result = { results, count: results.length, broadened };
 
   if (!validateSearchResponse(result)) {
     throw new Error('Réponse inattendue de la base ADEME.');

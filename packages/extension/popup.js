@@ -4,9 +4,10 @@ globalThis.browser ??= globalThis.chrome;
 
 (() => {
   // src/utils/score-calculator.js
+  var CONFIDENT_SCORE = 80;
   function getScoreColor(score) {
     if (typeof score !== 'number' || isNaN(score)) return 'gray';
-    if (score >= 80) return 'green';
+    if (score >= CONFIDENT_SCORE) return 'green';
     if (score >= 50) return 'orange';
     return 'red';
   }
@@ -128,10 +129,7 @@ globalThis.browser ??= globalThis.chrome;
         score: calculateMatchScore(adData, item),
       }))
       .sort((a, b) => b.score - a.score);
-    if (scored.length === 0) return scored;
-    const filtered = scored.filter((r) => r.score >= MIN_SCORE_THRESHOLD);
-    const kept = filtered.length > 0 ? filtered : [scored[0]];
-    return kept.slice(0, MAX_RESULTS);
+    return scored.filter((r) => r.score >= MIN_SCORE_THRESHOLD).slice(0, MAX_RESULTS);
   }
 
   // src/api/ademe-client.js
@@ -231,6 +229,20 @@ globalThis.browser ??= globalThis.chrome;
   function getErrorMessage(code, fallback = 'Une erreur inattendue est survenue.') {
     return ERROR_MESSAGES[code] || fallback;
   }
+  var MISSING = 'Non trouv\xE9';
+  function explainNoResult(data = {}) {
+    const isMissing = (v) => !v || v === MISSING;
+    if (isMissing(data.date_diag)) {
+      return "L'annonce ne donne pas la date du diagnostic : c'est le crit\xE8re le plus discriminant, sans lui la recherche aboutit rarement.";
+    }
+    if (isMissing(data.surface)) {
+      return "L'annonce ne donne pas la surface habitable, impossible de d\xE9partager les logements du secteur.";
+    }
+    if (isMissing(data.zipcode)) {
+      return "L'annonce ne donne pas le code postal, la recherche a port\xE9 sur toute la commune.";
+    }
+    return "Le DPE de ce logement n'est peut-\xEAtre pas encore publi\xE9, ou l'annonce affiche des valeurs mises \xE0 jour depuis le diagnostic.";
+  }
 
   // src/api/location-client.js
   function validateSearchData(data) {
@@ -274,12 +286,11 @@ globalThis.browser ??= globalThis.chrome;
       (item) => typeof item.address === 'string' && typeof item.score === 'number'
     );
   }
-  async function searchLocation(data) {
-    const payload = buildSearchPayload(data);
-    const url = buildAdemeUrl(payload);
+  var BROADEN = { ges: null, conso_prim: null, conso_fin: null };
+  async function fetchAdeme(payload) {
     let response;
     try {
-      response = await fetch(url, { signal: AbortSignal.timeout(1e4) });
+      response = await fetch(buildAdemeUrl(payload), { signal: AbortSignal.timeout(1e4) });
     } catch (e) {
       const err = new Error('Erreur de connexion \xE0 la base ADEME.');
       err.code =
@@ -294,9 +305,17 @@ globalThis.browser ??= globalThis.chrome;
       throw err;
     }
     const body = await response.json().catch(() => ({}));
-    const ademeResults = Array.isArray(body.results) ? body.results : [];
-    const results = processResults(payload, ademeResults);
-    const result = { results, count: results.length };
+    return Array.isArray(body.results) ? body.results : [];
+  }
+  async function searchLocation(data) {
+    const payload = buildSearchPayload(data);
+    let results = processResults(payload, await fetchAdeme(payload));
+    let broadened = false;
+    if (results.length === 0) {
+      broadened = true;
+      results = processResults(payload, await fetchAdeme({ ...payload, ...BROADEN }));
+    }
+    const result = { results, count: results.length, broadened };
     if (!validateSearchResponse(result)) {
       throw new Error('R\xE9ponse inattendue de la base ADEME.');
     }
@@ -388,12 +407,29 @@ globalThis.browser ??= globalThis.chrome;
     li.appendChild(link);
     return li;
   }
-  function createLocationResultsList(results, getMapsLink, getScoreColor2) {
+  function createLocationResultsList(results, getMapsLink, getScoreColor2, broadened = false) {
+    var _a;
     const container = document.createDocumentFragment();
+    const confident =
+      !broadened && ((_a = results[0]) == null ? void 0 : _a.score) >= CONFIDENT_SCORE;
     const title = createElement('p');
-    const strong = createElement('strong', 'Adresses trouv\xE9es :');
+    const strong = createElement(
+      'strong',
+      confident ? 'Adresses trouv\xE9es :' : 'Pistes possibles :'
+    );
     title.appendChild(strong);
     container.appendChild(title);
+    if (!confident) {
+      container.appendChild(
+        createElement(
+          'p',
+          broadened
+            ? 'Recherche \xE9largie : le GES et les consommations ont \xE9t\xE9 ignor\xE9s faute de correspondance exacte. V\xE9rifiez la surface et la date du diagnostic.'
+            : 'Correspondance incertaine : v\xE9rifiez la surface et la date du diagnostic avant de vous fier \xE0 ces adresses.',
+          { class: 'confidence-warning' }
+        )
+      );
+    }
     const ul = createElement('ul', '', {
       style: {
         paddingLeft: '20px',
@@ -1021,16 +1057,18 @@ globalThis.browser ??= globalThis.chrome;
           const resultsList = createLocationResultsList(
             result.results,
             getGoogleMapsLink,
-            getScoreColor
+            getScoreColor,
+            result.broadened
           );
           locationResults.appendChild(resultsList);
           if (shouldAskForRating()) {
             locationResults.appendChild(createRatePrompt());
           }
         } else {
-          locationResults.appendChild(
-            createMessage('Aucune adresse trouv\xE9e avec ces crit\xE8res stricts.')
-          );
+          locationResults.appendChild(createMessage('Aucune correspondance fiable.'));
+          const why = createMessage(explainNoResult(data), '#6b7280');
+          why.style.fontSize = '11.5px';
+          locationResults.appendChild(why);
         }
       } catch (error) {
         console.error('API Error:', error);

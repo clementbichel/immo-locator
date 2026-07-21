@@ -2,6 +2,8 @@
  * Secure DOM manipulation helpers to avoid innerHTML XSS vulnerabilities
  */
 
+import { CONFIDENT_SCORE } from './score-calculator.js';
+
 /**
  * Create an element with text content
  * @param {string} tag - HTML tag name
@@ -148,13 +150,29 @@ export function createLocationResultItem(item, mapsLink, scoreColor) {
  * @param {Function} getScoreColor - Function to get score color
  * @returns {HTMLElement}
  */
-export function createLocationResultsList(results, getMapsLink, getScoreColor) {
+export function createLocationResultsList(results, getMapsLink, getScoreColor, broadened = false) {
   const container = document.createDocumentFragment();
 
+  // Résultats triés par score décroissant : le premier donne le niveau de confiance global.
+  // Une recherche élargie n'est jamais présentée comme franche, quel que soit le score.
+  const confident = !broadened && results[0]?.score >= CONFIDENT_SCORE;
+
   const title = createElement('p');
-  const strong = createElement('strong', 'Adresses trouvées :');
+  const strong = createElement('strong', confident ? 'Adresses trouvées :' : 'Pistes possibles :');
   title.appendChild(strong);
   container.appendChild(title);
+
+  if (!confident) {
+    container.appendChild(
+      createElement(
+        'p',
+        broadened
+          ? 'Recherche élargie : le GES et les consommations ont été ignorés faute de correspondance exacte. Vérifiez la surface et la date du diagnostic.'
+          : 'Correspondance incertaine : vérifiez la surface et la date du diagnostic avant de vous fier à ces adresses.',
+        { class: 'confidence-warning' }
+      )
+    );
+  }
 
   const ul = createElement('ul', '', {
     style: {

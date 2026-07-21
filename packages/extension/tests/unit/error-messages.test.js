@@ -1,5 +1,10 @@
 import { describe, it, expect } from 'vitest';
-import { ERROR_CODES, ERROR_MESSAGES, getErrorMessage } from '../../src/utils/error-messages.js';
+import {
+  ERROR_CODES,
+  ERROR_MESSAGES,
+  explainNoResult,
+  getErrorMessage,
+} from '../../src/utils/error-messages.js';
 
 describe('error-messages', () => {
   describe('ERROR_CODES', () => {
@@ -52,6 +57,19 @@ describe('error-messages', () => {
       const customFallback = 'Custom error message';
       const message = getErrorMessage('UNKNOWN_CODE', customFallback);
       expect(message).toBe(customFallback);
+    });
+  });
+
+  describe('explainNoResult', () => {
+    it('blames the missing diagnosis date first', () => {
+      expect(explainNoResult({ date_diag: 'Non trouvé', surface: '45' })).toMatch(
+        /date du diagnostic/
+      );
+    });
+
+    it('falls back to the unpublished-DPE explanation when nothing is missing', () => {
+      const msg = explainNoResult({ date_diag: '15/03/2024', surface: '45', zipcode: '75001' });
+      expect(msg).toMatch(/pas encore publié/);
     });
   });
 });

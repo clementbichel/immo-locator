@@ -205,7 +205,45 @@ describe('location-client (direct ADEME)', () => {
 
       const { searchLocation } = await import('../../src/api/location-client.js');
       const result = await searchLocation(validData);
-      expect(result).toEqual({ results: [], count: 0 });
+      expect(result).toEqual({ results: [], count: 0, broadened: true });
+    });
+
+    it('retries once without GES and conso bounds when the first pass is empty', async () => {
+      const mockFetch = vi
+        .fn()
+        .mockResolvedValueOnce({ ok: true, json: async () => ({ results: [] }) })
+        .mockResolvedValueOnce({ ok: true, json: async () => ({ results: [ademeMatch] }) });
+      vi.stubGlobal('fetch', mockFetch);
+
+      const { searchLocation } = await import('../../src/api/location-client.js');
+      const result = await searchLocation({ ...validData, conso_prim: '230 kWh' });
+
+      expect(mockFetch).toHaveBeenCalledTimes(2);
+      expect(result.broadened).toBe(true);
+      expect(result.count).toBe(1);
+
+      const [firstUrl] = mockFetch.mock.calls[0];
+      const [secondUrl] = mockFetch.mock.calls[1];
+      expect(firstUrl).toContain('etiquette_ges_eq=E');
+      expect(firstUrl).toContain('conso_5_usages_par_m2_ep_gte');
+      expect(secondUrl).not.toContain('etiquette_ges_eq');
+      expect(secondUrl).not.toContain('conso_5_usages_par_m2_ep_gte');
+      // Le code postal, la surface et la date restent contraints
+      expect(secondUrl).toContain('code_postal_ban_eq=75001');
+      expect(secondUrl).toContain('date_etablissement_dpe_gte');
+    });
+
+    it('does not retry when the first pass already matches', async () => {
+      const mockFetch = vi
+        .fn()
+        .mockResolvedValue({ ok: true, json: async () => ({ results: [ademeMatch] }) });
+      vi.stubGlobal('fetch', mockFetch);
+
+      const { searchLocation } = await import('../../src/api/location-client.js');
+      const result = await searchLocation(validData);
+
+      expect(mockFetch).toHaveBeenCalledTimes(1);
+      expect(result.broadened).toBe(false);
     });
 
     it('throws an API error on a non-ok response', async () => {

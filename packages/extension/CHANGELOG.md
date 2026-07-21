@@ -7,6 +7,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.1.0] - 2026-07-21
+
+### Added
+
+- **Recherche élargie automatique** — quand la première requête ADEME ne renvoie aucune correspondance exploitable, une seconde passe est jouée sans le critère GES ni les bornes de consommation (code postal, DPE, surface et date restent contraints). Ces deux critères éliminaient des candidats légitimes avant même le scoring, le GES étant souvent désynchronisé de l'annonce et les consommations Leboncoin divergeant d'environ 20 % des valeurs ADEME. Plafonné à deux appels réseau.
+- **Wording de confiance** — au-dessus de 80 % les adresses sont présentées comme telles ; en dessous, ou après une recherche élargie, elles sont titrées « Pistes possibles » et accompagnées d'un avertissement invitant à vérifier la surface et la date du diagnostic.
+- **Explication des recherches infructueuses** — le message d'échec indique désormais la cause probable (date de diagnostic absente, surface absente, code postal absent, ou DPE non encore publié).
+- **Invitation à noter l'extension** — à partir de la sixième recherche réussie, un encart propose de laisser un avis sur le store courant (Chrome Web Store ou AMO, détecté automatiquement). Refusable définitivement. Le compteur vit en `localStorage`, aucune permission supplémentaire n'est demandée et aucune donnée ne quitte le poste.
+
+### Changed
+
+- **Plus de repêchage sous le seuil** — un résultat dont le score est inférieur à 50 % n'est plus affiché. Auparavant la meilleure correspondance était montrée quel que soit son score, ce qui pouvait présenter une adresse manifestement fausse comme un résultat.
+
+## [2.0.1] - 2026-06-15
+
+### Fixed
+
+- Détection des URL SeLoger en `detail.htm`.
+
+## [2.0.0] - 2026-06-14
+
+### Changed
+
+- **Passage en serverless** — l'extension interroge directement l'API publique ADEME et calcule les scores localement. Le serveur intermédiaire n'est plus sollicité. `host_permissions` passe de `api.immolocator.fr` à `data.ademe.fr`.
+
+### Removed
+
+- Bouton « Signaler une erreur » et envoi de rapports au serveur.
+
 ## [1.1.0] - 2026-04-08
 
 ### Added

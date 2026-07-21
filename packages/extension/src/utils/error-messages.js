@@ -59,3 +59,26 @@ export const ERROR_MESSAGES = {
 export function getErrorMessage(code, fallback = 'Une erreur inattendue est survenue.') {
   return ERROR_MESSAGES[code] || fallback;
 }
+
+const MISSING = 'Non trouvé';
+
+/**
+ * Explain why a search came back empty, en pointant le champ le plus probable.
+ * L'ordre compte : on cite la cause la plus fréquente en premier.
+ * @param {Object} data - Données extraites de l'annonce (valeurs brutes)
+ * @returns {string} Phrase d'explication à afficher sous le message d'échec
+ */
+export function explainNoResult(data = {}) {
+  const isMissing = (v) => !v || v === MISSING;
+
+  if (isMissing(data.date_diag)) {
+    return "L'annonce ne donne pas la date du diagnostic : c'est le critère le plus discriminant, sans lui la recherche aboutit rarement.";
+  }
+  if (isMissing(data.surface)) {
+    return "L'annonce ne donne pas la surface habitable, impossible de départager les logements du secteur.";
+  }
+  if (isMissing(data.zipcode)) {
+    return "L'annonce ne donne pas le code postal, la recherche a porté sur toute la commune.";
+  }
+  return "Le DPE de ce logement n'est peut-être pas encore publié, ou l'annonce affiche des valeurs mises à jour depuis le diagnostic.";
+}

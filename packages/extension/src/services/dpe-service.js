@@ -106,9 +106,6 @@ export function processResults(adData, ademeResults) {
     }))
     .sort((a, b) => b.score - a.score);
 
-  if (scored.length === 0) return scored;
-
-  const filtered = scored.filter((r) => r.score >= MIN_SCORE_THRESHOLD);
-  const kept = filtered.length > 0 ? filtered : [scored[0]];
-  return kept.slice(0, MAX_RESULTS);
+  // Rien sous le seuil : mieux vaut ne rien proposer qu'une adresse fausse
+  return scored.filter((r) => r.score >= MIN_SCORE_THRESHOLD).slice(0, MAX_RESULTS);
 }

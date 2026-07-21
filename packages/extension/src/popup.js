@@ -4,7 +4,7 @@ globalThis.browser ??= globalThis.chrome;
 import { getScoreColor } from './utils/score-calculator.js';
 import { validateSearchData, searchLocation, getGoogleMapsLink } from './api/location-client.js';
 import { clearElement, createMessage, createLocationResultsList } from './utils/dom-helpers.js';
-import { getErrorMessage, ERROR_CODES } from './utils/error-messages.js';
+import { getErrorMessage, ERROR_CODES, explainNoResult } from './utils/error-messages.js';
 import { getSite } from './utils/url-validator.js';
 import { shouldAskForRating, createRatePrompt } from './utils/rate-prompt.js';
 
@@ -602,16 +602,18 @@ document.addEventListener('DOMContentLoaded', () => {
         const resultsList = createLocationResultsList(
           result.results,
           getGoogleMapsLink,
-          getScoreColor
+          getScoreColor,
+          result.broadened
         );
         locationResults.appendChild(resultsList);
         if (shouldAskForRating()) {
           locationResults.appendChild(createRatePrompt());
         }
       } else {
-        locationResults.appendChild(
-          createMessage('Aucune adresse trouvée avec ces critères stricts.')
-        );
+        locationResults.appendChild(createMessage('Aucune correspondance fiable.'));
+        const why = createMessage(explainNoResult(data), '#6b7280');
+        why.style.fontSize = '11.5px';
+        locationResults.appendChild(why);
       }
     } catch (error) {
       console.error('API Error:', error);
