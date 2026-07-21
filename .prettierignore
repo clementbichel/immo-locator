@@ -1,0 +1,9 @@
+node_modules/
+dist/
+coverage/
+*.min.js
+package-lock.json
+
+# Bundle généré par esbuild, commité tel quel : le reformater le fait osciller
+# entre sortie esbuild et sortie Prettier à chaque commit.
+packages/extension/popup.js
